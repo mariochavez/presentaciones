@@ -45,6 +45,16 @@
     <!-- Additional image for other platforms -->
     <link rel="image_src" href="https://talks.mariochavez.io/playasontec/images/og-image.jpg">
     
+    <!-- CSS Files (from parent directory) -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="/css/ui-components.css">
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/css/styles.css" as="style">
+    <link rel="preload" href="/js/slides.js" as="script">
+    
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -63,8 +73,8 @@
           "https://github.com/mariochavez"
         ]
       },
-      "datePublished": "2025-07-17",
-      "dateModified": "2025-07-17",
+      "datePublished": "2025-01-17",
+      "dateModified": "2025-01-17",
       "inLanguage": "es",
       "keywords": ["AI", "inteligencia artificial", "programación", "Ruby on Rails", "MCP", "desarrollo software"],
       "url": "https://talks.mariochavez.io/playasontec/",
@@ -74,325 +84,6 @@
       }
     }
     </script>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #ffffff;
-            color: #333;
-        }
-
-        .slide {
-            width: 100vw;
-            height: 100vh;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 60px;
-            background: #ffffff;
-        }
-
-        .slide.active {
-            display: flex;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* Apply animations to active slides */
-        .slide.active h1,
-        .slide.active h2 {
-            animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .slide.active .subtitle {
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
-            opacity: 0;
-        }
-
-        .slide.active .url {
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
-            opacity: 0;
-        }
-
-        .slide.active .author {
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
-            opacity: 0;
-        }
-
-        .slide.active .browser-mockup {
-            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
-            opacity: 0;
-        }
-
-        .slide.active .code-block {
-            animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
-            opacity: 0;
-        }
-
-        /* Single gradient for all gradient text */
-        .gradient-text {
-            background: linear-gradient(90deg, #ee7fd9 0%, #5e8af5 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Pink text variant */
-        .text-pink {
-            color: #ee7fd9;
-        }
-
-        .subtitle {
-            font-size: 48px;
-            color: #5e8af5;
-            font-weight: 600;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .url {
-            font-size: 36px;
-            color: #5e8af5;
-            font-weight: 500;
-            margin-bottom: 60px;
-        }
-
-        /* Slide 1 - NoBuild */
-        .slide-1 {
-            background: #ffffff;
-        }
-
-        .slide-1 h1 {
-            font-size: 120px;
-            font-weight: 800;
-            margin-bottom: 40px;
-            letter-spacing: -4px;
-        }
-
-        .slide-1 .subtitle, .slide-1 .author {
-            font-size: 36px;
-            color: #5e8af5;
-            font-weight: 600;
-        }
-
-        /* Slide 2 - Ruby on Rails 8 */
-        .slide-2 h2 {
-            font-size: 96px;
-            font-weight: 800;
-            text-align: center;
-            line-height: 1.2;
-        }
-
-        .slide-2 .author {
-            position: absolute;
-            bottom: 60px;
-            font-size: 24px;
-            font-weight: 500;
-        }
-
-        /* Slide 3 - App ejemplo */
-        .slide-3 h2 {
-            font-size: 72px;
-            font-weight: 800;
-            margin-bottom: 20px;
-        }
-
-        .browser-mockup {
-            width: 80%;
-            max-width: 1200px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            overflow: hidden;
-        }
-
-        .browser-header {
-            background: #f8f8f8;
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .browser-dots {
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .dot.red { background: #ff5f57; }
-        .dot.yellow { background: #ffbd2e; }
-        .dot.green { background: #28ca42; }
-
-        .browser-content {
-            height: 500px;
-            background: #fafafa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #999;
-            overflow: hidden;
-        }
-
-        .browser-content img {
-          width: 100%;
-          object-fit: cover;
-          height: 100%;
-        }
-
-        /* Slide 4 - NoPAAS */
-        .slide-4 h1 {
-            font-size: 140px;
-            font-weight: 800;
-            margin-bottom: 20px;
-        }
-
-        .slide-4 .subtitle {
-            font-size: 48px;
-            color: #5e8af5;
-            font-weight: 600;
-            margin-bottom: 60px;
-        }
-
-        .code-block {
-            background: #f8f8f8;
-            color: #333;
-            padding: 40px 60px;
-            border-radius: 12px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 24px;
-            line-height: 1.8;
-            width: 80%;
-            max-width: 1000px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        .code-block .prompt {
-            color: #5e8af5;
-        }
-
-        .code-block .comment {
-            color: #ee7fd9;
-        }
-
-        /* Navigation */
-        .nav-hint {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 14px;
-            color: #808080;
-        }
-
-        /* Author info */
-        .author-info {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            font-size: 14px;
-            color: #808080;
-        }
-
-        .author-info a {
-            color: #808080;
-            text-decoration: none;
-        }
-
-        .author-info a:hover {
-            color: #5e8af5;
-        }
-
-        /* Position indicator */
-        .position-indicator {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 14px;
-            color: #808080;
-        }
-
-        /* Slide 5 - Image showcase */
-        .slide-5 h2 {
-            font-size: 100px;
-            font-weight: 800;
-            margin-bottom: 20px;
-        }
-
-        .slide-5 .subtitle {
-            font-size: 36px;
-            color: #5e8af5;
-            font-weight: 500;
-            margin-bottom: 60px;
-        }
-
-        .image-container {
-            width: 80%;
-            max-width: 1000px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .image-container img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .slide.active .image-container {
-            animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
-            opacity: 0;
-        }
-    </style>
 </head>
 <body>
     <!-- Slide 1: Title -->
@@ -407,7 +98,7 @@
         <h2 class="gradient-text">Rubysta desde el 2008</h2>
         <p class="subtitle text-pink">Desarrollador desde 1993</p>
         <div class="image-container">
-            <img src="playasontec/images/mario-chavez.jpg" alt="Mario Alberto Chávez">
+            <img src="images/mario-chavez.jpg" alt="Mario Alberto Chávez">
         </div>
         <p class="position-indicator">Fotografía</p>
     </div>
@@ -417,7 +108,7 @@
         <h2 class="gradient-text">Fotógrafo documental</h2>
         <p class="subtitle text-pink">Proyectos fotográficos sobre el territorio y memoria</p>
         <div class="image-container">
-            <img src="playasontec/images/mario-chavez-photo.jpg" alt="Mario Alberto Chávez">
+            <img src="images/mario-chavez-photo.jpg" alt="Mario Alberto Chávez">
         </div>
         <p class="position-indicator">Caxitlán</p>
     </div>
@@ -435,7 +126,7 @@
                 </div>
             </div>
             <div class="browser-content">
-              <img src="playasontec/images/caxitlan.jpg" alt="Caxitlán">
+              <img src="images/caxitlan.jpg" alt="Caxitlán">
             </div>
         </div>
         <p class="position-indicator">Pregunta</p>
@@ -443,7 +134,7 @@
 
     <!-- Slide 5: Pregunta -->
     <div class="slide slide-2">
-        <h2 class="gradient-text">¿Quienes usan AI para trabajar?</h2>
+        <h2 class="gradient-text">¿Quiénes usan AI para trabajar?</h2>
         <p class="subtitle">Ya sea que la pague la empresa o ustedes</p>
         <p class="position-indicator">Sin trabajo</p>
     </div>
@@ -452,7 +143,7 @@
     <div class="slide slide-2">
         <h2 class="gradient-text">La AI nos va a dejar sin trabajo</h2>
         <p class="subtitle">a todos</p>
-        <p class="position-indicator">Pregunta</p>
+        <p class="position-indicator">Modelos</p>
     </div>
 
     <!-- Slide 7: Modelos -->
@@ -468,7 +159,7 @@
                 </div>
             </div>
             <div class="browser-content">
-              <img src="playasontec/images/anthropic.jpg" alt="Anthropic">
+              <img src="images/anthropic.jpg" alt="Anthropic">
             </div>
         </div>
         <p class="position-indicator">Limitaciones</p>
@@ -491,11 +182,11 @@
     <!-- Slide 9: Contexto-->
     <div class="slide slide-2">
         <h2 class="gradient-text">Contexto limitado</h2>
-        <p class="subtitle">es necesario ser claro y conciso sobre que queremos hacer</p>
+        <p class="subtitle">es necesario ser claro y conciso sobre qué queremos hacer</p>
         <div class="code-block">
-            <div><span class="prompt">></span> No es posible cargar todo el “code base” de una aplicación, chica, mediana o grande</div>
+            <div><span class="prompt">></span> No es posible cargar todo el "code base" de una aplicación, chica, mediana o grande</div>
             <div><span class="prompt">></span> Definir reglas y condiciones muy específicas sobre qué y cómo trabajar al iniciar un chat</div>
-            <div><span class="prompt">></span> Ayudarle y pasarle los archivos que debe “observar” para entender el trabajo a realizar</div>
+            <div><span class="prompt">></span> Ayudarle y pasarle los archivos que debe "observar" para entender el trabajo a realizar</div>
             <div><span class="prompt">></span> No tiene información al día de frameworks, librerías, documentación</div>
             <div><span class="prompt">></span><span class="comment"> El chat o sesión se va a llenar y hay que comenzar una nueva sesión, pierde información previa</span></div>
         </div>
@@ -512,7 +203,6 @@
             <div><span class="prompt">></span> Agent CLI con integración a manipular archivos y ayuda en forma de archivo .md en el repositorio</div>
             <div><span class="prompt">></span> Apps como Claude Desktop donde se pueden configurar proyectos con Knowledge base</div>
             <div><span class="prompt">></span><span class="comment"> Integrar Model Context Protocols (MCP) para extender la ayuda al AI</span></div>
-
         </div>
         <p class="position-indicator">Model Context Protocol</p>
     </div>
@@ -530,7 +220,7 @@
                 </div>
             </div>
             <div class="browser-content">
-              <img src="playasontec/images/mcp.jpg" alt="Model Context Protocol">
+              <img src="images/mcp.jpg" alt="Model Context Protocol">
             </div>
         </div>
         <p class="position-indicator">Rails MCP Server</p>
@@ -549,7 +239,7 @@
                 </div>
             </div>
             <div class="browser-content">
-              <img src="playasontec/images/rails-mcp.jpg" alt="Rails MCP Server">
+              <img src="images/rails-mcp.jpg" alt="Rails MCP Server">
             </div>
         </div>
         <p class="position-indicator">Neovim MCP Server</p>
@@ -560,7 +250,7 @@
         <h2 class="gradient-text">Neovim MCP</h2>
         <p class="subtitle">Permite modificar archivos en mi editor</p>
         <div class="image-container">
-            <img src="playasontec/images/neovim.jpg" alt="Neovim MCP">
+            <img src="images/neovim.jpg" alt="Neovim MCP">
         </div>
         <p class="position-indicator">Mi Flujo</p>
     </div>
@@ -576,14 +266,13 @@
             <div><span class="prompt">></span> Reviso y modifico el plan si es necesario</div>
             <div><span class="prompt">></span> Le doy vía libre para modificar los archivos pero si algo no me gusta se lo indico</div>
             <div><span class="prompt">></span><span class="comment"> Creo y guardo resúmenes detallados del trabajo realizado</span></div>
-
         </div>
         <p class="position-indicator">Pregunta</p>
     </div>
 
     <!-- Slide 15: Pregunta -->
     <div class="slide slide-2">
-        <h2 class="gradient-text">Entonces, ¿La AI si nos va a quitar el trabajo?</h2>
+        <h2 class="gradient-text">Entonces, ¿La AI sí nos va a quitar el trabajo?</h2>
         <p class="subtitle">Lo dudo, no veo que eso pase en un futuro cercano</p>
         <p class="position-indicator">Final</p>
     </div>
@@ -596,72 +285,26 @@
             <div><span class="prompt">></span> Es buena cuando es código nuevo o una funcionalidad nueva</div>
             <div><span class="prompt">></span> Si es código legacy o funcionalidad compleja, es un volado</div>
             <div><span class="prompt">></span> Si se atora con un problema y después de un par de iteraciones no lo resuelve, se atora en un ciclo</div>
-            <div><span class="prompt">></span> Le gusta hacer cosas complejas, siempre tengo que pedirle “simplicidad”</div>
+            <div><span class="prompt">></span> Le gusta hacer cosas complejas, siempre tengo que pedirle "simplicidad"</div>
             <div><span class="prompt">></span> Sin MCPs no tiene acceso a funcionalidad nueva o librerías nuevas</div>
             <div><span class="prompt">></span><span class="comment"> No puedo dejarla sola, necesita que la cuiden, su ventana de contexto es corta</span></div>
-
         </div>
         <p class="position-indicator">Gracias</p>
     </div>
 
     <!-- Slide 17: Gracias -->
-    <div class="slide slide-1 active">
+    <div class="slide slide-1">
         <h1 class="gradient-text">Gracias</h1>
         <p class="author text-pink">MARIO ALBERTO CHÁVEZ - 2025</p>
     </div>
 
+    <!-- Navigation hints -->
     <p class="nav-hint">Use arrow keys to navigate</p>
     <div class="author-info">
         Mario Alberto Chávez - <a href="https://mariochavez.io" target="_blank">https://mariochavez.io</a>
     </div>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-
-        function showSlide(index) {
-            slides.forEach(slide => slide.classList.remove('active'));
-          console.log(index);
-            slides[index].classList.add('active');
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
-                currentSlide++;
-                showSlide(currentSlide);
-            } else if (e.key === 'ArrowLeft' && currentSlide > 0) {
-                currentSlide--;
-                showSlide(currentSlide);
-            } else if (e.key >= '1' && e.key <= '9') {
-                // Number key navigation
-                const slideIndex = parseInt(e.key) - 1;
-                if (slideIndex < slides.length) {
-                    currentSlide = slideIndex;
-                    showSlide(currentSlide);
-                }
-            }
-        });
-
-        // Touch support for mobile
-        let touchStartX = 0;
-        document.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-        });
-
-        document.addEventListener('touchend', (e) => {
-            const touchEndX = e.changedTouches[0].clientX;
-            const diff = touchStartX - touchEndX;
-            
-            if (Math.abs(diff) > 50) {
-                if (diff > 0 && currentSlide < slides.length - 1) {
-                    currentSlide++;
-                    showSlide(currentSlide);
-                } else if (diff < 0 && currentSlide > 0) {
-                    currentSlide--;
-                    showSlide(currentSlide);
-                }
-            }
-        });
-    </script>
+    <!-- JavaScript (from parent directory) -->
+    <script src="/js/slides.js"></script>
 </body>
 </html>

@@ -1,0 +1,418 @@
+/* responsive.css - Responsive styles for all screen sizes */
+
+/* ===================================
+   Tablet Devices (768px and below)
+   =================================== */
+@media (max-width: 768px) {
+    /* Adjust base font size for better mobile scaling */
+    html {
+        font-size: 14px; /* Smaller base for mobile */
+    }
+
+    /* Slide container adjustments */
+    .slide {
+        padding: 1.25rem; /* 20px */
+    }
+
+    /* Title slide (slide-1) responsive */
+    .slide-1 h1 {
+        font-size: 3rem; /* 48px */
+        letter-spacing: -0.125rem; /* -2px */
+        line-height: 1.1;
+        text-align: center;
+    }
+
+    .slide-1 .subtitle, 
+    .slide-1 .author {
+        font-size: 1.25rem; /* 20px */
+    }
+
+    /* General slides (slide-2) responsive */
+    .slide-2 h2 {
+        font-size: 2.25rem; /* 36px */
+        line-height: 1.2;
+    }
+
+    .slide-2 .author {
+        position: static;
+        margin-top: 1.25rem; /* 20px */
+        font-size: 1.125rem; /* 18px */
+    }
+
+    /* Browser mockup slides (slide-3) responsive */
+    .slide-3 h2 {
+        font-size: 2rem; /* 32px */
+    }
+
+    /* Typography adjustments */
+    .subtitle {
+        font-size: 1.5rem; /* 24px */
+        margin-top: 0.9375rem; /* 15px */
+        margin-bottom: 0.9375rem; /* 15px */
+    }
+
+    .url {
+        font-size: 1.25rem; /* 20px */
+        margin-bottom: 1.875rem; /* 30px */
+        word-break: break-all;
+    }
+
+    /* Browser mockup responsive */
+    .browser-mockup {
+        width: 95%;
+        box-shadow: 0 0.625rem 1.875rem rgba(0,0,0,0.3);
+    }
+
+    .browser-header {
+        padding: 0.75rem 1rem; /* 12px 16px */
+    }
+
+    .browser-content {
+        height: 18.75rem; /* 300px */
+        font-size: 1.125rem; /* 18px */
+    }
+
+    .dot {
+        width: 0.5rem; /* 8px */
+        height: 0.5rem; /* 8px */
+    }
+
+    /* Code block responsive */
+    .code-block {
+        width: 95%;
+        padding: 1.25rem; /* 20px */
+        font-size: 0.875rem; /* 14px */
+        line-height: 1.6;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    }
+
+    /* Image container responsive */
+    .image-container {
+        width: 95%;
+        max-width: none;
+        box-shadow: 0 0.625rem 1.875rem rgba(0,0,0,0.1);
+    }
+
+    /* Navigation elements responsive */
+    .nav-hint {
+        font-size: 0.75rem; /* 12px */
+        bottom: 0.625rem; /* 10px */
+    }
+
+    .author-info {
+        font-size: 0.75rem; /* 12px */
+        bottom: 0.625rem; /* 10px */
+        left: 0.625rem; /* 10px */
+        right: 0.625rem; /* 10px */
+        text-align: center;
+    }
+
+    .position-indicator {
+        display: none; /* Hide on mobile to save space */
+    }
+
+    /* Slide counter responsive */
+    .slide-counter {
+        top: 0.625rem; /* 10px */
+        right: 0.625rem; /* 10px */
+        font-size: 0.75rem; /* 12px */
+        padding: 0.375rem 0.75rem;
+    }
+}
+
+/* ===================================
+   Small Mobile Devices (480px and below)
+   =================================== */
+@media (max-width: 480px) {
+    /* Further reduce base font size */
+    html {
+        font-size: 13px; /* Even smaller base for small phones */
+    }
+
+    /* Tighter padding on small screens */
+    .slide {
+        padding: 0.9375rem; /* 15px */
+    }
+
+    /* Title slide adjustments */
+    .slide-1 h1 {
+        font-size: 2.25rem; /* 36px */
+        letter-spacing: -0.0625rem; /* -1px */
+    }
+
+    /* General slide headings */
+    .slide-2 h2 {
+        font-size: 1.75rem; /* 28px */
+    }
+
+    .slide-3 h2 {
+        font-size: 1.5rem; /* 24px */
+    }
+
+    /* Smaller text elements */
+    .subtitle {
+        font-size: 1.125rem; /* 18px */
+    }
+
+    .url {
+        font-size: 1rem; /* 16px */
+    }
+
+    /* Code block on small screens */
+    .code-block {
+        font-size: 0.75rem; /* 12px */
+        padding: 0.9375rem; /* 15px */
+    }
+
+    /* Smaller browser mockup */
+    .browser-content {
+        height: 12.5rem; /* 200px */
+    }
+
+    /* Ensure navigation doesn't overlap content */
+    .author-info {
+        position: static;
+        margin-top: 2rem;
+        padding: 0.5rem;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 0.25rem;
+    }
+}
+
+/* ===================================
+   Landscape Mobile (max 768px width + landscape)
+   =================================== */
+@media (max-width: 768px) and (orientation: landscape) {
+    /* Maintain readable font size in landscape */
+    html {
+        font-size: 14px;
+    }
+
+    /* Adjust padding for landscape */
+    .slide {
+        padding: 0.625rem 2.5rem; /* 10px 40px */
+    }
+
+    /* Optimize headings for landscape */
+    .slide-1 h1 {
+        font-size: 3.75rem; /* 60px */
+    }
+
+    .slide-2 h2 {
+        font-size: 2.5rem; /* 40px */
+    }
+
+    /* Constrain heights in landscape */
+    .browser-content {
+        height: 15.625rem; /* 250px */
+    }
+
+    .code-block {
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+
+    .image-container {
+        max-height: 60vh;
+    }
+
+    .image-container img {
+        object-fit: contain;
+        height: auto;
+        max-height: 100%;
+    }
+
+    /* Hide less important elements in landscape */
+    .nav-hint,
+    .position-indicator {
+        display: none;
+    }
+}
+
+/* ===================================
+   Small Landscape (max 568px + landscape)
+   =================================== */
+@media (max-width: 568px) and (orientation: landscape) {
+    /* Very tight landscape mode */
+    .slide {
+        padding: 0.5rem 1.5rem;
+    }
+
+    .slide-1 h1 {
+        font-size: 2.5rem;
+    }
+
+    .slide-2 h2 {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+
+    /* Make browser mockup more compact */
+    .browser-content {
+        height: 12rem;
+    }
+
+    /* Extremely compact code blocks */
+    .code-block {
+        font-size: 0.7rem;
+        padding: 0.75rem;
+        max-height: 40vh;
+    }
+}
+
+/* ===================================
+   Large Tablets / Small Laptops (769px - 1024px)
+   =================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    /* Slightly smaller than desktop */
+    html {
+        font-size: 15px;
+    }
+
+    .slide {
+        padding: 2.5rem; /* 40px */
+    }
+
+    .slide-1 h1 {
+        font-size: 6rem; /* 96px */
+    }
+
+    .slide-2 h2 {
+        font-size: 4.5rem; /* 72px */
+    }
+
+    .browser-mockup {
+        width: 85%;
+    }
+
+    .code-block {
+        width: 85%;
+        font-size: 1.25rem; /* 20px */
+    }
+}
+
+/* ===================================
+   Large Screens (1920px and above)
+   =================================== */
+@media (min-width: 1920px) {
+    /* Larger base font for big screens */
+    html {
+        font-size: 18px;
+    }
+
+    /* Increase maximum widths */
+    .browser-mockup {
+        max-width: 90rem; /* 1440px */
+    }
+
+    .code-block {
+        max-width: 75rem; /* 1200px */
+    }
+
+    .image-container {
+        max-width: 75rem; /* 1200px */
+    }
+}
+
+/* ===================================
+   Print Styles
+   =================================== */
+@media print {
+    /* Reset for printing */
+    html {
+        font-size: 12pt;
+    }
+
+    .slide {
+        page-break-after: always;
+        padding: 0.5in;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    /* Show all slides for printing */
+    .slide {
+        display: flex !important;
+    }
+
+    /* Hide navigation elements */
+    .nav-hint,
+    .author-info,
+    .position-indicator,
+    .slide-counter {
+        display: none !important;
+    }
+
+    /* Adjust colors for print */
+    .gradient-text {
+        -webkit-text-fill-color: #333;
+        background: none;
+        color: #333;
+    }
+
+    .code-block {
+        border: 1px solid #ccc;
+    }
+
+    /* Ensure images print well */
+    img {
+        max-width: 100%;
+        page-break-inside: avoid;
+    }
+}
+
+/* ===================================
+   Accessibility - High Contrast Mode
+   =================================== */
+@media (prefers-contrast: high) {
+    .gradient-text {
+        background: none;
+        -webkit-text-fill-color: currentColor;
+        color: #000;
+    }
+
+    .code-block {
+        border: 2px solid currentColor;
+    }
+
+    .browser-mockup {
+        border: 2px solid currentColor;
+    }
+}
+
+/* ===================================
+   Dark Mode Support (Optional)
+   =================================== */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    .slide {
+        background: #1a1a1a;
+    }
+
+    .code-block {
+        background: #2a2a2a;
+        color: #e0e0e0;
+    }
+
+    .browser-mockup {
+        background: #2a2a2a;
+    }
+
+    .browser-header {
+        background: #333;
+        border-bottom-color: #444;
+    }
+
+    .browser-content {
+        background: #1a1a1a;
+    }
+}

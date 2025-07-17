@@ -1,0 +1,61 @@
+/* ui-components.css - Styles for dynamic UI elements */
+
+/* ===================================
+   Progress Bar
+   =================================== */
+.progress-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: #5e8af5;
+    transition: width 0.3s ease;
+    z-index: 100;
+}
+
+/* ===================================
+   Fullscreen Button
+   =================================== */
+.fullscreen-btn {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s ease;
+    opacity: 0.3;
+    color: #666;
+}
+
+.fullscreen-btn:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    transform: scale(1.05);
+}
+
+/* Hide fullscreen button on mobile */
+@media (max-width: 768px) {
+    .fullscreen-btn {
+        display: none;
+    }
+}
+
+/* ===================================
+   Optional: Slide Counter (if needed later)
+   =================================== */
+.slide-counter {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    font-size: 0.875rem;
+    color: #808080;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.1);
+}
