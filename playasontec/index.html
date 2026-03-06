@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>Programando con AI: Lo bueno, lo malo y lo real - Mario Alberto Chávez</title>
+    <meta name="title" content="Programando con AI: Lo bueno, lo malo y lo real - Mario Alberto Chávez">
+    <meta name="description" content="Presentación sobre el uso de inteligencia artificial en programación. Explora las herramientas, limitaciones y flujos de trabajo reales con AI en el desarrollo de software.">
+    <meta name="author" content="Mario Alberto Chávez">
+    <meta name="keywords" content="inteligencia artificial, AI, programación, desarrollo software, Ruby on Rails, Model Context Protocol, MCP, Neovim, Claude, desarrollo web">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Spanish">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:image" content="https://talks.mariochavez.io/playasontec/images/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://talks.mariochavez.io/playasontec/">
+    <meta property="og:title" content="Programando con AI: Lo bueno, lo malo y lo real">
+    <meta property="og:description" content="Presentación sobre el uso real de AI en programación. Herramientas, limitaciones y experiencias prácticas.">
+    <meta property="og:locale" content="es_MX">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://talks.mariochavez.io/playasontec/">
+    <meta property="twitter:title" content="Programando con AI: Lo bueno, lo malo y lo real">
+    <meta property="twitter:description" content="Presentación sobre el uso real de AI en programación. Herramientas, limitaciones y experiencias prácticas.">
+    <meta property="twitter:image" content="https://talks.mariochavez.io/playasontec/images/og-image.jpg">
+    <meta property="twitter:creator" content="@mario_chavez">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://talks.mariochavez.io/playasontec/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#5e8af5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- Additional image for other platforms -->
+    <link rel="image_src" href="https://talks.mariochavez.io/playasontec/images/og-image.jpg">
+    
+    <!-- CSS Files (from parent directory) -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="/css/ui-components.css">
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/css/styles.css" as="style">
+    <link rel="preload" href="/js/slides.js" as="script">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "PresentationDigitalDocument",
+      "name": "Programando con AI: Lo bueno, lo malo y lo real",
+      "description": "Presentación sobre el uso de inteligencia artificial en programación, explorando herramientas, limitaciones y flujos de trabajo reales",
+      "image": "https://talks.mariochavez.io/playasontec/images/og-image.jpg",
+      "thumbnailUrl": "https://talks.mariochavez.io/playasontec/images/og-image.jpg",
+      "author": {
+        "@type": "Person",
+        "name": "Mario Alberto Chávez",
+        "url": "https://mariochavez.io",
+        "sameAs": [
+          "https://twitter.com/mario_chavez",
+          "https://github.com/mariochavez"
+        ]
+      },
+      "datePublished": "2025-01-17",
+      "dateModified": "2025-01-17",
+      "inLanguage": "es",
+      "keywords": ["AI", "inteligencia artificial", "programación", "Ruby on Rails", "MCP", "desarrollo software"],
+      "url": "https://talks.mariochavez.io/playasontec/",
+      "publisher": {
+        "@type": "Person",
+        "name": "Mario Alberto Chávez"
+      }
+    }
+    </script>
+</head>
+<body>
+    <!-- Slide 1: Title -->
+    <div class="slide slide-1 active">
+        <h1 class="gradient-text">Programando con AI: Lo bueno, lo malo y lo real</h1>
+        <p class="author text-pink">MARIO ALBERTO CHÁVEZ - 2025</p>
+        <p class="position-indicator">Presentacion</p>
+    </div>
+
+    <!-- Slide 2: Mario Alberto Chávez --> 
+    <div class="slide slide-2">
+        <h2 class="gradient-text">Rubysta desde el 2008</h2>
+        <p class="subtitle text-pink">Desarrollador desde 1993</p>
+        <div class="image-container">
+            <img src="/playasontec/images/mario-chavez.jpg" alt="Mario Alberto Chávez">
+        </div>
+        <p class="position-indicator">Fotografía</p>
+    </div>
+
+    <!-- Slide 3: Fotografía--> 
+    <div class="slide slide-2">
+        <h2 class="gradient-text">Fotógrafo documental</h2>
+        <p class="subtitle text-pink">Proyectos fotográficos sobre el territorio y memoria</p>
+        <div class="image-container">
+            <img src="/playasontec/images/mario-chavez-photo.jpg" alt="Mario Alberto Chávez">
+        </div>
+        <p class="position-indicator">Caxitlán</p>
+    </div>
+
+    <!-- Slide 4: Caxitlán -->
+    <div class="slide slide-2">
+        <h2 class="gradient-text">Proyecto reciente</h2>
+        <p class="url">https://caxitlan.org</p>
+        <div class="browser-mockup">
+            <div class="browser-header">
+                <div class="browser-dots">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+            </div>
+            <div class="browser-content">
+              <img src="/playasontec/images/caxitlan.jpg" alt="Caxitlán">
+            </div>
+        </div>
+        <p class="position-indicator">Pregunta</p>
+    </div>
+
+    <!-- Slide 5: Pregunta -->
+    <div class="slide slide-2">
+        <h2 class="gradient-text">¿Quiénes usan AI para trabajar?</h2>
+        <p class="subtitle">Ya sea que la pague la empresa o ustedes</p>
+        <p class="position-indicator">Sin trabajo</p>
+    </div>
+
+    <!-- Slide 6: Sin trabajo -->
+    <div class="slide slide-2">
+        <h2 class="gradient-text">La AI nos va a dejar sin trabajo</h2>
+        <p class="subtitle">a todos</p>
+        <p class="position-indicator">Modelos</p>
+    </div>
+
+    <!-- Slide 7: Modelos -->
+    <div class="slide slide-3">
+        <h2 class="gradient-text">Existe una variedad de modelos</h2>
+        <p class="subtitle">de pago como Open Source</p>
+        <div class="browser-mockup">
+            <div class="browser-header">
+                <div class="browser-dots">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+            </div>
+            <div class="browser-content">
+              <img src="/playasontec/images/anthropic.jpg" alt="Anthropic">
+            </div>
+        </div>
+        <p class="position-indicator">Limitaciones</p>
+    </div>
+
+    <!-- Slide 8: Limitaciones-->
+    <div class="slide slide-2">
+        <h2 class="gradient-text">Todos tienen limitaciones</h2>
+        <p class="subtitle">por lo que es necesario tenerlas en cuenta</p>
+        <div class="code-block">
+            <div><span class="prompt">></span> Las versiones gratuitas no sirven para algo serio</div>
+            <div><span class="prompt">></span> La realidad ... necesitas un plan de 100 o 200 USD al mes</div>
+            <div><span class="prompt">></span> Su conocimiento es limitado y no se actualiza regularmente</div>
+            <div><span class="prompt">></span> Tienen "preferencia" a ciertos lenguajes y tecnología</div>
+            <div><span class="prompt">></span><span class="comment"> Tienen una ventana de contexto limitado</span></div>
+        </div>
+        <p class="position-indicator">Contexto</p>
+    </div>
+
+    <!-- Slide 9: Contexto-->
+    <div class="slide slide-2">
+        <h2 class="gradient-text">Contexto limitado</h2>
+        <p class="subtitle">es necesario ser claro y conciso sobre qué queremos hacer</p>
+        <div class="code-block">
+            <div><span class="prompt">></span> No es posible cargar todo el "code base" de una aplicación, chica, mediana o grande</div>
+            <div><span class="prompt">></span> Definir reglas y condiciones muy específicas sobre qué y cómo trabajar al iniciar un chat</div>
+            <div><span class="prompt">></span> Ayudarle y pasarle los archivos que debe "observar" para entender el trabajo a realizar</div>
+            <div><span class="prompt">></span> No tiene información al día de frameworks, librerías, documentación</div>
+            <div><span class="prompt">></span><span class="comment"> El chat o sesión se va a llenar y hay que comenzar una nueva sesión, pierde información previa</span></div>
+        </div>
+        <p class="position-indicator">Herramientas</p>
+    </div>
+
+    <!-- Slide 10: Herramientas-->
+    <div class="slide slide-2">
+        <h2 class="gradient-text">Herramientas</h2>
+        <p class="subtitle">la AI no puede sola, hay que darle mucha ayuda</p>
+        <div class="code-block">
+            <div><span class="prompt">></span> Crear una serie de prompts que ayuden a mantener el AI enfocado</div>
+            <div><span class="prompt">></span> IDEs con integración a manipular archivos y ayuda en forma de archivo .md en el repositorio</div>
+            <div><span class="prompt">></span> Agent CLI con integración a manipular archivos y ayuda en forma de archivo .md en el repositorio</div>
+            <div><span class="prompt">></span> Apps como Claude Desktop donde se pueden configurar proyectos con Knowledge base</div>
+            <div><span class="prompt">></span><span class="comment"> Integrar Model Context Protocols (MCP) para extender la ayuda al AI</span></div>
+        </div>
+        <p class="position-indicator">Model Context Protocol</p>
+    </div>
+
+    <!-- Slide 11: MCP -->
+    <div class="slide slide-3">
+        <h2 class="gradient-text">MCP</h2>
+        <p class="subtitle">AI puede interactuar con servicios y obtener información actualizada</p>
+        <div class="browser-mockup">
+            <div class="browser-header">
+                <div class="browser-dots">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+            </div>
+            <div class="browser-content">
+              <img src="/playasontec/images/mcp.jpg" alt="Model Context Protocol">
+            </div>
+        </div>
+        <p class="position-indicator">Rails MCP Server</p>
+    </div>
+
+    <!-- Slide 12: Rails MCP -->
+    <div class="slide slide-3">
+        <h2 class="gradient-text">Rails MCP Server</h2>
+        <p class="subtitle">Permite entender la estructura de Ruby on Rails y acceso a información actualizada</p>
+        <div class="browser-mockup">
+            <div class="browser-header">
+                <div class="browser-dots">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+            </div>
+            <div class="browser-content">
+              <img src="/playasontec/images/rails-mcp.jpg" alt="Rails MCP Server">
+            </div>
+        </div>
+        <p class="position-indicator">Neovim MCP Server</p>
+    </div>
+
+    <!-- Slide 13: Neovim MCP Server -->
+    <div class="slide slide-2">
+        <h2 class="gradient-text">Neovim MCP</h2>
+        <p class="subtitle">Permite modificar archivos en mi editor</p>
+        <div class="image-container">
+            <img src="/playasontec/images/neovim.jpg" alt="Neovim MCP">
+        </div>
+        <p class="position-indicator">Mi Flujo</p>
+    </div>
+
+    <!-- Slide 14: Mi Flujo-->
+    <div class="slide slide-2">
+        <h2 class="gradient-text">Mi flujo de trabajo</h2>
+        <p class="subtitle">Soy lo más específico posible, una tarea por sesión</p>
+        <div class="code-block">
+            <div><span class="prompt">></span> Tengo un prompt inicial que pone las reglas para AI</div>
+            <div><span class="prompt">></span> Siempre le explico a detalle, menciono archivos y los abro en Neovim</div>
+            <div><span class="prompt">></span> Le pido que antes de escribir código me muestre un plan</div>
+            <div><span class="prompt">></span> Reviso y modifico el plan si es necesario</div>
+            <div><span class="prompt">></span> Le doy vía libre para modificar los archivos pero si algo no me gusta se lo indico</div>
+            <div><span class="prompt">></span><span class="comment"> Creo y guardo resúmenes detallados del trabajo realizado</span></div>
+        </div>
+        <p class="position-indicator">Pregunta</p>
+    </div>
+
+    <!-- Slide 15: Pregunta -->
+    <div class="slide slide-2">
+        <h2 class="gradient-text">Entonces, ¿La AI sí nos va a quitar el trabajo?</h2>
+        <p class="subtitle">Lo dudo, no veo que eso pase en un futuro cercano</p>
+        <p class="position-indicator">Final</p>
+    </div>
+
+    <!-- Slide 16: Final-->
+    <div class="slide slide-2">
+        <h2 class="gradient-text">Acelera el trabajo</h2>
+        <p class="subtitle">Pero hasta cierto punto</p>
+        <div class="code-block">
+            <div><span class="prompt">></span> Es buena cuando es código nuevo o una funcionalidad nueva</div>
+            <div><span class="prompt">></span> Si es código legacy o funcionalidad compleja, es un volado</div>
+            <div><span class="prompt">></span> Si se atora con un problema y después de un par de iteraciones no lo resuelve, se atora en un ciclo</div>
+            <div><span class="prompt">></span> Le gusta hacer cosas complejas, siempre tengo que pedirle "simplicidad"</div>
+            <div><span class="prompt">></span> Sin MCPs no tiene acceso a funcionalidad nueva o librerías nuevas</div>
+            <div><span class="prompt">></span><span class="comment"> No puedo dejarla sola, necesita que la cuiden, su ventana de contexto es corta</span></div>
+        </div>
+        <p class="position-indicator">Gracias</p>
+    </div>
+
+    <!-- Slide 17: Gracias -->
+    <div class="slide slide-1">
+        <h1 class="gradient-text">Gracias</h1>
+        <p class="author text-pink">MARIO ALBERTO CHÁVEZ - 2025</p>
+    </div>
+
+    <!-- Navigation hints -->
+    <p class="nav-hint">Use arrow keys to navigate</p>
+    <div class="author-info">
+        Mario Alberto Chávez - <a href="https://mariochavez.io" target="_blank">https://mariochavez.io</a>
+    </div>
+
+    <!-- JavaScript (from parent directory) -->
+    <script src="/js/slides.js"></script>
+</body>
+</html>
