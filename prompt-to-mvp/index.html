@@ -1,0 +1,3193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Del Prompt al MVP con Claude — maquina.app</title>
+
+  <!-- SEO -->
+  <meta name="description" content="3 fases para ir de la idea hasta especificaciones listas para Claude Code: MVP Creator, diseño de marca y Spec-Driven Development. Por Mario Alberto Chávez.">
+  <meta name="author" content="Mario Alberto Chávez">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://talks.mariochavez.io/prompt-to-mvp">
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:title"       content="Del Prompt al MVP con Claude — maquina.app">
+  <meta property="og:description" content="3 fases para ir de la idea hasta especificaciones listas para Claude Code: MVP Creator, diseño de marca y Spec-Driven Development.">
+  <meta property="og:image"       content="https://talks.mariochavez.io/prompt-to-mvp/images/og-del-prompt-al-mvp.jpg">
+  <meta property="og:url"         content="https://talks.mariochavez.io/prompt-to-mvp">
+  <meta property="og:site_name"   content="maquina.app">
+  <meta property="og:locale"      content="es_MX">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:site"        content="@mario_chavez">
+  <meta name="twitter:creator"     content="@mario_chavez">
+  <meta name="twitter:title"       content="Del Prompt al MVP con Claude">
+  <meta name="twitter:description" content="3 fases para ir de la idea hasta especificaciones listas para Claude Code.">
+  <meta name="twitter:image"       content="https://talks.mariochavez.io/prompt-to-mvp/images/og-del-prompt-al-mvp.jpg">
+
+  <!-- Theme -->
+  <meta name="theme-color" content="#0b0d11">
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <!-- GSAP core only — SplitText is Club plugin, not on public CDN -->
+
+  <style>
+    /* ─────────────────────────────────────────────
+       Design tokens — matched to existing Maquina
+       talk aesthetic
+    ───────────────────────────────────────────── */
+    :root {
+      --bg:          #0b0d11;
+      --surface:     #12151c;
+      --border:      #1e2330;
+      --border-dim:  #161a25;
+      --text:        #e8eaf0;
+      --text-muted:  #6b7280;
+      --text-dim:    #9ca3af;
+      --accent:      #6c8cf4;       /* blue — primary */
+      --accent-warm: #f4a646;       /* amber — phase labels */
+      --accent-cool: #4ecdc4;       /* teal — step numbers */
+      --accent-rose: #f46c8c;       /* rose — warnings / anti-patterns */
+      --mono:        'JetBrains Mono', 'Fira Code', monospace;
+      --sans:        'Inter', system-ui, sans-serif;
+      --slide-w:     1280px;
+      --slide-h:     720px;
+    }
+
+    /* ─── Google Fonts ─────────────────────────── */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
+
+    /* ─── Reset ────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #06080d;
+      overflow: hidden;
+      font-family: var(--sans);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Slide stage ──────────────────────────── */
+    #stage {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide-wrapper {
+      position: relative;
+      width: var(--slide-w);
+      height: var(--slide-h);
+      /* scale to fit viewport */
+      transform-origin: center center;
+    }
+
+    /* ─── Individual slides ────────────────────── */
+    .slide {
+      position: absolute;
+      inset: 0;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Subtle grid overlay — same mood as original */
+    .slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border-dim) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-dim) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* ─── Shared slide layout ──────────────────── */
+    .slide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 48px 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .slide-logo img {
+      height: 28px;
+      opacity: 0.9;
+    }
+
+    .slide-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 48px 48px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ─── Typography scale ─────────────────────── */
+    .talk-eyebrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      opacity: 0;          /* animated in */
+    }
+
+    .talk-title {
+      font-family: 'Syne', var(--sans);
+      font-weight: 800;
+      font-size: 72px;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 28px;
+      opacity: 0;
+    }
+
+    .talk-tagline {
+      font-size: 20px;
+      font-weight: 300;
+      color: var(--text-dim);
+      letter-spacing: 0.01em;
+      line-height: 1.5;
+      margin-bottom: 56px;
+      max-width: 680px;
+      opacity: 0;
+    }
+
+    /* ─── Credits ──────────────────────────────── */
+    .credits {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      opacity: 0;
+    }
+
+    .credits-author {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .credits-name {
+      font-family: 'Syne', var(--sans);
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .credits-role {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .credits-url {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      padding: 8px 16px;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .credits-url:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    /* ─── Thank-you social links ───────────────── */
+    .thank-links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .thank-link {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      padding: 5px 14px;
+      border: 1px solid rgba(108, 140, 244, 0.35);
+      border-radius: 3px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .thank-link:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .thank-open-source {
+      margin-top: 32px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      opacity: 0;
+    }
+
+    /* ─── Decorative corner mark ───────────────── */
+    .corner-mark {
+      position: absolute;
+      right: 48px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 200px;
+      font-family: 'Syne', var(--sans);
+      font-weight: 800;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--border);
+      line-height: 1;
+      user-select: none;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* ─── Accent bar ───────────────────────────── */
+    .accent-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        var(--accent) 30%,
+        var(--accent-cool) 70%,
+        transparent 100%
+      );
+      opacity: 0.7;
+    }
+
+    /* ─── HUD — slide counter & controls ──────── */
+    #hud {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      z-index: 100;
+      background: rgba(11, 13, 17, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 20px;
+      backdrop-filter: blur(12px);
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    #slide-counter {
+      letter-spacing: 0.1em;
+      min-width: 48px;
+      text-align: center;
+    }
+
+    #hud .sep { opacity: 0.3; }
+
+    .hud-hint { letter-spacing: 0.05em; }
+
+    #hud .next-sep,
+    #hud-next {
+      transition: opacity 0.3s ease;
+    }
+
+    #hud-next {
+      color: var(--accent-warm);
+      letter-spacing: 0.06em;
+      font-size: 11px;
+    }
+
+    #hud-next.hidden,
+    #hud .next-sep.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ─── Progress bar ─────────────────────────── */
+    #progress-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-cool));
+      width: 0%;
+      transition: width 0.4s ease;
+      z-index: 200;
+    }
+
+    /* ─── View Transition keyframes ────────────── */
+    @keyframes slide-from-right {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slide-to-left {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(-40px); }
+    }
+
+    @keyframes slide-from-left {
+      from { opacity: 0; transform: translateX(-40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slide-to-right {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(40px); }
+    }
+
+    ::view-transition-old(slide-content) {
+      animation: 300ms ease both slide-to-left;
+    }
+    ::view-transition-new(slide-content) {
+      animation: 300ms ease both slide-from-right;
+    }
+
+    ::view-transition-old(slide-content-back) {
+      animation: 300ms ease both slide-to-right;
+    }
+    ::view-transition-new(slide-content-back) {
+      animation: 300ms ease both slide-from-left;
+    }
+
+    .slide-wrapper {
+      view-transition-name: slide-content;
+    }
+
+    /* ─── Utility classes ──────────────────────── */
+    .mono { font-family: var(--mono); }
+
+    /* ─── Phase badge ──────────────────────────── */
+    .phase-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-warm);
+      border: 1px solid rgba(244, 166, 70, 0.3);
+      padding: 5px 12px 5px 8px;
+      border-radius: 3px;
+      background: rgba(244, 166, 70, 0.06);
+    }
+
+    .phase-badge::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-warm);
+    }
+
+    /* ─── Two-col layout helper ────────────────── */
+    .cols-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    /* ─── Section heading ──────────────────────── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-family: 'Syne', var(--sans);
+      font-weight: 800;
+      font-size: 40px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 32px;
+    }
+
+    /* ─── Step number ──────────────────────────── */
+    .step-num {
+      font-family: 'Syne', var(--sans);
+      font-weight: 800;
+      font-size: 72px;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--accent-cool);
+      opacity: 0.4;
+      margin-bottom: -8px;
+    }
+
+    /* ─── Table style ──────────────────────────── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .data-table th {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px 12px 0;
+      text-align: left;
+      font-weight: 500;
+    }
+
+    .data-table td {
+      padding: 10px 16px 10px 0;
+      border-bottom: 1px solid var(--border-dim);
+      color: var(--text-dim);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .data-table td:first-child {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent-cool);
+      white-space: nowrap;
+    }
+
+    /* ─── List items ───────────────────────────── */
+    .check-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .check-list li {
+      display: flex;
+      gap: 12px;
+      color: var(--text-dim);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .check-list li::before {
+      content: '✓';
+      color: var(--accent-cool);
+      font-family: var(--mono);
+      font-weight: 500;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ─── Warning box ──────────────────────────── */
+    .warn-box {
+      border: 1px solid rgba(244, 108, 140, 0.3);
+      background: rgba(244, 108, 140, 0.05);
+      border-radius: 3px;
+      padding: 16px 20px;
+    }
+
+    .warn-box-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-rose);
+      margin-bottom: 6px;
+    }
+
+    /* ─── Callout box ──────────────────────────── */
+    .callout {
+      border-left: 3px solid var(--accent);
+      padding: 16px 20px;
+      background: rgba(108, 140, 244, 0.05);
+    }
+
+    .callout-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .callout p {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ─── Thank you slide specifics ────────────── */
+    .link-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+      color: var(--text-dim);
+    }
+
+    .link-item a {
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .link-item a:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .link-icon {
+      font-family: var(--mono);
+      color: var(--text-muted);
+      font-size: 13px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* ─── About slide ─────────────────────────── */
+    .about-body {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 0;
+      padding-bottom: 56px;
+      padding-top: 24px;
+    }
+
+    .about-text {
+      flex: 0 0 52%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 48px;
+    }
+
+    .about-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      opacity: 0;
+    }
+
+    .about-name {
+      font-family: 'Syne', var(--sans);
+      font-weight: 800;
+      font-size: 48px;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      margin-bottom: 36px;
+      opacity: 0;
+    }
+
+    .about-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .about-list li {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      opacity: 0;
+    }
+
+    .about-num {
+      font-family: 'Syne', var(--sans);
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--accent-cool);
+      flex-shrink: 0;
+      min-width: 28px;
+      margin-top: 1px;
+    }
+
+    .about-list li span:last-child {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-dim);
+    }
+
+    .about-list li strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Screenshot column */
+    .about-screenshot-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border);
+    }
+
+    /* Gradient fade at top and bottom */
+    .about-screenshot-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: linear-gradient(to bottom, var(--bg), transparent);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .about-screenshot-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 80px;
+      background: linear-gradient(to top, var(--bg), transparent);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .screenshot-frame {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-start;
+      padding: 24px 24px 0;
+      transform: translateY(100%);   /* starts off-screen bottom */
+    }
+
+    .screenshot-img {
+      width: 100%;
+      border-radius: 10px 10px 0 0;
+      border: 1px solid var(--border);
+      display: block;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+    }
+
+    .tech-philosophy {
+      border-left: 2px solid var(--accent-warm);
+      padding: 10px 14px;
+      margin-bottom: 4px;
+      opacity: 0;
+    }
+
+    .tech-phil-quote {
+      font-size: 13px;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .tech-name {
+      color: var(--accent-cool);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .brand-values {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      opacity: 0;
+    }
+
+    .brand-value-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 10px 14px;
+      border-left: 2px solid var(--border);
+      transition: border-color 0.2s;
+    }
+
+    .brand-value-row:nth-child(1) { border-color: var(--accent); }
+    .brand-value-row:nth-child(2) { border-color: var(--accent-cool); }
+    .brand-value-row:nth-child(3) { border-color: var(--accent-warm); }
+
+    .brand-val-name {
+      font-family: 'Syne', var(--sans);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .brand-val-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ─── Document preview slide ───────────────── */
+    .doc-preview-body {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 0;
+      padding-bottom: 48px;
+      padding-top: 20px;
+    }
+
+    .doc-preview-text {
+      flex: 0 0 44%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 48px;
+      gap: 0;
+    }
+
+    .doc-preview-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+      opacity: 0;
+    }
+
+    .doc-preview-title {
+      font-family: 'Syne', var(--sans);
+      font-weight: 800;
+      font-size: 42px;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      margin-bottom: 28px;
+      opacity: 0;
+    }
+
+    .doc-preview-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .doc-preview-list li {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-dim);
+      padding-left: 16px;
+      border-left: 2px solid var(--border);
+      opacity: 0;
+    }
+
+    .doc-preview-list li em {
+      font-style: italic;
+      color: var(--text-muted);
+    }
+
+    /* Mock rationale note */
+    .mock-rationale {
+      border-left: 2px solid var(--accent-warm);
+      padding: 10px 14px;
+      margin-bottom: 4px;
+      background: rgba(244, 166, 70, 0.04);
+      border-radius: 0 4px 4px 0;
+      opacity: 0;
+    }
+
+    .mock-rationale-label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-warm);
+      margin-bottom: 6px;
+    }
+
+    .mock-rationale p {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text-dim);
+    }
+
+    /* Right — screenshot panel */
+    .doc-preview-screen {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .doc-preview-frame {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-start;
+      padding: 20px 20px 0;
+      transform: translateY(100%);
+    }
+
+    .doc-preview-img {
+      width: 100%;
+      border-radius: 8px 8px 0 0;
+      border: 1px solid var(--border);
+      display: block;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+    }
+
+    .doc-preview-fade {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 100px;
+      background: linear-gradient(to top, var(--bg), transparent);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .url-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 28px;
+      padding: 12px 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      opacity: 0;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .url-bar[style*="pointer"]:hover {
+      border-color: var(--accent-cool);
+      background: rgba(78, 205, 196, 0.04);
+    }
+
+    .url-bar-icon {
+      flex-shrink: 0;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .url-bar-text {
+      font-family: var(--sans);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--text-dim);
+      letter-spacing: -0.01em;
+      flex: 1;
+    }
+
+    .url-bar-text .url-highlight { color: var(--text); }
+    .url-cursor { display: inline-block; width: 2px; height: 1.1em; background: var(--accent-cool); vertical-align: text-bottom; margin-left: 1px; animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ─── Feature workflow slide ───────────────── */
+    .flow-body { flex-direction: column; gap: 0; padding: 16px 56px 32px; justify-content: flex-start; }
+    .flow-note { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-warm); margin-bottom: 20px; opacity: 0; }
+    .flow-steps { display: flex; gap: 14px; flex: 1; align-items: stretch; }
+    .flow-step { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 18px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); position: relative; opacity: 0; }
+    .flow-step::after { content: '→'; position: absolute; right: -11px; top: 50%; transform: translateY(-50%); color: var(--border); font-size: 13px; z-index: 1; }
+    .flow-step:last-child::after { display: none; }
+    .flow-step-num { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; color: var(--accent-cool); text-transform: uppercase; }
+    .flow-step-title { font-family: 'Syne', var(--sans); font-size: 19px; font-weight: 700; color: var(--text); line-height: 1.1; }
+    .flow-step-list { list-style: none; display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
+    .flow-step-list li { font-size: 11.5px; line-height: 1.4; color: var(--text-muted); padding-left: 10px; border-left: 1px solid var(--border); }
+    .flow-step-list li strong { color: var(--text-dim); font-weight: 500; }
+    .flow-order-note { margin-top: 16px; padding: 9px 14px; border: 1px solid rgba(108,140,244,0.2); border-radius: 4px; background: rgba(108,140,244,0.04); font-size: 12px; color: var(--text-muted); opacity: 0; }
+    .flow-order-note strong { color: var(--accent); font-weight: 500; }
+
+    /* ─── Stack + Tasks slide ───────────────────── */
+    .stack-group-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-cool); margin-bottom: 8px; margin-top: 16px; opacity: 0; }
+    .stack-group-title:first-child { margin-top: 0; }
+    .stack-row { display: flex; align-items: baseline; gap: 8px; font-size: 12px; opacity: 0; margin-bottom: 4px; }
+    .stack-key { font-family: var(--mono); font-size: 11px; color: var(--text-muted); flex: 0 0 90px; }
+    .stack-val { color: var(--text-dim); }
+    .stack-val strong { color: var(--text); font-weight: 500; }
+    .task-group-block { margin-bottom: 12px; opacity: 0; }
+    .task-group-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-warm); margin-bottom: 6px; }
+    .task-group-items { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+    .task-group-items li { font-size: 11.5px; color: var(--text-muted); padding-left: 10px; border-left: 1px solid var(--border); line-height: 1.35; }
+
+    /* ─── Documents slide ──────────────────────── */
+    .docs-body {
+      padding-top: 16px;
+      padding-bottom: 48px;
+      gap: 28px;
+    }
+
+    .docs-heading {
+      opacity: 0;
+    }
+
+    .docs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .doc-row {
+      display: grid;
+      grid-template-columns: 260px 28px 1fr;
+      align-items: baseline;
+      gap: 0 8px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-dim);
+      opacity: 0;
+    }
+
+    .doc-file {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent-cool);
+      letter-spacing: 0.01em;
+    }
+
+    .doc-sep {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .doc-desc {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .doc-code {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent-warm);
+    }
+
+    .docs-rule {
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      border-left: 2px solid var(--accent-warm);
+      padding-left: 14px;
+      line-height: 1.6;
+      opacity: 0;
+    }
+
+    .term-optional-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-warm);
+      border: 1px solid rgba(244,166,70,0.3);
+      background: rgba(244,166,70,0.06);
+      padding: 4px 10px;
+      border-radius: 100px;
+      align-self: flex-start;
+      opacity: 0;
+    }
+
+    .term-optional-badge::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-warm);
+      display: block;
+    }
+
+    .voice-hints {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 860px;
+    }
+
+    .voice-hint-item {
+      flex: 1;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-dim);
+    }
+
+    .voice-hint-item strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .voice-hint-icon {
+      color: var(--accent-warm);
+      font-size: 11px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ─── Terminal slide ───────────────────────── */
+    .terminal-body {
+      align-items: center;
+      justify-content: center;
+      padding: 40px 64px;
+    }
+
+    .terminal-window {
+      width: 100%;
+      max-width: 860px;
+      background: #0d0f14;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+    }
+
+    .terminal-chrome {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #161922;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chrome-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: block;
+    }
+
+    .chrome-title {
+      flex: 1;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-right: 28px; /* optical center past dots */
+    }
+
+    .terminal-content {
+      padding: 20px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* CWD line */
+    .term-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 13px;
+      opacity: 0;
+    }
+
+    .term-path  { color: var(--accent-cool); }
+    .term-caret { color: var(--accent-warm); }
+    .term-cmd   { color: var(--text); }
+
+    /* User prompt block */
+    .term-prompt-block {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      opacity: 0;
+    }
+
+    .term-user-icon,
+    .term-claude-icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .term-user-icon {
+      background: var(--accent);
+    }
+
+    .term-claude-icon {
+      background: #D97757;
+    }
+
+    .term-icon-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+
+    .term-user-text {
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-dim);
+      padding: 4px 0;
+    }
+
+    .term-highlight {
+      color: var(--accent-warm);
+    }
+
+    .term-url {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    /* Thinking block */
+    .term-thinking-block {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      opacity: 0;
+    }
+
+    .term-thinking-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tw-cursor {
+      display: inline-block;
+      color: var(--accent-cool);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1;
+      animation: blink 0.7s step-end infinite;
+      vertical-align: text-bottom;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    #typewriter-out {
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-dim);
+      white-space: pre-wrap;
+    }
+
+    .thinking-dot {
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-warm);
+      opacity: 0.25;
+    }
+
+    .thinking-label {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent-warm);
+      margin-left: 4px;
+      font-style: italic;
+    }
+
+    /* ─── MVP Creator slide ────────────────────── */
+    .mvp-body {
+      align-items: flex-start;
+      justify-content: center;
+      padding: 80px 120px;
+    }
+
+    .mvp-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-warm);
+      margin-bottom: 20px;
+      opacity: 0;
+    }
+
+    .mvp-title {
+      font-family: 'Syne', var(--sans);
+      font-weight: 800;
+      font-size: 96px;
+      line-height: 1.0;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      margin-bottom: 40px;
+      opacity: 0;
+      clip-path: inset(0 100% 0 0);
+    }
+
+    .mvp-desc {
+      font-size: 22px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--text-dim);
+      max-width: 680px;
+      opacity: 0;
+    }
+
+    /* ─── Statement slide ──────────────────────── */
+    .statement-body {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 120px;
+    }
+
+    .statement-text {
+      font-family: 'Syne', var(--sans);
+      font-weight: 800;
+      font-size: 56px;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      opacity: 0;
+    }
+
+    .strike {
+      position: relative;
+      color: var(--text-muted);
+      display: inline-block;
+    }
+
+    /* Animated strikethrough line */
+    .strike::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: var(--sw, 0%);
+      height: 3px;
+      background: var(--accent-rose);
+      border-radius: 2px;
+    }
+
+    .reveal-text {
+      display: inline-block;
+      color: #D97757;
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    /* ─── Image slide ──────────────────────────── */
+    .slide-image-full {
+      position: absolute;
+      inset: 0;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      opacity: 0.25;
+    }
+
+    .slide-image-right {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 45%;
+      object-fit: cover;
+      opacity: 0.5;
+    }
+
+    .image-gradient-mask {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--bg) 55%, transparent 100%);
+      pointer-events: none;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     STAGE
+══════════════════════════════════════════════════ -->
+<div id="stage">
+  <div class="slide-wrapper" id="wrapper">
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 01 — Title / Cover
+    ────────────────────────────────────────── -->
+        <section class="slide active" id="slide-1" data-slide="1" data-next="Acerca de mí">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+      </div>
+
+      <div class="slide-body" style="padding-top: 40px; justify-content: flex-end; padding-bottom: 80px;">
+
+        <div class="corner-mark" id="cover-mark">✦</div>
+
+        <h1 class="talk-title" id="cover-title">
+          Del Prompt al<br>MVP con Claude
+        </h1>
+
+        <p class="talk-tagline" id="cover-tagline">
+          De la idea a las especificaciones listas para implementar
+        </p>
+
+        <div class="credits" id="cover-credits">
+          <div class="credits-author">
+            <span class="credits-name">Mario Alberto Chávez</span>
+            <span class="credits-role">Arquitecto Rails &amp; creador de herramientas IA — Colima, México</span>
+          </div>
+          <a href="https://maquina.app" class="credits-url" target="_blank">maquina.app</a>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 02 — Acerca de mí
+    ────────────────────────────────────────── -->
+
+    <section class="slide" id="slide-2" data-slide="2" data-next="Vibecoding">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">Acerca de mí</span>
+      </div>
+
+      <div class="slide-body about-body">
+
+        <!-- Left column — bio -->
+        <div class="about-text">
+          <p class="about-eyebrow">Arquitecto Rails &amp; creador de herramientas IA</p>
+          <h2 class="about-name">Mario Alberto<br>Chávez</h2>
+          <ul class="about-list">
+            <li>
+              <span class="about-num">15+</span>
+              <span>años construyendo con Ruby on Rails — sistemas empresariales, fintech y herramientas para desarrolladores.</span>
+            </li>
+            <li>
+              <span class="about-num">∿</span>
+              <span>Co-fundador de <strong>michelada.io</strong> — consultora Rails con clientes como Levi's, startups fintech y proveedores de salud en EE.UU.</span>
+            </li>
+            <li>
+              <span class="about-num">◆</span>
+              <span>Creador de <strong>maquina.app</strong>, Rails MCP Server y <strong>railsenespanol.co</strong> — el curso de Rails en español.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Right column — screenshot -->
+        <div class="about-screenshot-wrap">
+          <div class="screenshot-frame" id="screenshot-frame">
+            <div class="img-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#12151c;border:1px dashed #2a3044;border-radius:4px;gap:10px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3b4670" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span style="font-family:var(--mono);font-size:11px;color:#3b4670;">maquina-site.png</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 06 — Los cinco documentos
+    ────────────────────────────────────────── -->
+
+    <section class="slide" id="slide-3" data-slide="3" data-next="MVP Creator">
+      <div class="accent-bar"></div>
+
+      <div class="slide-body statement-body">
+        <p class="statement-text" id="statement-line">
+          Cómo <span class="strike">hacer vibecoding</span> <span class="reveal-text" id="usar-ia">usar Claude AI</span><br>para desarrollo sin morir en el intento
+        </p>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 04 — MVP Creator
+    ────────────────────────────────────────── -->
+
+    <section class="slide" id="slide-4" data-slide="4" data-next="El prompt">
+      <div class="accent-bar"></div>
+
+      <div class="slide-body mvp-body">
+        <p class="mvp-label">Phase 01</p>
+        <h2 class="mvp-title">MVP Creator</h2>
+        <p class="mvp-desc">
+          Investiga el mercado, haz las preguntas correctas y genera<br>
+          cinco documentos base — uno aprobado a la vez.
+        </p>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-5" data-slide="5" data-next="Los documentos">
+      <div class="accent-bar"></div>
+
+      <div class="slide-body terminal-body">
+
+        <div class="terminal-window">
+
+          <!-- Window chrome -->
+          <div class="terminal-chrome">
+            <span class="chrome-dot" style="background:#ff5f57"></span>
+            <span class="chrome-dot" style="background:#febc2e"></span>
+            <span class="chrome-dot" style="background:#28c840"></span>
+            <span class="chrome-title">claude — MVP Creator</span>
+          </div>
+
+          <!-- Terminal content -->
+          <div class="terminal-content">
+
+            <div class="term-row" id="t-cwd">
+              <span class="term-path">~/projects/liminal</span>
+              <span class="term-caret">❯</span>
+              <span class="term-cmd">claude</span>
+            </div>
+
+            <div class="term-prompt-block" id="t-prompt">
+              <div class="term-user-icon">
+                <span class="term-icon-label">You</span>
+              </div>
+              <div class="term-user-text">
+                <span id="typewriter-out"></span><span class="tw-cursor" id="tw-cursor">▋</span>
+              </div>
+            </div>
+
+            <div class="term-thinking-block" id="t-thinking">
+              <div class="term-claude-icon">
+                <span class="term-icon-label">Claude</span>
+              </div>
+              <div class="term-thinking-indicator">
+                <span class="thinking-dot"></span>
+                <span class="thinking-dot"></span>
+                <span class="thinking-dot"></span>
+                <span class="thinking-label">Thinking…</span>
+              </div>
+            </div>
+
+          </div><!-- /.terminal-content -->
+        </div><!-- /.terminal-window -->
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 03 — Statement
+    ────────────────────────────────────────── -->
+
+    <section class="slide" id="slide-6" data-slide="6" data-next="Business Plan">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">MVP Creator — Phase 01</span>
+      </div>
+
+      <div class="slide-body docs-body">
+
+        <div class="docs-heading">
+          <p class="section-label">Resultado</p>
+          <h2 class="section-title">Cinco documentos base</h2>
+        </div>
+
+        <div class="docs-list">
+
+          <div class="doc-row">
+            <span class="doc-file">RESEARCH_REPORT.md</span>
+            <span class="doc-sep">→</span>
+            <span class="doc-desc">Análisis de competidores, matriz de funcionalidades y oportunidades de mercado.</span>
+          </div>
+
+          <div class="doc-row">
+            <span class="doc-file">MVP_BUSINESS_PLAN.md</span>
+            <span class="doc-sep">→</span>
+            <span class="doc-desc">Visión del producto, personas, flujos de usuario y métricas de éxito.</span>
+          </div>
+
+          <div class="doc-row">
+            <span class="doc-file">BRAND_GUIDE.md</span>
+            <span class="doc-sep">→</span>
+            <span class="doc-desc">Logotipos SVG, paleta de color, tipografía y configuración de Tailwind <span class="doc-code">@theme</span>.</span>
+          </div>
+
+          <div class="doc-row">
+            <span class="doc-file">TECHNICAL_GUIDE.md</span>
+            <span class="doc-sep">→</span>
+            <span class="doc-desc">Modelos de datos, patrones Rails, estrategia I18n y decisiones de arquitectura.</span>
+          </div>
+
+          <div class="doc-row">
+            <span class="doc-file">CLAUDE.md</span>
+            <span class="doc-sep">→</span>
+            <span class="doc-desc">Contexto del proyecto para Claude Code, configuración MCP y comandos personalizados.</span>
+          </div>
+
+        </div>
+
+        <p class="docs-rule">Revisa y aprueba cada documento antes de solicitar el siguiente — cada uno alimenta al que sigue.</p>
+
+      </div>
+    </section>
+
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 07 — MVP Business Plan document
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-7" data-slide="7" data-next="Technical Guide">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">MVP_BUSINESS_PLAN.md</span>
+      </div>
+
+      <div class="slide-body doc-preview-body">
+
+        <!-- Left — label + highlights -->
+        <div class="doc-preview-text">
+          <p class="doc-preview-eyebrow">Documento generado</p>
+          <h2 class="doc-preview-title">Liminal<br>MVP Business Plan</h2>
+          <ul class="doc-preview-list">
+            <li>Nombre y significado — <em>el umbral entre crear y entregar</em></li>
+            <li>Executive Summary en español</li>
+            <li>Problem Statement con contexto LATAM</li>
+            <li>Personas, flujos y métricas de éxito</li>
+          </ul>
+        </div>
+
+        <!-- Right — document screenshot sliding up -->
+        <div class="doc-preview-screen">
+          <div class="doc-preview-frame" id="doc-frame-7">
+            <div class="img-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#12151c;border:1px dashed #2a3044;border-radius:4px;gap:10px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3b4670" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span style="font-family:var(--mono);font-size:11px;color:#3b4670;">mvp-plan.png</span>
+            </div>
+          </div>
+          <!-- gradient fade bottom -->
+          <div class="doc-preview-fade"></div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 08 — Technical Guide document
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-8" data-slide="8" data-next="Phase 02">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">TECHNICAL_GUIDE.md</span>
+      </div>
+
+      <div class="slide-body doc-preview-body">
+
+        <!-- Left — highlights -->
+        <div class="doc-preview-text">
+          <p class="doc-preview-eyebrow">Documento generado</p>
+          <h2 class="doc-preview-title">Liminal<br>Technical Guide</h2>
+
+          <div class="tech-philosophy">
+            <span class="tech-phil-quote">"Rails vanilla es suficiente. La complejidad del producto viene de la experiencia del usuario, no de la arquitectura del código."</span>
+          </div>
+
+          <ul class="doc-preview-list" style="margin-top: 20px;">
+            <li><span class="tech-name">Rails 8</span> — Omakase, sin service objects</li>
+            <li><span class="tech-name">Hotwire</span> — Turbo + Stimulus, sin frameworks JS</li>
+            <li><span class="tech-name">Tailwind CSS 4</span> — configuración CSS-first</li>
+            <li><span class="tech-name">maquina_components</span> — UI à la shadcn/ui para Rails</li>
+            <li><span class="tech-name">Active Storage</span> — variantes thumb / medium / high</li>
+          </ul>
+        </div>
+
+        <!-- Right — document screenshot -->
+        <div class="doc-preview-screen">
+          <div class="doc-preview-frame" id="doc-frame-8">
+            <div class="img-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#12151c;border:1px dashed #2a3044;border-radius:4px;gap:10px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3b4670" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span style="font-family:var(--mono);font-size:11px;color:#3b4670;">technical-guide.png</span>
+            </div>
+          </div>
+          <div class="doc-preview-fade"></div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ─────────────────────────────────────────
+         SLIDE — Phase 02 transition
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-phase2" data-slide="phase2" data-next="Brand Guide">
+      <div class="accent-bar"></div>
+
+      <div class="slide-body mvp-body">
+        <p class="mvp-label">Phase 02</p>
+        <h2 class="mvp-title">Design<br>&amp; Brand</h2>
+        <p class="mvp-desc">
+          Dos entregables. Uno define cómo habla la app.<br>
+          El otro define cómo se ve. Ambos guían cada<br>
+          spec de SDD que viene después.
+        </p>
+      </div>
+    </section>
+
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 09 — Brand Guide document
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-9" data-slide="9" data-next="La voz">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">BRAND_GUIDE.md</span>
+      </div>
+
+      <div class="slide-body doc-preview-body">
+
+        <!-- Left — highlights -->
+        <div class="doc-preview-text">
+          <p class="doc-preview-eyebrow">Documento generado</p>
+          <h2 class="doc-preview-title">Liminal<br>Brand Guide</h2>
+
+          <div class="brand-values">
+            <div class="brand-value-row">
+              <span class="brand-val-name">Serenidad</span>
+              <span class="brand-val-desc">Sin ruido, sin distracción — solo el trabajo.</span>
+            </div>
+            <div class="brand-value-row">
+              <span class="brand-val-name">Precisión</span>
+              <span class="brand-val-desc">La calidad del diseño es un espejo de la del fotógrafo.</span>
+            </div>
+            <div class="brand-value-row">
+              <span class="brand-val-name">Confianza</span>
+              <span class="brand-val-desc">El trabajo está protegido. La entrega, a la altura.</span>
+            </div>
+          </div>
+
+          <ul class="doc-preview-list" style="margin-top: 20px;">
+            <li>Propuesta de logotipo SVG lista para usar</li>
+            <li>Paleta de color + configuración <span class="tech-name">@theme</span> Tailwind 4</li>
+            <li>Tipografía y escala visual compatible con maquina_components</li>
+            <li>Voz y tono — sereno, preciso, profesional</li>
+          </ul>
+        </div>
+
+        <!-- Right — document screenshot -->
+        <div class="doc-preview-screen">
+          <div class="doc-preview-frame" id="doc-frame-9">
+            <div class="img-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#12151c;border:1px dashed #2a3044;border-radius:4px;gap:10px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3b4670" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span style="font-family:var(--mono);font-size:11px;color:#3b4670;">brand-guide.png</span>
+            </div>
+          </div>
+          <div class="doc-preview-fade"></div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 10 — Brand Voice prompt
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-10" data-slide="10" data-next="UI Mocks">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">Prompt opcional</span>
+      </div>
+
+      <div class="slide-body" style="flex-direction: column; align-items: center; padding: 28px 64px 40px; gap: 0; justify-content: flex-start;">
+
+        <div class="voice-hints" id="t10-hints">
+          <div class="voice-hint-item">
+            <span class="voice-hint-icon">✦</span>
+            <span>Define el <strong>tono y voz</strong> del producto — cómo habla la app con sus usuarios</span>
+          </div>
+          <div class="voice-hint-item">
+            <span class="voice-hint-icon">✦</span>
+            <span>Genera <strong>microcopy bilingüe</strong> — botones, estados vacíos, errores, páginas de marketing</span>
+          </div>
+          <div class="voice-hint-item">
+            <span class="voice-hint-icon">✦</span>
+            <span>Elimina el <strong>hype genérico de SaaS</strong> antes de que entre al código</span>
+          </div>
+        </div>
+
+        <!-- Terminal centrada en el espacio restante -->
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding-top: 20px;">
+        <div class="terminal-window">
+          <div class="terminal-chrome">
+            <span class="chrome-dot" style="background:#ff5f57"></span>
+            <span class="chrome-dot" style="background:#febc2e"></span>
+            <span class="chrome-dot" style="background:#28c840"></span>
+            <span class="chrome-title">claude — Brand Voice</span>
+          </div>
+
+          <div class="terminal-content">
+
+            <div class="term-row" id="t10-cwd">
+              <span class="term-path">~/projects/liminal</span>
+              <span class="term-caret">❯</span>
+              <span class="term-cmd">claude</span>
+            </div>
+
+            <div class="term-prompt-block" id="t10-prompt">
+              <div class="term-user-icon">
+                <span class="term-icon-label">You</span>
+              </div>
+              <div class="term-user-text">
+                <span id="tw10-out"></span><span class="tw-cursor" id="tw10-cursor">▋</span>
+              </div>
+            </div>
+
+            <div class="term-thinking-block" id="t10-thinking">
+              <div class="term-claude-icon">
+                <span class="term-icon-label">Claude</span>
+              </div>
+              <div class="term-thinking-indicator">
+                <span class="thinking-dot"></span>
+                <span class="thinking-dot"></span>
+                <span class="thinking-dot"></span>
+                <span class="thinking-label">Thinking…</span>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- /.terminal-window -->
+        </div><!-- /.terminal-center-wrapper -->
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 11 — UI Mocks prompt
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-11" data-slide="11" data-next="Project Dashboard">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">frontend-design skill</span>
+      </div>
+
+      <div class="slide-body" style="flex-direction: column; align-items: center; padding: 28px 64px 40px; gap: 0; justify-content: flex-start;">
+
+        <div class="voice-hints" id="t11-hints">
+          <div class="voice-hint-item">
+            <span class="voice-hint-icon">✦</span>
+            <span>Mocks en <strong>HTML, CSS y JS vanilla</strong> — sin frameworks, listos para el browser</span>
+          </div>
+          <div class="voice-hint-item">
+            <span class="voice-hint-icon">✦</span>
+            <span><strong>6 pantallas priorizadas</strong> — las dos caras de Liminal: cliente y fotógrafo</span>
+          </div>
+          <div class="voice-hint-item">
+            <span class="voice-hint-icon">✦</span>
+            <span>Cada pantalla incluye <strong>contenido real</strong> y una nota de decisión de diseño</span>
+          </div>
+        </div>
+
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding-top: 20px;">
+        <div class="terminal-window">
+          <div class="terminal-chrome">
+            <span class="chrome-dot" style="background:#ff5f57"></span>
+            <span class="chrome-dot" style="background:#febc2e"></span>
+            <span class="chrome-dot" style="background:#28c840"></span>
+            <span class="chrome-title">claude — UI Mocks</span>
+          </div>
+
+          <div class="terminal-content">
+
+            <div class="term-row" id="t11-cwd">
+              <span class="term-path">~/projects/liminal</span>
+              <span class="term-caret">❯</span>
+              <span class="term-cmd">claude</span>
+            </div>
+
+            <div class="term-prompt-block" id="t11-prompt">
+              <div class="term-user-icon">
+                <span class="term-icon-label">You</span>
+              </div>
+              <div class="term-user-text">
+                <span id="tw11-out"></span><span class="tw-cursor" id="tw11-cursor">▋</span>
+              </div>
+            </div>
+
+            <div class="term-thinking-block" id="t11-thinking">
+              <div class="term-claude-icon">
+                <span class="term-icon-label">Claude</span>
+              </div>
+              <div class="term-thinking-indicator">
+                <span class="thinking-dot"></span>
+                <span class="thinking-dot"></span>
+                <span class="thinking-dot"></span>
+                <span class="thinking-label">Thinking…</span>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- /.terminal-window -->
+        </div><!-- /.terminal-center-wrapper -->
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE 12 — Gallery Landing UI mock
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-12" data-slide="12" data-next="Phase 03">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">UI Mock — Fotógrafo</span>
+      </div>
+
+      <div class="slide-body doc-preview-body">
+
+        <!-- Left — screen label + rationale -->
+        <div class="doc-preview-text">
+          <p class="doc-preview-eyebrow">Mock generado</p>
+          <h2 class="doc-preview-title">Project<br>Dashboard</h2>
+
+          <div class="mock-rationale" id="mock-rationale-12">
+            <span class="mock-rationale-label">Decisión de diseño</span>
+            <p>El estado de cada proyecto es lo primero — sin métricas innecesarias. El fotógrafo entra, ve qué necesita atención y actúa.</p>
+          </div>
+
+          <ul class="doc-preview-list" style="margin-top: 20px;">
+            <li>Vista autenticada — acceso del fotógrafo</li>
+            <li>Lista de proyectos con estado: borrador, compartido, cerrado</li>
+            <li>Conteo de fotos, visitas y descargas por proyecto</li>
+            <li>Acción rápida: crear proyecto, copiar link de entrega</li>
+          </ul>
+        </div>
+
+        <!-- Right — mock placeholder sliding up -->
+        <div class="doc-preview-screen">
+          <div class="doc-preview-frame" id="doc-frame-12">
+            <div class="img-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#12151c;border:1px dashed #2a3044;border-radius:4px;gap:10px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3b4670" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span style="font-family:var(--mono);font-size:11px;color:#3b4670;">project-dashboard.png</span>
+            </div>
+          </div>
+          <div class="doc-preview-fade"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE — Phase 03 transition
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-phase3" data-slide="phase3" data-next="Recuerd0">
+      <div class="accent-bar"></div>
+
+      <div class="slide-body mvp-body">
+        <p class="mvp-label">Phase 03</p>
+        <h2 class="mvp-title">Spec-Driven<br>Development</h2>
+        <p class="mvp-desc">
+          Convierte los documentos aprobados del MVP en specs formales,<br>
+          task breakdowns, y prompts de implementación<br>
+          listos para Claude Code.
+        </p>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE — Recuerd0 workspace
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-recuerd0" data-slide="recuerd0" data-next="Inicializar SDD">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">recuerd0.ai</span>
+      </div>
+
+      <div class="slide-body doc-preview-body">
+
+        <!-- Left — features -->
+        <div class="doc-preview-text">
+          <p class="doc-preview-eyebrow">Memoria del proyecto</p>
+          <h2 class="doc-preview-title">Recuerd0<br>Workspace</h2>
+
+          <ul class="doc-preview-list">
+            <li>Crea un <strong>workspace por proyecto</strong> — cada documento del MVP es una memoria independiente</li>
+            <li>El <strong>contexto persiste</strong> entre sesiones — Claude Code siempre sabe qué se decidió y por qué</li>
+            <li>Brand guide, guía técnica y specs <strong>informan cada prompt</strong> sin repetir instrucciones</li>
+            <li>Los documentos se comparten con <strong>todo el equipo</strong> — el contexto no vive solo en tu máquina</li>
+            <li>Claude accede a las memorias vía <strong>CLI y un Skill dedicado</strong> — sin copiar y pegar contexto</li>
+          </ul>
+
+          <a href="https://recuerd0.ai" target="_blank" id="r0-link" style="display:inline-block;margin-top:28px;font-family:var(--mono);font-size:12px;letter-spacing:0.08em;color:#3ecf8e;text-decoration:none;opacity:0.85;">↗ recuerd0.ai</a>
+        </div>
+
+        <!-- Right — workspace screenshot placeholder -->
+        <div class="doc-preview-screen">
+          <div class="doc-preview-frame" id="doc-frame-r0">
+            <div class="img-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#12151c;border:1px dashed #2a3044;border-radius:4px;gap:10px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3b4670" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span style="font-family:var(--mono);font-size:11px;color:#3b4670;">recuerd0-workspace.png</span>
+            </div>
+          </div>
+          <div class="doc-preview-fade"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE — SDD Init
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-sdd-init" data-slide="sdd-init" data-next="Feature Workflow">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">spec-driven-development skill</span>
+      </div>
+
+      <div class="slide-body" style="flex-direction: column; align-items: center; padding: 28px 64px 40px; gap: 0; justify-content: flex-start;">
+
+        <div class="voice-hints" id="tsdd-hints">
+          <div class="voice-hint-item">
+            <span class="voice-hint-icon">✦</span>
+            <span>Lee las <strong>memorias de Recuerd0</strong> — los documentos del MVP llegan como contexto sin copiar y pegar</span>
+          </div>
+          <div class="voice-hint-item">
+            <span class="voice-hint-icon">✦</span>
+            <span>Crea la carpeta <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">sdd/</code> y los <strong>slash commands</strong> <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">/sdd-shape /sdd-tasks /sdd-status</code></span>
+          </div>
+          <div class="voice-hint-item">
+            <span class="voice-hint-icon">✦</span>
+            <span><strong>Prioriza sin piedad</strong> — revisa mission.md y roadmap.md en cuanto se generan. Este es el momento de cortar scope. No toda feature del Business Plan pertenece a v1</span>
+          </div>
+        </div>
+
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding-top: 20px;">
+        <div class="terminal-window">
+          <div class="terminal-chrome">
+            <span class="chrome-dot" style="background:#ff5f57"></span>
+            <span class="chrome-dot" style="background:#febc2e"></span>
+            <span class="chrome-dot" style="background:#28c840"></span>
+            <span class="chrome-title">claude — SDD Init</span>
+          </div>
+          <div class="terminal-content">
+            <div class="term-row" id="tsdd-cwd">
+              <span class="term-path">~/projects/liminal</span>
+              <span class="term-caret">❯</span>
+              <span class="term-cmd">claude</span>
+            </div>
+            <div class="term-prompt-block" id="tsdd-prompt">
+              <div class="term-user-icon"><span class="term-icon-label">You</span></div>
+              <div class="term-user-text">
+                <span id="twsdd-out"></span><span class="tw-cursor" id="twsdd-cursor">▋</span>
+              </div>
+            </div>
+            <div class="term-thinking-block" id="tsdd-thinking">
+              <div class="term-claude-icon"><span class="term-icon-label">Claude</span></div>
+              <div class="term-thinking-indicator">
+                <span class="thinking-dot"></span>
+                <span class="thinking-dot"></span>
+                <span class="thinking-dot"></span>
+                <span class="thinking-label">Thinking…</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE — Feature Workflow
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-sdd-flow" data-slide="sdd-flow" data-next="Stack & Tasks">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">Feature Workflow</span>
+      </div>
+
+      <div class="slide-body flow-body">
+
+        <p class="flow-note" id="flow-note">El MVP Business Plan define las features — shape y spec filtran lo que entra en v1</p>
+
+        <div class="flow-steps">
+
+          <div class="flow-step" id="flow-step-1">
+            <span class="flow-step-num">01</span>
+            <span class="flow-step-title">Shape</span>
+            <ul class="flow-step-list">
+              <li>4–6 preguntas de alcance</li>
+              <li>Búsqueda en el codebase</li>
+              <li><strong>references.md</strong> + standards</li>
+              <li>Visuales si aplica</li>
+            </ul>
+          </div>
+
+          <div class="flow-step" id="flow-step-2">
+            <span class="flow-step-num">02</span>
+            <span class="flow-step-title">Spec</span>
+            <ul class="flow-step-list">
+              <li>Goal + User Stories</li>
+              <li>Requirements formales</li>
+              <li>Referencia visual</li>
+              <li><strong>Out of Scope</strong> explícito</li>
+            </ul>
+          </div>
+
+          <div class="flow-step" id="flow-step-3">
+            <span class="flow-step-num">03</span>
+            <span class="flow-step-title">Tasks</span>
+            <ul class="flow-step-list">
+              <li>4 grupos de tareas</li>
+              <li>Prompt autocontenido por grupo</li>
+              <li>2–5 tests por grupo</li>
+              <li>10–20 tests por feature</li>
+            </ul>
+          </div>
+
+          <div class="flow-step" id="flow-step-4">
+            <span class="flow-step-num">04</span>
+            <span class="flow-step-title">Implement</span>
+            <ul class="flow-step-list">
+              <li>Spec completo a Claude Code</li>
+              <li>Por grupo o sesión completa</li>
+              <li>Prompts independientes</li>
+              <li>Subagentes en paralelo</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <p class="flow-order-note" id="flow-order">
+          <strong>Orden recomendado:</strong> Autenticación primero → Modelo de datos core → Flujo UX principal → Features secundarias en orden de prioridad del Business Plan
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE — Task Groups + Technical Stack
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-sdd-stack" data-slide="sdd-stack" data-next="Escribiendo código">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">Task Groups + Technical Stack — desde la Technical Guide memory</span>
+      </div>
+
+      <div class="slide-body doc-preview-body">
+
+        <!-- Left — Task groups -->
+        <div class="doc-preview-text" style="flex: 0 0 48%;">
+          <p class="doc-preview-eyebrow">Grupos de tareas</p>
+
+          <div class="task-group-block" id="tg-1">
+            <p class="task-group-label">01 — Database</p>
+            <ul class="task-group-items">
+              <li>Migrations · Models + validations</li>
+              <li>Associations + scopes · Fixtures</li>
+            </ul>
+          </div>
+
+          <div class="task-group-block" id="tg-2">
+            <p class="task-group-label">02 — Backend</p>
+            <ul class="task-group-items">
+              <li>Controllers + routes · Business logic</li>
+              <li>Authorization · Background jobs</li>
+            </ul>
+          </div>
+
+          <div class="task-group-block" id="tg-3">
+            <p class="task-group-label">03 — Frontend</p>
+            <ul class="task-group-items">
+              <li>ERB views (Tailwind 4) · Turbo Frames</li>
+              <li>Stimulus controllers · maquina_components</li>
+            </ul>
+          </div>
+
+          <div class="task-group-block" id="tg-4">
+            <p class="task-group-label">04 — Integration</p>
+            <ul class="task-group-items">
+              <li>System tests · Model unit tests</li>
+              <li>Controller tests · Edge cases</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Right — Technical stack -->
+        <div class="doc-preview-screen" style="display:flex;flex-direction:column;justify-content:center;padding:0 0 0 40px;border-left:1px solid var(--border);">
+
+          <p class="doc-preview-eyebrow" style="margin-bottom:14px;">Stack no negociable</p>
+
+          <p class="stack-group-title" id="sg-1">Framework & Frontend</p>
+          <div class="stack-row" id="sr-1"><span class="stack-key">Framework</span><span class="stack-val"><strong>Rails 8.x</strong></span></div>
+          <div class="stack-row" id="sr-2"><span class="stack-key">Frontend</span><span class="stack-val"><strong>Hotwire</strong> — Turbo + Stimulus</span></div>
+          <div class="stack-row" id="sr-3"><span class="stack-key">CSS</span><span class="stack-val"><strong>Tailwind 4</strong> — CSS-first config</span></div>
+          <div class="stack-row" id="sr-4"><span class="stack-key">Components</span><span class="stack-val"><strong>maquina_components</strong></span></div>
+
+          <p class="stack-group-title" id="sg-2">Infraestructura</p>
+          <div class="stack-row" id="sr-5"><span class="stack-key">Jobs</span><span class="stack-val">Solid Queue</span></div>
+          <div class="stack-row" id="sr-6"><span class="stack-key">Cache</span><span class="stack-val">Solid Cache</span></div>
+          <div class="stack-row" id="sr-7"><span class="stack-key">Auth</span><span class="stack-val">Rails 8 built-in</span></div>
+          <div class="stack-row" id="sr-8"><span class="stack-key">Testing</span><span class="stack-val">Minitest + Fixtures</span></div>
+          <div class="stack-row" id="sr-9"><span class="stack-key">Deploy</span><span class="stack-val">Kamal 2</span></div>
+
+          <p class="stack-group-title" id="sg-3">Patrones obligatorios</p>
+          <div class="stack-row" id="sr-10"><span class="stack-key" style="flex:0 0 auto;max-width:none;">✓</span><span class="stack-val">Rich domain models con concerns — sin service objects</span></div>
+          <div class="stack-row" id="sr-11"><span class="stack-key" style="flex:0 0 auto;max-width:none;">✓</span><span class="stack-val">CRUD resources — sin acciones de controller custom</span></div>
+          <div class="stack-row" id="sr-12"><span class="stack-key" style="flex:0 0 auto;max-width:none;">✓</span><span class="stack-val">Turbo Morph por defecto — Frames usados con moderación</span></div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE — SDD Coding: tools & skills
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-sdd-code" data-slide="sdd-code" data-next="Resto">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">Rails Vanilla — One Man Framework</span>
+      </div>
+
+      <div class="slide-body doc-preview-body">
+
+        <!-- Left — philosophy + tools -->
+        <div class="doc-preview-text" style="flex: 0 0 46%;">
+          <p class="doc-preview-eyebrow">Escribiendo código</p>
+          <h2 class="doc-preview-title">Un developer.<br>Un framework.<br>Producción.</h2>
+
+          <p id="sdd-code-desc" style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:22px;opacity:0;">
+            Opinionado por diseño. Rails sin abstracciones innecesarias — modelos ricos, CRUD resources, Hotwire. La complejidad viene de la experiencia del usuario, no de la arquitectura.
+          </p>
+
+          <div class="task-group-block" id="sc-gen">
+            <p class="task-group-label">Maquina Generators</p>
+            <ul class="task-group-items">
+              <li><code style="font-family:var(--mono);font-size:10px;color:var(--accent)">maquina:app</code> — auth, multi-tenancy, jobs, error tracking</li>
+              <li><code style="font-family:var(--mono);font-size:10px;color:var(--accent)">maquina:clave</code> — autenticación passwordless</li>
+              <li>Sin dependencia en runtime — el código es tuyo</li>
+            </ul>
+            <a href="https://maquina.app/documentation/generators/" target="_blank" style="display:inline-block;margin-top:7px;font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--accent);text-decoration:none;opacity:0.8;">↗ maquina.app/documentation/generators/</a>
+          </div>
+
+          <div class="task-group-block" id="sc-comp">
+            <p class="task-group-label">Maquina Components</p>
+            <ul class="task-group-items">
+              <li>16+ componentes — Alert, Badge, Card, Form, Sidebar, Table…</li>
+              <li>Estilo shadcn/ui para Rails — Tailwind 4 + Stimulus</li>
+            </ul>
+            <a href="https://maquina.app/documentation/components/" target="_blank" style="display:inline-block;margin-top:7px;font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--accent);text-decoration:none;opacity:0.8;">↗ maquina.app/documentation/components/</a>
+          </div>
+        </div>
+
+        <!-- Right — skills and agents -->
+        <div class="doc-preview-screen" style="display:flex;flex-direction:column;justify-content:center;padding:0 0 0 40px;border-left:1px solid var(--border);">
+
+          <p class="doc-preview-eyebrow" id="sc-skills-eyebrow" style="margin-bottom:18px;">Skills & Agents activos</p>
+
+          <div class="task-group-block" id="sc-sk-1">
+            <p class="task-group-label">Rails Simplifier</p>
+            <ul class="task-group-items">
+              <li>Mantiene el código idiomático — patrones 37signals</li>
+              <li>Elimina abstracciones que Rails ya resuelve</li>
+            </ul>
+          </div>
+
+          <div class="task-group-block" id="sc-sk-2">
+            <p class="task-group-label">Better Stimulus</p>
+            <ul class="task-group-items">
+              <li>Mejores prácticas para Stimulus controllers</li>
+              <li>Lifecycle, outlets, valores — sin antipatrones</li>
+            </ul>
+          </div>
+
+          <div class="task-group-block" id="sc-sk-3">
+            <p class="task-group-label">Maquina UI Standards</p>
+            <ul class="task-group-items">
+              <li>Guía de uso consistente de maquina_components</li>
+              <li>Brand guide y voz aplicados a cada vista</li>
+            </ul>
+          </div>
+
+          <div class="task-group-block" id="sc-sk-4">
+            <p class="task-group-label">Recuerd0 Agents</p>
+            <ul class="task-group-items">
+              <li>Business Plan, Technical Guide y Brand Guide como contexto activo</li>
+              <li>Claude Code consulta las memorias en cada sesión de trabajo</li>
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE — Resto showcase
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-turesto" data-slide="turesto" data-next="Gracias">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+        <span class="slide-label">Ejemplo real</span>
+      </div>
+
+      <div class="slide-body doc-preview-body">
+
+        <!-- Left — description + URL animation -->
+        <div class="doc-preview-text">
+          <p class="doc-preview-eyebrow">Construido con esta metodología</p>
+          <h2 class="doc-preview-title">Resto</h2>
+
+          <ul class="doc-preview-list">
+            <li>App de finanzas personales basada en el <strong>método Kakeibo</strong></li>
+            <li>Rails 8 · Hotwire · Tailwind 4 · maquina_components</li>
+            <li>Autenticación passwordless con <strong>maquina:clave</strong></li>
+            <li>Un developer · desplegado con Kamal 2</li>
+          </ul>
+
+          <!-- URL bar with localhost → turesto.app animation -->
+          <div class="url-bar" id="turesto-url-bar">
+            <svg class="url-bar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span class="url-bar-text">
+              <span id="turesto-url-display"></span><span class="url-cursor" id="turesto-url-cursor"></span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Right — app screenshot placeholder -->
+        <div class="doc-preview-screen">
+          <div class="doc-preview-frame" id="doc-frame-turesto">
+            <div class="img-placeholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#12151c;border:1px dashed #2a3044;border-radius:4px;gap:10px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3b4670" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span style="font-family:var(--mono);font-size:11px;color:#3b4670;">turesto-screenshot.png</span>
+            </div>
+          </div>
+          <div class="doc-preview-fade"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         SLIDE — Gracias / Thank you
+    ────────────────────────────────────────── -->
+    <section class="slide" id="slide-thanks" data-slide="thanks" data-next="">
+      <div class="accent-bar"></div>
+
+      <div class="slide-header">
+        <div class="slide-logo">
+          <img src="https://talks.mariochavez.io/prompt-to-mvp/images/maquina_logo_horizontal.svg" alt="Maquina">
+        </div>
+      </div>
+
+      <div class="slide-body" style="padding-top: 40px; justify-content: flex-end; padding-bottom: 80px;">
+
+        <div class="corner-mark" id="thanks-mark">✦</div>
+
+        <h1 class="talk-title" id="thanks-title">Gracias</h1>
+
+        <p class="talk-tagline" id="thanks-tagline">
+          Mario Alberto Chávez<br>
+          <span style="font-size:16px;">Arquitecto Rails &amp; creador de herramientas IA — Colima, México</span>
+        </p>
+
+        <div class="credits" id="thanks-credits" style="align-items: flex-start; gap: 80px;">
+
+          <div class="thank-links" id="thanks-links">
+            <a href="https://maquina.app"           class="thank-link" target="_blank">maquina.app</a>
+            <a href="https://mariochavez.io"         class="thank-link" target="_blank">mariochavez.io</a>
+            <a href="https://github.com/mariochavez" class="thank-link" target="_blank">github.com/mariochavez</a>
+            <a href="https://x.com/mario_chavez"     class="thank-link" target="_blank">@mario_chavez</a>
+          </div>
+
+          <p class="thank-open-source" id="thanks-oss">
+            Open source — todas las herramientas<br>disponibles en maquina.app
+          </p>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+         Agregar nuevos slides aquí ↓
+    ────────────────────────────────────────── -->
+
+    </div><!-- /.slide-wrapper -->
+</div><!-- /#stage -->
+
+<!-- ═══════════════════════════════════════════════
+     HUD
+══════════════════════════════════════════════════ -->
+<div id="hud">
+  <span id="slide-counter">1 / 10</span>
+  <span class="sep">│</span>
+  <span class="hud-hint mono">← →</span>
+  <span class="sep">│</span>
+  <span class="hud-hint mono">f</span>
+  <span class="sep next-sep">│</span>
+  <span id="hud-next" class="hud-next mono">Acerca de mí →</span>
+</div>
+
+<div id="progress-bar"></div>
+
+<!-- ═══════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════════ -->
+<script>
+  /* ─── Slide engine ─────────────────────────────── */
+  const slides    = Array.from(document.querySelectorAll('.slide'));
+  const counter   = document.getElementById('slide-counter');
+  const progress  = document.getElementById('progress-bar');
+  const wrapper   = document.getElementById('wrapper');
+  let   current   = 0;
+  let   animating = false;
+
+  /* Scale wrapper to fill viewport */
+  function scaleStage() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const sw = 1280, sh = 720;
+    const scale = Math.min(vw / sw, vh / sh) * 0.97;
+    wrapper.style.transform = `scale(${scale})`;
+    wrapper.style.width  = sw + 'px';
+    wrapper.style.height = sh + 'px';
+  }
+  scaleStage();
+  window.addEventListener('resize', scaleStage);
+
+  /* Update HUD */
+  const hudNext    = document.getElementById('hud-next');
+  const hudNextSep = document.querySelector('#hud .next-sep');
+
+  function updateHUD() {
+    counter.textContent  = `${current + 1} / ${slides.length}`;
+    progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+
+    const label = slides[current].dataset.next || '';
+
+    if (label) {
+      hudNext.textContent = label + ' →';
+      hudNext.classList.remove('hidden');
+      hudNextSep.classList.remove('hidden');
+    } else {
+      hudNext.classList.add('hidden');
+      hudNextSep.classList.add('hidden');
+    }
+  }
+  updateHUD();
+
+  /* Run per-slide GSAP entrance animation */
+  function animateSlide(idx) {
+    const slide = slides[idx];
+    const tl    = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    /* ── Brand Voice terminal (slide-10) ── */
+    if (slide.id === 'slide-10') {
+      const cwd      = slide.querySelector('.term-row');
+      const prompt   = slide.querySelector('.term-prompt-block');
+      const thinking = slide.querySelector('.term-thinking-block');
+      const dots     = slide.querySelectorAll('.thinking-dot');
+      const output   = slide.querySelector('#tw10-out');
+      const cursor   = slide.querySelector('#tw10-cursor');
+      const hints    = slide.querySelectorAll('.voice-hint-item');
+
+      const text = `Based on everything we've defined about Liminal — write a brand voice document.\n\nThe voice should feel like a photographer who has found their style and doesn't need to announce it. Not austere, but economical. Someone who chooses words the way they choose light — deliberately, with care for what gets left out.\n\nInfluences: the way Magnum Photos writes. The directness of a good photo caption. Not the breathless enthusiasm of a SaaS landing page.\n\nAvoid: startup-casual ("Hey there!"), anything that could belong to any creative tool.\n\nInclude: core personality traits, tone spectrum, vocabulary (words we use / avoid), UI microcopy in Spanish and English side by side.`;
+
+      gsap.set(hints,  { opacity: 0, y: 14 });
+      gsap.set([cwd, prompt, thinking], { opacity: 0 });
+      output.textContent = '';
+
+      /* Cards stagger in one by one */
+      tl.to(hints, { opacity: 1, y: 0, duration: 0.4, stagger: 0.18, ease: 'power2.out' }, 0);
+
+      /* Terminal appears after all cards are visible */
+      tl.to(cwd,    { opacity: 1, duration: 0.3 }, 0.85)
+        .to(prompt, { opacity: 1, duration: 0.2 }, 1.2);
+
+      tl.to({ i: 0 }, {
+        i: text.length,
+        duration: text.length * 0.016,
+        ease: 'none',
+        onUpdate() {
+          output.textContent = text.slice(0, Math.round(this.targets()[0].i));
+        }
+      }, 1.4);
+
+      const afterType = 1.4 + text.length * 0.016;
+
+      tl.call(() => { cursor.style.display = 'none'; }, [], afterType + 0.1)
+        .to(thinking, { opacity: 1, duration: 0.35 }, afterType + 0.3);
+
+      tl.call(() => {
+        gsap.to(dots, {
+          opacity: 1,
+          duration: 0.35,
+          stagger: { each: 0.15, repeat: -1, yoyo: true },
+          ease: 'power1.inOut'
+        });
+      }, [], afterType + 0.7);
+
+      return;
+    }
+
+    /* ── UI Mocks terminal (slide-11) ── */
+    if (slide.id === 'slide-11') {
+      const cwd      = slide.querySelector('.term-row');
+      const prompt   = slide.querySelector('.term-prompt-block');
+      const thinking = slide.querySelector('.term-thinking-block');
+      const dots     = slide.querySelectorAll('.thinking-dot');
+      const output   = slide.querySelector('#tw11-out');
+      const cursor   = slide.querySelector('#tw11-cursor');
+      const hints    = slide.querySelectorAll('#t11-hints .voice-hint-item');
+
+      const text = `Using the frontend-design skill, create UI mocks for Liminal's critical screens. Pull from the brand guide already established and the brand voice: quiet craft, deliberate, editorial — not SaaS.\n\nPrioritize these screens:\n\nClient-facing: Gallery landing · Collection view · Download selection\n\nPhotographer-facing: Project dashboard · Collection editor · Share link manager\n\nFor each screen: desktop-first, real placeholder content, embed a short design rationale note.\n\nAesthetic: editorial photography magazine meets quiet utility. Avoid purple gradients, generic card grids, anything that could belong to a stock photo platform.`;
+
+      gsap.set(hints,  { opacity: 0, y: 14 });
+      gsap.set([cwd, prompt, thinking], { opacity: 0 });
+      output.textContent = '';
+
+      tl.to(hints, { opacity: 1, y: 0, duration: 0.4, stagger: 0.18, ease: 'power2.out' }, 0);
+
+      tl.to(cwd,    { opacity: 1, duration: 0.3 }, 0.85)
+        .to(prompt, { opacity: 1, duration: 0.2 }, 1.2);
+
+      tl.to({ i: 0 }, {
+        i: text.length,
+        duration: text.length * 0.016,
+        ease: 'none',
+        onUpdate() {
+          output.textContent = text.slice(0, Math.round(this.targets()[0].i));
+        }
+      }, 1.4);
+
+      const afterType = 1.4 + text.length * 0.016;
+
+      tl.call(() => { cursor.style.display = 'none'; }, [], afterType + 0.1)
+        .to(thinking, { opacity: 1, duration: 0.35 }, afterType + 0.3);
+
+      tl.call(() => {
+        gsap.to(dots, {
+          opacity: 1,
+          duration: 0.35,
+          stagger: { each: 0.15, repeat: -1, yoyo: true },
+          ease: 'power1.inOut'
+        });
+      }, [], afterType + 0.7);
+
+      return;
+    }
+
+    /* ── Brand Guide slide (slide-9) ── */
+    if (slide.id === 'slide-9') {
+      const eyebrow = slide.querySelector('.doc-preview-eyebrow');
+      const title   = slide.querySelector('.doc-preview-title');
+      const values  = slide.querySelector('.brand-values');
+      const items   = slide.querySelectorAll('.doc-preview-list li');
+      const frame   = slide.querySelector('.doc-preview-frame');
+
+      gsap.set([eyebrow, title, values], { opacity: 0, y: 12 });
+      gsap.set(items, { opacity: 0, x: -12 });
+      gsap.set(frame, { y: '100%' });
+
+      tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.4 }, 0)
+        .to(title,   { opacity: 1, y: 0, duration: 0.55 }, 0.12)
+        .to(values,  { opacity: 1, y: 0, duration: 0.45 }, 0.35)
+        .to(items,   { opacity: 1, x: 0, duration: 0.35, stagger: 0.09, ease: 'power2.out' }, 0.6)
+        .to(frame,   { y: '0%', duration: 1.1, ease: 'power4.out' }, 0.5);
+      return;
+    }
+
+    /* ── Gallery Landing mock (slide-12) ── */
+    if (slide.id === 'slide-12') {
+      const eyebrow  = slide.querySelector('.doc-preview-eyebrow');
+      const title    = slide.querySelector('.doc-preview-title');
+      const rationale = slide.querySelector('.mock-rationale');
+      const items    = slide.querySelectorAll('.doc-preview-list li');
+      const frame    = slide.querySelector('.doc-preview-frame');
+
+      gsap.set([eyebrow, title, rationale], { opacity: 0, y: 12 });
+      gsap.set(items, { opacity: 0, x: -12 });
+      gsap.set(frame, { y: '100%' });
+
+      tl.to(eyebrow,   { opacity: 1, y: 0, duration: 0.4 }, 0)
+        .to(title,     { opacity: 1, y: 0, duration: 0.55 }, 0.12)
+        .to(rationale, { opacity: 1, y: 0, duration: 0.45 }, 0.4)
+        .to(items,     { opacity: 1, x: 0, duration: 0.35, stagger: 0.09, ease: 'power2.out' }, 0.65)
+        .to(frame,     { y: '0%', duration: 1.2, ease: 'power4.out' }, 0.3);
+      return;
+    }
+    if (slide.id === 'slide-8') {
+      const eyebrow = slide.querySelector('.doc-preview-eyebrow');
+      const title   = slide.querySelector('.doc-preview-title');
+      const phil    = slide.querySelector('.tech-philosophy');
+      const items   = slide.querySelectorAll('.doc-preview-list li');
+      const frame   = slide.querySelector('.doc-preview-frame');
+
+      gsap.set([eyebrow, title, phil], { opacity: 0, y: 12 });
+      gsap.set(items, { opacity: 0, x: -12 });
+      gsap.set(frame, { y: '100%' });
+
+      tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.4 }, 0)
+        .to(title,   { opacity: 1, y: 0, duration: 0.55 }, 0.12)
+        .to(phil,    { opacity: 1, y: 0, duration: 0.45 }, 0.35)
+        .to(items,   { opacity: 1, x: 0, duration: 0.35, stagger: 0.09, ease: 'power2.out' }, 0.55)
+        .to(frame,   { y: '0%', duration: 1.1, ease: 'power4.out' }, 0.5);
+      return;
+    }
+
+    /* ── Document preview slide (slide-7) ── */
+    if (slide.id === 'slide-7') {
+      const eyebrow = slide.querySelector('.doc-preview-eyebrow');
+      const title   = slide.querySelector('.doc-preview-title');
+      const items   = slide.querySelectorAll('.doc-preview-list li');
+      const frame   = slide.querySelector('.doc-preview-frame');
+
+      gsap.set([eyebrow, title], { opacity: 0, y: 12 });
+      gsap.set(items, { opacity: 0, x: -12 });
+      gsap.set(frame, { y: '100%' });
+
+      tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.4 }, 0)
+        .to(title,   { opacity: 1, y: 0, duration: 0.55 }, 0.12)
+        .to(items,   { opacity: 1, x: 0, duration: 0.35, stagger: 0.1, ease: 'power2.out' }, 0.35)
+        .to(frame,   { y: '0%', duration: 1.1, ease: 'power4.out' }, 0.5);
+      return;
+    }
+
+    /* ── Documents slide (slide-6) ── */
+    if (slide.id === 'slide-6') {
+      const heading  = slide.querySelector('.docs-heading');
+      const rows     = slide.querySelectorAll('.doc-row');
+      const rule     = slide.querySelector('.docs-rule');
+
+      gsap.set(heading, { opacity: 0, y: 12 });
+      gsap.set(rows,    { opacity: 0, x: -16 });
+      gsap.set(rule,    { opacity: 0 });
+
+      tl.to(heading, { opacity: 1, y: 0, duration: 0.45 }, 0)
+        .to(rows, {
+          opacity: 1, x: 0,
+          duration: 0.4,
+          stagger: 0.1,
+          ease: 'power2.out'
+        }, 0.3)
+        .to(rule, { opacity: 1, duration: 0.4 }, 0.3 + rows.length * 0.1 + 0.2);
+      return;
+    }
+
+    /* ── Terminal slide (slide-5) ── */
+    if (slide.id === 'slide-5') {
+      const cwd      = slide.querySelector('.term-row');
+      const prompt   = slide.querySelector('.term-prompt-block');
+      const thinking = slide.querySelector('.term-thinking-block');
+      const dots     = slide.querySelectorAll('.thinking-dot');
+      const output   = slide.querySelector('#typewriter-out');
+      const cursor   = slide.querySelector('#tw-cursor');
+
+      const text = `Help me create an MVP for a photo delivery platform for professional photographers — a private gallery where photographers deliver finished work to clients.\n\nApp name: "Liminal"\nTarget: freelance photographers in Latin America\nLanguage: Spanish-first\n\nResearch: pic-time.com, picdrop.com\n\nUse the MVP Creator skill to generate the full documentation set.`;
+
+      /* Reset */
+      gsap.set([cwd, prompt, thinking], { opacity: 0 });
+      output.textContent = '';
+
+      /* 1. Show cwd line */
+      tl.to(cwd, { opacity: 1, duration: 0.3 }, 0.2);
+
+      /* 2. Show user block (empty, cursor visible) */
+      tl.to(prompt, { opacity: 1, duration: 0.2 }, 0.7);
+
+      /* 3. Typewriter — drive index 0 → text.length */
+      tl.to({ i: 0 }, {
+        i: text.length,
+        duration: text.length * 0.018,   /* ~18ms per char = fast typing */
+        ease: 'none',
+        onUpdate() {
+          const idx = Math.round(this.targets()[0].i);
+          output.textContent = text.slice(0, idx);
+        }
+      }, 1.0);
+
+      /* 4. After typing: hide cursor, show thinking */
+      tl.call(() => {
+        cursor.style.display = 'none';
+      }, [], 1.0 + text.length * 0.018 + 0.1);
+
+      tl.to(thinking, { opacity: 1, duration: 0.35 },
+        1.0 + text.length * 0.018 + 0.2);
+
+      /* 5. Pulse dots forever */
+      tl.call(() => {
+        gsap.to(dots, {
+          opacity: 1,
+          duration: 0.35,
+          stagger: { each: 0.15, repeat: -1, yoyo: true },
+          ease: 'power1.inOut'
+        });
+      }, [], 1.0 + text.length * 0.018 + 0.6);
+
+      return;
+    }
+
+    /* ── MVP Creator slide (slide-4) ── */
+    if (slide.id === 'slide-4') {
+      const label = slide.querySelector('.mvp-label');
+      const title = slide.querySelector('.mvp-title');
+      const desc  = slide.querySelector('.mvp-desc');
+
+      gsap.set(label, { opacity: 0, y: 10 });
+      gsap.set(title, { opacity: 0, clipPath: 'inset(0 100% 0 0)' });
+      gsap.set(desc,  { opacity: 0, y: 16 });
+
+      tl.to(label, { opacity: 1, y: 0, duration: 0.4 }, 0)
+        .to(title, {
+          opacity: 1,
+          clipPath: 'inset(0 0% 0 0)',
+          duration: 0.9,
+          ease: 'power4.out'
+        }, 0.2)
+        .to(desc, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, 2.4);
+      return;
+    }
+
+    /* ── Phase 02 transition slide ── */
+    if (slide.id === 'slide-phase2') {
+      const label = slide.querySelector('.mvp-label');
+      const title = slide.querySelector('.mvp-title');
+      const desc  = slide.querySelector('.mvp-desc');
+
+      gsap.set(label, { opacity: 0, y: 10 });
+      gsap.set(title, { opacity: 0, clipPath: 'inset(0 100% 0 0)' });
+      gsap.set(desc,  { opacity: 0, y: 16 });
+
+      tl.to(label, { opacity: 1, y: 0, duration: 0.4 }, 0)
+        .to(title, {
+          opacity: 1,
+          clipPath: 'inset(0 0% 0 0)',
+          duration: 0.9,
+          ease: 'power4.out'
+        }, 0.2)
+        .to(desc, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, 2.4);
+      return;
+    }
+
+    /* ── Phase 03 transition slide ── */
+    if (slide.id === 'slide-phase3') {
+      const label = slide.querySelector('.mvp-label');
+      const title = slide.querySelector('.mvp-title');
+      const desc  = slide.querySelector('.mvp-desc');
+
+      gsap.set(label, { opacity: 0, y: 10 });
+      gsap.set(title, { opacity: 0, clipPath: 'inset(0 100% 0 0)' });
+      gsap.set(desc,  { opacity: 0, y: 16 });
+
+      tl.to(label, { opacity: 1, y: 0, duration: 0.4 }, 0)
+        .to(title, {
+          opacity: 1,
+          clipPath: 'inset(0 0% 0 0)',
+          duration: 0.9,
+          ease: 'power4.out'
+        }, 0.2)
+        .to(desc, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, 2.4);
+      return;
+    }
+
+    /* ── SDD Init terminal (slide-sdd-init) ── */
+    if (slide.id === 'slide-sdd-init') {
+      const hints    = slide.querySelectorAll('#tsdd-hints .voice-hint-item');
+      const cwd      = slide.querySelector('#tsdd-cwd');
+      const prompt   = slide.querySelector('#tsdd-prompt');
+      const thinking = slide.querySelector('#tsdd-thinking');
+      const dots     = slide.querySelectorAll('#tsdd-thinking .thinking-dot');
+      const output   = slide.querySelector('#twsdd-out');
+      const cursor   = slide.querySelector('#twsdd-cursor');
+
+      const text = `Initialize SDD using the MVP documents from Recuerd0 memories. Convert:\n- Business Plan → mission.md + roadmap.md\n- Technical Guide → tech-stack.md + standards/backend/\n- Brand Guide → standards/frontend/\n- Brand Voice → standards/frontend/voice\n\nReview mission.md carefully after generation — this is the moment to cut scope. Not every Business Plan feature belongs in v1.`;
+
+      gsap.set(hints,  { opacity: 0, y: 14 });
+      gsap.set([cwd, prompt, thinking], { opacity: 0 });
+      output.textContent = '';
+
+      tl.to(hints, { opacity: 1, y: 0, duration: 0.4, stagger: 0.18, ease: 'power2.out' }, 0);
+      tl.to(cwd,    { opacity: 1, duration: 0.3 }, 0.85)
+        .to(prompt, { opacity: 1, duration: 0.2 }, 1.2);
+      tl.to({ i: 0 }, {
+        i: text.length, duration: text.length * 0.016, ease: 'none',
+        onUpdate() { output.textContent = text.slice(0, Math.round(this.targets()[0].i)); }
+      }, 1.4);
+      const afterType = 1.4 + text.length * 0.016;
+      tl.call(() => { cursor.style.display = 'none'; }, [], afterType + 0.1)
+        .to(thinking, { opacity: 1, duration: 0.35 }, afterType + 0.3);
+      tl.call(() => {
+        gsap.to(dots, { opacity: 1, duration: 0.35, stagger: { each: 0.15, repeat: -1, yoyo: true }, ease: 'power1.inOut' });
+      }, [], afterType + 0.7);
+      return;
+    }
+
+    /* ── Feature workflow (slide-sdd-flow) ── */
+    if (slide.id === 'slide-sdd-flow') {
+      const note  = slide.querySelector('#flow-note');
+      const steps = slide.querySelectorAll('.flow-step');
+      const order = slide.querySelector('#flow-order');
+
+      gsap.set(note,  { opacity: 0, y: 10 });
+      gsap.set(steps, { opacity: 0, y: 20 });
+      gsap.set(order, { opacity: 0, y: 8 });
+
+      tl.to(note,  { opacity: 1, y: 0, duration: 0.4 }, 0)
+        .to(steps, { opacity: 1, y: 0, duration: 0.45, stagger: 0.12, ease: 'power2.out' }, 0.35)
+        .to(order, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.35 + steps.length * 0.12 + 0.3);
+      return;
+    }
+
+    /* ── Thank you slide (slide-thanks) ── */
+    if (slide.id === 'slide-thanks') {
+      const mark      = slide.querySelector('#thanks-mark');
+      const title     = slide.querySelector('#thanks-title');
+      const tagline   = slide.querySelector('#thanks-tagline');
+      const credits   = slide.querySelector('#thanks-credits');
+      const linkItems = slide.querySelectorAll('.thank-link');
+      const oss       = slide.querySelector('#thanks-oss');
+
+      gsap.set(mark,      { opacity: 0, scale: 0.6 });
+      gsap.set(title,     { opacity: 0, y: 28 });
+      gsap.set(tagline,   { opacity: 0, y: 16 });
+      gsap.set(credits,   { opacity: 1 });
+      gsap.set(linkItems, { opacity: 0, x: -12 });
+      gsap.set(oss,       { opacity: 0 });
+
+      tl.to(title,     { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0)
+        .to(tagline,   { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.45)
+        .to(mark,      { opacity: 0.15, scale: 1, duration: 1.2, ease: 'power3.out' }, 0.1)
+        .to(linkItems, { opacity: 1, x: 0, duration: 0.35, stagger: 0.1, ease: 'power2.out' }, 0.85)
+        .to(oss,       { opacity: 1, duration: 0.5 }, 1.4);
+      return;
+    }
+
+    /* ── Resto showcase (slide-turesto) ── */
+    if (slide.id === 'slide-turesto') {
+      const eyebrow  = slide.querySelector('.doc-preview-eyebrow');
+      const title    = slide.querySelector('.doc-preview-title');
+      const items    = slide.querySelectorAll('.doc-preview-list li');
+      const urlBar   = slide.querySelector('#turesto-url-bar');
+      const urlEl    = slide.querySelector('#turesto-url-display');
+      const cursor   = slide.querySelector('#turesto-url-cursor');
+      const frame    = slide.querySelector('.doc-preview-frame');
+
+      const localhost  = 'http://localhost:3000';
+      const realUrl    = 'https://turesto.app/';
+
+      gsap.set([eyebrow, title], { opacity: 0, y: 12 });
+      gsap.set(items,  { opacity: 0, x: -12 });
+      gsap.set(urlBar, { opacity: 0, y: 8 });
+      gsap.set(frame,  { y: '100%' });
+      urlEl.textContent = '';
+
+      tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.35 }, 0)
+        .to(title,   { opacity: 1, y: 0, duration: 0.5  }, 0.1)
+        .to(items,   { opacity: 1, x: 0, duration: 0.35, stagger: 0.1, ease: 'power2.out' }, 0.35)
+        .to(urlBar,  { opacity: 1, y: 0, duration: 0.4,  ease: 'power2.out' }, 0.8)
+        .to(frame,   { y: '0%',   duration: 1.1, ease: 'power4.out' }, 0.2);
+
+      /* 1 — type localhost quickly on slide enter */
+      tl.to({ i: 0 }, {
+        i: localhost.length,
+        duration: localhost.length * 0.028,
+        ease: 'none',
+        onUpdate() { urlEl.textContent = localhost.slice(0, Math.round(this.targets()[0].i)); }
+      }, 1.15);
+
+      /* 2 — wait for click to trigger the fix */
+      const fixUrl = () => {
+        urlBar.style.cursor = 'default';
+        urlBar.removeEventListener('click', fixUrl);
+
+        const backspaceDur = localhost.length * 0.07;
+        const fix = gsap.timeline();
+
+        fix.to({ i: localhost.length }, {
+          i: 0,
+          duration: backspaceDur,
+          ease: 'power1.in',
+          onUpdate() { urlEl.textContent = localhost.slice(0, Math.round(this.targets()[0].i)); }
+        });
+
+        fix.to({ i: 0 }, {
+          i: realUrl.length,
+          duration: realUrl.length * 0.055,
+          ease: 'none',
+          delay: 0.2,
+          onUpdate() { urlEl.textContent = realUrl.slice(0, Math.round(this.targets()[0].i)); }
+        });
+
+        fix.call(() => {
+          cursor.style.display = 'none';
+          urlEl.innerHTML = `<a href="https://turesto.app/" target="_blank" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--accent-cool);padding-bottom:1px;">https://turesto.app/</a>`;
+        }, [], '+=0.4');
+      };
+
+      /* Make bar clickable once localhost is typed */
+      tl.call(() => {
+        urlBar.style.cursor = 'pointer';
+        urlBar.addEventListener('click', fixUrl);
+      }, [], 1.15 + localhost.length * 0.028 + 0.1);
+
+      return;
+    }
+
+    /* ── SDD Coding tools & skills (slide-sdd-code) ── */
+    if (slide.id === 'slide-sdd-code') {
+      const eyebrow     = slide.querySelector('.doc-preview-eyebrow');
+      const title       = slide.querySelector('.doc-preview-title');
+      const desc        = slide.querySelector('#sdd-code-desc');
+      const leftBlocks  = slide.querySelectorAll('#sc-gen, #sc-comp');
+      const rightEye    = slide.querySelector('#sc-skills-eyebrow');
+      const rightBlocks = slide.querySelectorAll('#sc-sk-1, #sc-sk-2, #sc-sk-3, #sc-sk-4');
+
+      gsap.set([eyebrow, title, desc], { opacity: 0, y: 12 });
+      gsap.set(leftBlocks,  { opacity: 0, x: -12 });
+      gsap.set(rightEye,    { opacity: 0, y: 10 });
+      gsap.set(rightBlocks, { opacity: 0, x: 12 });
+
+      tl.to(eyebrow,     { opacity: 1, y: 0, duration: 0.35 }, 0)
+        .to(title,       { opacity: 1, y: 0, duration: 0.5 },  0.1)
+        .to(desc,        { opacity: 1, y: 0, duration: 0.4 },  0.45)
+        .to(leftBlocks,  { opacity: 1, x: 0, duration: 0.35, stagger: 0.12, ease: 'power2.out' }, 0.65)
+        .to(rightEye,    { opacity: 1, y: 0, duration: 0.35 }, 0.3)
+        .to(rightBlocks, { opacity: 1, x: 0, duration: 0.3, stagger: 0.1, ease: 'power2.out' }, 0.5);
+      return;
+    }
+
+    /* ── Stack + Tasks (slide-sdd-stack) ── */
+    if (slide.id === 'slide-sdd-stack') {
+      const eyebrow   = slide.querySelector('.doc-preview-eyebrow');
+      const taskBlocks = slide.querySelectorAll('.task-group-block');
+      const stackEyebrow = slide.querySelectorAll('.doc-preview-screen .doc-preview-eyebrow');
+      const groupTitles = slide.querySelectorAll('.stack-group-title');
+      const stackRows   = slide.querySelectorAll('.stack-row');
+
+      gsap.set(eyebrow,     { opacity: 0, y: 10 });
+      gsap.set(taskBlocks,  { opacity: 0, x: -12 });
+      gsap.set(stackEyebrow,{ opacity: 0, y: 10 });
+      gsap.set(groupTitles, { opacity: 0 });
+      gsap.set(stackRows,   { opacity: 0, x: 10 });
+
+      tl.to(eyebrow,      { opacity: 1, y: 0, duration: 0.35 }, 0)
+        .to(taskBlocks,   { opacity: 1, x: 0, duration: 0.35, stagger: 0.1, ease: 'power2.out' }, 0.2)
+        .to(stackEyebrow, { opacity: 1, y: 0, duration: 0.35 }, 0.2)
+        .to(groupTitles,  { opacity: 1, duration: 0.3, stagger: 0.12 }, 0.4)
+        .to(stackRows,    { opacity: 1, x: 0, duration: 0.25, stagger: 0.05, ease: 'power2.out' }, 0.5);
+      return;
+    }
+
+    /* ── Recuerd0 workspace slide ── */
+    if (slide.id === 'slide-recuerd0') {
+      const eyebrow = slide.querySelector('.doc-preview-eyebrow');
+      const title   = slide.querySelector('.doc-preview-title');
+      const items   = slide.querySelectorAll('.doc-preview-list li');
+      const link    = slide.querySelector('#r0-link');
+      const frame   = slide.querySelector('.doc-preview-frame');
+
+      gsap.set([eyebrow, title], { opacity: 0, y: 12 });
+      gsap.set(items, { opacity: 0, x: -12 });
+      gsap.set(link,  { opacity: 0 });
+      gsap.set(frame, { y: '100%' });
+
+      tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.4 }, 0)
+        .to(title,   { opacity: 1, y: 0, duration: 0.55 }, 0.12)
+        .to(items,   { opacity: 1, x: 0, duration: 0.35, stagger: 0.1, ease: 'power2.out' }, 0.4)
+        .to(link,    { opacity: 0.85, duration: 0.35 }, 0.85)
+        .to(frame,   { y: '0%', duration: 1.1, ease: 'power4.out' }, 0.3);
+      return;
+    }
+
+    /* ── Statement slide (slide-3) ── */
+    if (slide.id === 'slide-3') {
+      const text     = slide.querySelector('.statement-text');
+      const strikeEl = slide.querySelector('.strike');
+      const usarIa   = slide.querySelector('.reveal-text');
+
+      gsap.set(text,   { opacity: 0, y: 20 });
+      gsap.set(usarIa, { opacity: 0, y: 12 });
+      strikeEl.style.setProperty('--sw', '0%');
+
+      tl.to(text, { opacity: 1, y: 0, duration: 0.7 }, 0)
+        .to({ w: 0 }, {
+          w: 100,
+          duration: 0.5,
+          ease: 'power2.inOut',
+          onUpdate() {
+            strikeEl.style.setProperty('--sw', this.targets()[0].w + '%');
+          }
+        }, 1.2)
+        .to(usarIa, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 1.85);
+      return;
+    }
+
+    /* ── About slide (slide-2) ── */
+    if (slide.id === 'slide-2') {
+      const eyebrow    = slide.querySelector('.about-eyebrow');
+      const name       = slide.querySelector('.about-name');
+      const listItems  = slide.querySelectorAll('.about-list li');
+      const screenshot = slide.querySelector('.screenshot-frame');
+
+      gsap.set([eyebrow, name], { opacity: 0, y: 14 });
+      gsap.set(listItems, { opacity: 0, x: -14 });
+      gsap.set(screenshot, { y: '100%' });
+
+      tl.to(eyebrow,    { opacity: 1, y: 0, duration: 0.45 }, 0)
+        .to(name,       { opacity: 1, y: 0, duration: 0.55 }, 0.12)
+        .to(listItems,  { opacity: 1, x: 0, duration: 0.4, stagger: 0.1 }, 0.35)
+        .to(screenshot, { y: '0%', duration: 1.1, ease: 'power4.out' }, 0.5);
+      return;
+    }
+
+    /* ── Generic slides ── */
+    const eyebrow = slide.querySelector('.talk-eyebrow, .section-label, .phase-badge');
+    const title   = slide.querySelector('.talk-title, .section-title, h2, h1');
+    const rest    = slide.querySelectorAll(
+      '.talk-tagline, .credits, .check-list, .data-table, ' +
+      '.callout, .warn-box, .cols-2, .link-list, p:not(.talk-eyebrow)'
+    );
+    const mark    = slide.querySelector('.corner-mark');
+
+    if (mark)    tl.to(mark,    { opacity: 0.06, duration: 1.2 }, 0);
+    if (eyebrow) tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.5 }, 0);
+    if (title) {
+      tl.fromTo(title,
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.65 },
+        eyebrow ? 0.12 : 0
+      );
+    }
+    if (rest.length) {
+      tl.to(rest,
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 },
+        0.3
+      );
+    }
+
+    /* Items in lists that start hidden */
+    const items = slide.querySelectorAll('.check-list li, .link-item, tr');
+    if (items.length) {
+      gsap.set(items, { opacity: 0, x: -10 });
+      tl.to(items,
+        { opacity: 1, x: 0, duration: 0.35, stagger: 0.06, ease: 'power2.out' },
+        0.45
+      );
+    }
+  }
+
+  /* Transition to a slide using View Transitions if available */
+  async function goTo(idx, direction = 'forward') {
+    if (idx < 0 || idx >= slides.length || idx === current || animating) return;
+    animating = true;
+
+    const prevIdx = current;
+
+    const doTransition = () => {
+      slides[prevIdx].classList.remove('active');
+      slides[idx].classList.add('active');
+      current = idx;
+      updateHUD();
+      /* Reset then animate new slide elements */
+      const el = slides[idx];
+      const customSlides = ['slide-2', 'slide-3', 'slide-4', 'slide-phase2', 'slide-5', 'slide-6', 'slide-7', 'slide-8', 'slide-9', 'slide-10', 'slide-11', 'slide-12', 'slide-phase3', 'slide-recuerd0', 'slide-sdd-init', 'slide-sdd-flow', 'slide-sdd-stack', 'slide-sdd-code', 'slide-turesto', 'slide-thanks'];
+      if (!customSlides.includes(el.id)) {
+        gsap.set(
+          el.querySelectorAll(
+            '.talk-eyebrow, .section-label, .phase-badge, .talk-title, ' +
+            '.section-title, h2, h1, .talk-tagline, .credits, .check-list, ' +
+            '.data-table, .callout, .warn-box, .cols-2, .link-list, ' +
+            '.corner-mark, p:not(.talk-eyebrow)'
+          ),
+          { opacity: 0, y: 16 }
+        );
+      }
+      animateSlide(idx);
+    };
+
+    try {
+      if (document.startViewTransition) {
+        wrapper.style.viewTransitionName =
+          direction === 'forward' ? 'slide-content' : 'slide-content-back';
+        const t = document.startViewTransition(doTransition);
+        await t.finished;
+        wrapper.style.viewTransitionName = 'slide-content';
+      } else {
+        doTransition();
+      }
+    } finally {
+      animating = false;
+    }
+  }
+
+  /* Keyboard navigation */
+  let numBuffer  = '';
+  let numTimeout = null;
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { numBuffer = ''; goTo(current + 1, 'forward'); return; }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { numBuffer = ''; goTo(current - 1, 'back');    return; }
+    if (e.key === 'f' || e.key === 'F') {
+      document.fullscreenElement
+        ? document.exitFullscreen()
+        : document.documentElement.requestFullscreen();
+      return;
+    }
+    /* Number jump with debounce — listens for multi-digit (e.g. "13") */
+    if (e.key >= '0' && e.key <= '9') {
+      numBuffer += e.key;
+      clearTimeout(numTimeout);
+      numTimeout = setTimeout(() => {
+        const n = parseInt(numBuffer, 10);
+        if (n >= 1 && n <= slides.length) goTo(n - 1, n - 1 > current ? 'forward' : 'back');
+        numBuffer = '';
+      }, 800);
+    }
+  });
+
+  /* Touch swipe */
+  let touchX = null;
+  document.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 40) {
+      dx < 0 ? goTo(current + 1, 'forward') : goTo(current - 1, 'back');
+    }
+    touchX = null;
+  });
+
+  /* ─── Boot: animate first slide ─────────────── */
+  document.addEventListener('DOMContentLoaded', () => {
+    gsap.set('#cover-title',   { opacity: 0, y: 28 });
+    gsap.set('#cover-tagline', { opacity: 0, y: 16 });
+    gsap.set('#cover-credits', { opacity: 0, y: 12 });
+    gsap.set('#cover-mark',    { opacity: 0 });
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.1 });
+    tl.to('#cover-mark',    { opacity: 0.06, duration: 2 }, 0)
+      .to('#cover-title',   { opacity: 1, y: 0, duration: 0.7 },  0.2)
+      .to('#cover-tagline', { opacity: 1, y: 0, duration: 0.55 }, 0.5)
+      .to('#cover-credits', { opacity: 1, y: 0, duration: 0.5 },  0.75);
+  });
+</script>
+
+</body>
+</html>
