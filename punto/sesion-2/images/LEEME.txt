@@ -1,0 +1,53 @@
+IMÁGENES PARA LA PRESENTACIÓN — SESIÓN 2
+=============================================
+
+Coloca aquí tus archivos con estos nombres exactos (respeta mayúsculas,
+minúsculas y guiones). Mientras un archivo no exista, esa diapositiva
+muestra un recuadro punteado con el nombre pendiente — así sabes de un
+vistazo qué falta antes de la sesión.
+
+Cada fotografía ocupa su propia diapositiva, casi a pantalla completa,
+con un cintillo abajo indicando fotógrafo/a y proyecto.
+
+RICHARD MISRACH — Desert Cantos
+  01-misrach-desert-cantos-1.jpg
+  01-misrach-desert-cantos-2.jpg
+  01-misrach-desert-cantos-3.jpg
+
+MARIO ALBERTO CHÁVEZ — Cofradía de Volcanes
+  02-chavez-cofradia-volcanes-1.jpg
+  02-chavez-cofradia-volcanes-2.jpg
+  02-chavez-cofradia-volcanes-3.jpg
+  (estas son tus propias fotografías — elige tres que muestren el
+  mismo territorio en distintas condiciones: quema agrícola, río
+  crecido, niebla, etc., ya que es justo el punto que ilustran)
+
+INGRID HERNÁNDEZ — Under Construction
+  03-hernandez-under-construction-1.jpg
+  03-hernandez-under-construction-2.jpg
+  03-hernandez-under-construction-3.jpg
+
+RECOMENDACIONES
+----------------
+- Formato: JPG, de preferencia horizontal (landscape) — es la orientación
+  más común en estos proyectos y la que usa el recuadro de referencia
+  cuando falta una imagen. Si alguna fotografía es vertical, no hay
+  problema: se muestra completa igual, sin recortar, solo un poco más
+  angosta en pantalla.
+- Tamaño: con que el lado más largo mida 1500–2000px es más que suficiente
+  para proyección; no hace falta resolución de impresión.
+- Las imágenes de Richard Misrach e Ingrid Hernández son de terceros —
+  revisa que tengas derecho de uso para proyectarlas en un taller
+  (los fotolibros de Misrach y la Fraenkel Gallery, y la retrospectiva
+  del CECUT o el sitio de Hernández, suelen tener reproducciones
+  disponibles con fines educativos; si tienes duda, omite la imagen y
+  deja el recuadro con el nombre del proyecto — funciona igual como
+  referencia).
+- Para Misrach y para Cofradía de Volcanes: elige variedad de condiciones
+  (luz, estación, clima) — es literalmente el punto que ambos ejemplos
+  ilustran sobre volver al mismo lugar.
+
+Si agregas o quitas fotografías, solo necesitas cambiar el atributo
+data-filename y el src="images/..." correspondiente dentro de index.html,
+en la diapositiva de esa fotografía (busca el nombre de archivo con
+Ctrl+F / Cmd+F para encontrarla rápido).

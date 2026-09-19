@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Qué me importa? — Sesión 1 — Punto de Partida</title>
+
+<!--
+  CÓMO USAR ESTE ARCHIVO
+  =======================
+  1. Agrega tus fotografías dentro de la carpeta "images/" con los nombres
+     exactos que se indican en images/LEEME.txt (ej: 01-brenner-tonatiuh-1.jpg).
+     Mientras no exista el archivo, la diapositiva muestra un recuadro con
+     el nombre pendiente — así sabes exactamente qué falta.
+  2. Abre index.html directamente en el navegador (doble clic) o desde un
+     servidor local. No necesita internet salvo para cargar las tipografías
+     de Google Fonts; si no hay conexión, usa las tipografías del sistema
+     y se ve bien igual.
+  3. Navegación durante la sesión:
+       → / espacio / clic derecho de la pantalla   → avanza
+       ← / clic izquierdo de la pantalla            → retrocede
+       Inicio / Fin                                  → primera / última diapositiva
+       F                                              → pantalla completa
+       También puedes usar las marcas de marea (las líneas del pie de página)
+       o los botones de flecha para saltar directo a una diapositiva.
+  4. Para editar texto: cada diapositiva es un bloque <section class="slide">
+     numerado en el código (04, 05, etc.). Edita el HTML directamente ahí.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --pacifico-950:#071C29;
+    --pacifico-900:#0A2C40;
+    --pacifico-800:#0E3A52;
+    --pacifico-600:#1E6E8C;
+    --pacifico-400:#86BED4;
+    --pacifico-200:#C7E6EF;
+    --arena:#F4EEE2;
+    --arena-dim:#E4DBC8;
+    --tinta:#0D1418;
+
+    --font-display:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+    --font-body:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --font-mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+
+    --pad-edge: clamp(1.5rem, 5vw, 5rem);
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; height:100%; width:100%;
+    background:var(--pacifico-950);
+    overflow:hidden;
+  }
+  body{
+    font-family:var(--font-body);
+    color:var(--arena);
+    background:
+      radial-gradient(120% 80% at 15% -10%, var(--pacifico-800) 0%, var(--pacifico-950) 55%, #050f17 100%);
+  }
+  :focus-visible{ outline:2px solid var(--pacifico-400); outline-offset:3px; }
+  a{ color:inherit; }
+  h1,h2,h3{ margin:0; font-family:var(--font-display); font-weight:700; letter-spacing:-0.01em; }
+  p{ margin:0; }
+  ul,ol{ margin:0; padding:0; list-style:none; }
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:.72rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--pacifico-400);
+  }
+
+  /* ============ DECK / SLIDES ============ */
+  .deck{ position:relative; width:100vw; height:100vh; }
+
+  .slide{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; justify-content:center;
+    padding: var(--pad-edge);
+    padding-bottom: calc(var(--pad-edge) + 3.2rem); /* room for footer */
+    opacity:0; visibility:hidden;
+    transform:translateY(14px);
+    transition:opacity .55s ease, transform .55s ease;
+  }
+  .slide.active{
+    opacity:1; visibility:visible; transform:translateY(0);
+    z-index:2;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .slide{ transition:opacity .01s linear; transform:none; }
+  }
+
+  .slide-inner{ max-width:1100px; width:100%; margin:0 auto; }
+  .slide--narrow .slide-inner{ max-width:820px; }
+
+  /* ---- title treatments ---- */
+  .display-xl{ font-size:clamp(2.6rem, 6.4vw, 5.4rem); line-height:1.03; }
+  .display-lg{ font-size:clamp(2.1rem, 4.6vw, 3.6rem); line-height:1.07; }
+  .display-md{ font-size:clamp(1.6rem, 3vw, 2.4rem); line-height:1.1; }
+
+  .kicker-gap{ margin-bottom: .9rem; }
+  .title-gap{ margin-bottom: 1.4rem; }
+
+  .lede{
+    font-size:clamp(1.05rem, 1.7vw, 1.35rem);
+    line-height:1.55;
+    color:var(--arena-dim);
+    max-width:46ch;
+  }
+
+  .divider{
+    width:64px; height:2px; background:var(--pacifico-600);
+    margin:1.6rem 0;
+    border:0;
+  }
+
+  /* ---- portada ---- */
+  .portada .display-xl{ font-style:italic; font-weight:600; }
+  .portada .meta{ margin-top:2rem; display:flex; flex-direction:column; gap:.35rem; }
+  .portada .meta span{ font-family:var(--font-mono); font-size:.85rem; color:var(--pacifico-400); letter-spacing:.03em; }
+
+  /* ---- lista simple ---- */
+  .simple-list{ display:flex; flex-direction:column; gap:1.1rem; margin-top:1.6rem; }
+  .simple-list li{
+    display:flex; gap:1rem; align-items:baseline;
+    font-size:clamp(1.05rem, 1.7vw, 1.3rem);
+    color:var(--arena);
+  }
+  .simple-list li::before{
+    content:'—';
+    color:var(--pacifico-600);
+    flex:0 0 auto;
+  }
+
+  /* ---- pasos numerados (ejercicio con orden real) ---- */
+  .step-block{ display:flex; gap:1rem; align-items:flex-start; margin-top:1.3rem; }
+  .step-num{
+    flex:0 0 auto; width:2rem; height:2rem; border-radius:50%;
+    border:1px solid var(--pacifico-600);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-size:.85rem; color:var(--pacifico-200);
+  }
+  .step-block p{
+    font-size:clamp(1.05rem, 1.7vw, 1.3rem);
+    line-height:1.5;
+    color:var(--arena);
+    padding-top:.2rem;
+  }
+
+  /* ---- tema vs pregunta ---- */
+  .compare{
+    display:grid; grid-template-columns:1fr auto 1fr; gap:2.5rem; align-items:center;
+    margin-top:2.2rem;
+  }
+  .compare-col{ display:flex; flex-direction:column; gap:.7rem; }
+  .compare-col .compare-label{ font-family:var(--font-mono); font-size:.75rem; letter-spacing:.14em; text-transform:uppercase; }
+  .compare-col.tema{ opacity:.55; }
+  .compare-col.tema .compare-label{ color:var(--pacifico-400); }
+  .compare-col.tema .compare-text{ font-size:clamp(1.2rem,2.2vw,1.6rem); font-family:var(--font-display); font-weight:500; color:var(--arena-dim); }
+  .compare-col.pregunta .compare-label{ color:var(--pacifico-200); }
+  .compare-col.pregunta .compare-text{ font-size:clamp(1.4rem,2.8vw,2.1rem); font-family:var(--font-display); font-weight:700; color:var(--arena); font-style:italic; }
+  .compare-rule{ width:1px; height:96px; background:var(--pacifico-600); justify-self:center; }
+  @media (max-width:760px){
+    .compare{ grid-template-columns:1fr; gap:1.4rem; }
+    .compare-rule{ width:56px; height:1px; }
+  }
+
+  /* ---- ejemplo (referente) slides ---- */
+  .example-grid{
+    display:grid; grid-template-columns: 1.1fr 1fr; gap:3rem; align-items:center;
+    margin-top:1.6rem;
+  }
+  @media (max-width:820px){
+    .example-grid{ grid-template-columns:1fr; }
+  }
+  .example-name{ font-size:clamp(1.9rem,3.4vw,2.7rem); }
+  .example-project{ font-family:var(--font-body); font-style:italic; color:var(--pacifico-200); font-size:clamp(1rem,1.6vw,1.2rem); margin-top:.35rem; }
+  .example-body{ margin-top:1.1rem; font-size:clamp(1rem,1.5vw,1.15rem); line-height:1.55; color:var(--arena-dim); max-width:44ch; }
+  .example-footnote{ margin-top:1rem; font-family:var(--font-mono); font-size:.78rem; color:var(--pacifico-400); letter-spacing:.02em; }
+
+  .quote{
+    margin-top:1.2rem;
+    font-family:var(--font-display); font-style:italic; font-weight:500;
+    font-size:clamp(1.05rem,1.8vw,1.35rem); line-height:1.45;
+    color:var(--arena);
+    max-width:44ch;
+    position:relative; padding-left:1.4rem;
+    border-left:2px solid var(--pacifico-600);
+  }
+  .quote-attr{ display:block; margin-top:.7rem; font-family:var(--font-mono); font-style:normal; font-size:.78rem; color:var(--pacifico-400); letter-spacing:.05em; }
+
+  /* ---- full-bleed photo slides ---- */
+  .slide--photo{
+    padding: 0.9rem 0.9rem calc(3.2rem + 0.7rem) 0.9rem;
+    align-items:center; justify-content:center;
+  }
+  .slide--photo .slide-inner{ display:flex; align-items:center; justify-content:center; max-width:none; height:100%; }
+
+  .photo-frame{
+    position:relative;
+    display:inline-block;
+    line-height:0;
+    max-width:100%;
+    margin:0;
+  }
+  .photo-frame img{
+    display:block;
+    max-width:100%;
+    max-height:calc(100vh - 4.8rem);
+    width:auto; height:auto;
+    border-radius:3px;
+    box-shadow:0 30px 90px rgba(0,0,0,.55);
+  }
+  .photo-frame .placeholder{
+    display:flex; flex-direction:column; align-items:center; gap:.6rem;
+    color:var(--pacifico-400); text-align:center; padding:0 1.4rem;
+  }
+  .photo-frame .placeholder .plus{ font-family:var(--font-display); font-size:2.6rem; line-height:1; opacity:.7; }
+  .photo-frame .placeholder .hint{ font-family:var(--font-mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; opacity:.85; }
+  .photo-frame.missing{
+    /* la mayoría de las fotografías son landscape (3:2) — el placeholder
+       usa esa misma proporción para representar fielmente el espacio real */
+    width:min(90vw, calc((100vh - 4.8rem) * 1.5), 1500px);
+    aspect-ratio:3/2;
+    border:1px dashed var(--pacifico-600);
+    border-radius:6px;
+    background:rgba(255,255,255,0.02);
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .cintillo{
+    position:absolute; left:0; right:0; bottom:0;
+    display:flex; align-items:baseline; gap:.65rem; flex-wrap:wrap;
+    padding:.85rem 1.1rem;
+    line-height:1.3;
+    background:linear-gradient(0deg, rgba(5,15,23,0.9) 0%, rgba(5,15,23,0.55) 55%, rgba(5,15,23,0) 100%);
+    border-radius:0 0 3px 3px;
+  }
+  .cintillo .name{ font-family:var(--font-display); font-weight:700; font-size:.92rem; color:var(--arena); white-space:nowrap; }
+  .cintillo .project{ font-family:var(--font-body); font-style:italic; font-size:.82rem; color:var(--pacifico-200); white-space:nowrap; }
+
+  /* ---- cartagena timeline ---- */
+  .timeline{ display:flex; flex-wrap:wrap; gap:0; margin-top:1.8rem; position:relative; }
+  .timeline::before{
+    content:''; position:absolute; left:0; right:0; top:8px; height:1px;
+    background:var(--pacifico-600); opacity:.6;
+  }
+  .timeline li{ flex:1 1 0; min-width:120px; position:relative; padding-top:1.4rem; padding-right:1rem; }
+  .timeline li::before{
+    content:''; position:absolute; top:2px; left:0; width:11px; height:11px;
+    border-radius:50%; background:var(--pacifico-950); border:2px solid var(--pacifico-400);
+  }
+  .timeline .year{ display:block; font-family:var(--font-mono); font-size:.78rem; color:var(--pacifico-400); }
+  .timeline .label{ display:block; margin-top:.25rem; font-size:.92rem; color:var(--arena-dim); line-height:1.3; }
+
+  /* ---- panel (arena — for instructional slides) ---- */
+  .panel-arena{
+    background:var(--arena); color:var(--tinta);
+    border-radius:12px;
+    padding:clamp(1.6rem, 3vw, 2.6rem);
+    margin-top:1.6rem;
+    box-shadow:0 20px 50px rgba(0,0,0,.35);
+  }
+  .panel-arena .eyebrow{ color:var(--pacifico-600); }
+  .panel-arena h3{ margin-top:.5rem; font-size:clamp(1.2rem,2vw,1.5rem); }
+  .panel-arena .simple-list li{ color:var(--tinta); }
+  .panel-arena .simple-list li::before{ color:var(--pacifico-600); }
+
+  /* ---- referentes grid ---- */
+  .ref-grid{
+    margin-top:1.8rem;
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:.9rem 2.4rem;
+  }
+  .ref-grid li{ display:flex; flex-direction:column; gap:.15rem; }
+  .ref-grid strong{ font-family:var(--font-display); font-weight:600; font-size:.98rem; color:var(--arena); }
+  .ref-grid span{ font-family:var(--font-body); font-style:italic; font-size:.85rem; color:var(--pacifico-400); }
+  @media (max-width:760px){ .ref-grid{ grid-template-columns:1fr; } }
+
+  /* ---- bisagra / minimal centered ---- */
+  .slide--center{ align-items:center; text-align:center; }
+  .slide--center .slide-inner{ display:flex; flex-direction:column; align-items:center; }
+
+  /* ============ FOOTER / NAV ============ */
+  .deck-footer{
+    position:fixed; left:0; right:0; bottom:0;
+    height:3.2rem;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 var(--pad-edge);
+    border-top:1px solid rgba(134,190,212,0.18);
+    background:linear-gradient(0deg, rgba(5,15,23,0.75), rgba(5,15,23,0));
+    z-index:10;
+    font-family:var(--font-mono);
+  }
+  .coord{ font-size:.72rem; letter-spacing:.06em; color:var(--pacifico-400); white-space:nowrap; }
+
+  .tide-nav{ display:flex; align-items:center; gap:.4rem; flex:1; justify-content:center; padding:0 1.5rem; }
+  .tide-mark{
+    appearance:none; border:0; background:none; cursor:pointer;
+    width:6px; height:14px; padding:0;
+    display:flex; align-items:flex-end; justify-content:center;
+  }
+  .tide-mark::before{
+    content:''; display:block; width:1px; height:7px; background:var(--pacifico-600);
+    transition:height .25s ease, background .25s ease;
+  }
+  .tide-mark:hover::before{ height:11px; background:var(--pacifico-200); }
+  .tide-mark.active::before{ height:14px; background:var(--arena); width:2px; }
+
+  .counter{ font-size:.72rem; letter-spacing:.05em; color:var(--pacifico-400); white-space:nowrap; }
+
+  .nav-btn{
+    appearance:none; border:1px solid var(--pacifico-600); background:transparent;
+    color:var(--arena); width:2.1rem; height:2.1rem; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:1rem; line-height:1;
+    transition:background .2s ease, border-color .2s ease;
+  }
+  .nav-btn:hover{ background:rgba(134,190,212,0.12); border-color:var(--pacifico-400); }
+
+  .side-controls{
+    position:fixed; top:1.4rem; right:1.4rem; z-index:10;
+    display:flex; gap:.5rem;
+  }
+  .icon-btn{
+    appearance:none; border:1px solid rgba(134,190,212,0.35); background:rgba(7,28,41,0.4);
+    color:var(--pacifico-200); width:2.1rem; height:2.1rem; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    font-family:var(--font-mono); font-size:.85rem;
+    transition:background .2s ease;
+  }
+  .icon-btn:hover{ background:rgba(134,190,212,0.18); }
+
+  .hint-toast{
+    position:fixed; left:50%; bottom:4.6rem; transform:translateX(-50%);
+    font-family:var(--font-mono); font-size:.72rem; letter-spacing:.06em;
+    color:var(--pacifico-200); background:rgba(7,28,41,0.75);
+    border:1px solid rgba(134,190,212,0.3);
+    padding:.5rem 1rem; border-radius:999px;
+    opacity:1; transition:opacity .8s ease;
+    z-index:10; pointer-events:none;
+  }
+  .hint-toast.gone{ opacity:0; }
+
+</style>
+</head>
+<body>
+
+<main class="deck" id="deck">
+
+  <!-- 01 — PORTADA -->
+  <section class="slide active portada">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">PUNTO DE PARTIDA · TALLER DE INICIACIÓN A PROYECTOS FOTOGRÁFICOS</p>
+      <h1 class="display-xl">¿Qué me importa?</h1>
+      <div class="meta">
+        <span>SESIÓN 1 — MARTES 22 DE SEPTIEMBRE, 2026</span>
+        <span>ESPACIO CULTURAL 399, COLIMA</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 — CÓMO FUNCIONA -->
+  <section class="slide slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">ANTES DE EMPEZAR</p>
+      <h2 class="display-lg title-gap">Cómo funciona este taller</h2>
+      <ul class="simple-list">
+        <li>No enseñamos técnica. Enseñamos a encontrar una pregunta.</li>
+        <li>Seis semanas, seis sesiones, un mismo grupo.</li>
+        <li>La tarea entre sesiones no es opcional.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 03 — TEMA VS PREGUNTA -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">COMPONENTE TEÓRICO</p>
+      <h2 class="display-md title-gap">Partir de un tema no es lo mismo que partir de una pregunta</h2>
+      <div class="compare">
+        <div class="compare-col tema">
+          <span class="compare-label">Tema</span>
+          <span class="compare-text">"la migración en Colima"</span>
+        </div>
+        <div class="compare-rule"></div>
+        <div class="compare-col pregunta">
+          <span class="compare-label">Pregunta</span>
+          <span class="compare-text">¿qué queda de los que se fueron en las casas que dejaron?</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 — EJEMPLO 1: BRENNER — INTRO -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">EJEMPLO 1</p>
+      <h2 class="example-name">Juan Brenner</h2>
+      <p class="example-project">Tonatiuh — Guatemala, 2019</p>
+      <p class="example-body" style="margin-top:.9rem;">Recorre la ruta de conquista de Pedro de Alvarado para preguntar cómo esa historia sigue viva en el territorio guatemalteco hoy.</p>
+      <p class="example-footnote">Mentor de Caxitlán en el taller "El Largo Aliento", Plataforma Guadalajara</p>
+    </div>
+  </section>
+
+  <!-- 05 — BRENNER — FOTO 1 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="01-brenner-tonatiuh-1.jpg">
+        <img src="images/01-brenner-tonatiuh-1.jpg" alt="Tonatiuh, Juan Brenner, fotografía 1" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Juan Brenner</span>
+          <span class="project">Tonatiuh, 2019</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 06 — BRENNER — FOTO 2 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="01-brenner-tonatiuh-2.jpg">
+        <img src="images/01-brenner-tonatiuh-2.jpg" alt="Tonatiuh, Juan Brenner, fotografía 2" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Juan Brenner</span>
+          <span class="project">Tonatiuh, 2019</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 07 — BRENNER — FOTO 3 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="01-brenner-tonatiuh-3.jpg">
+        <img src="images/01-brenner-tonatiuh-3.jpg" alt="Tonatiuh, Juan Brenner, fotografía 3" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Juan Brenner</span>
+          <span class="project">Tonatiuh, 2019</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 08 — EJEMPLO 2: YAEL MARTÍNEZ — INTRO -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">EJEMPLO 2</p>
+      <h2 class="example-name">Yael Martínez</h2>
+      <p class="example-project">La Casa que Sangra — Guerrero, México, 2013–2018</p>
+      <blockquote class="quote" style="margin-top:.9rem;">
+        Después de estos eventos, empecé a documentar a mi familia, y a las familias de otras personas desaparecidas, para capturar en fotografías la ruptura psicológica y emocional que provoca la pérdida de un familiar.
+        <span class="quote-attr">— Yael Martínez</span>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- 09 — MARTÍNEZ — FOTO 1 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="02-martinez-casa-sangra-1.jpg">
+        <img src="images/02-martinez-casa-sangra-1.jpg" alt="La Casa que Sangra, Yael Martínez, fotografía 1" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Yael Martínez</span>
+          <span class="project">La Casa que Sangra, 2013–2018</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 10 — MARTÍNEZ — FOTO 2 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="02-martinez-casa-sangra-2.jpg">
+        <img src="images/02-martinez-casa-sangra-2.jpg" alt="La Casa que Sangra, Yael Martínez, fotografía 2" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Yael Martínez</span>
+          <span class="project">La Casa que Sangra, 2013–2018</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 11 — MARTÍNEZ — FOTO 3 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="02-martinez-casa-sangra-3.jpg">
+        <img src="images/02-martinez-casa-sangra-3.jpg" alt="La Casa que Sangra, Yael Martínez, fotografía 3" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Yael Martínez</span>
+          <span class="project">La Casa que Sangra, 2013–2018</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 12 — EJEMPLO 3: KORAL CARBALLO — INTRO -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">EJEMPLO 3</p>
+      <h2 class="example-name">Koral Carballo</h2>
+      <p class="example-project">La Sangre Llama / Siempre Estuvimos Aquí — Veracruz, 2014–en curso</p>
+      <blockquote class="quote" style="margin-top:.9rem;">
+        La necesidad de buscarme a mí misma... esto ha significado descubrir la afrodescendencia, algo que siempre había estado conmigo y con mi familia, pero de lo que no se hablaba.
+        <span class="quote-attr">— Koral Carballo</span>
+      </blockquote>
+      <p class="example-footnote">Leica Women Foto Project Award, 2025 · proyecto en curso</p>
+    </div>
+  </section>
+
+  <!-- 13 — CARBALLO — FOTO 1 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="03-carballo-sangre-llama-1.jpg">
+        <img src="images/03-carballo-sangre-llama-1.jpg" alt="La Sangre Llama, Koral Carballo, fotografía 1" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Koral Carballo</span>
+          <span class="project">La Sangre Llama, 2014–en curso</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 14 — CARBALLO — FOTO 2 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="03-carballo-sangre-llama-2.jpg">
+        <img src="images/03-carballo-sangre-llama-2.jpg" alt="La Sangre Llama, Koral Carballo, fotografía 2" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Koral Carballo</span>
+          <span class="project">La Sangre Llama, 2014–en curso</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 15 — CARBALLO — FOTO 3 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="03-carballo-sangre-llama-3.jpg">
+        <img src="images/03-carballo-sangre-llama-3.jpg" alt="La Sangre Llama, Koral Carballo, fotografía 3" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Koral Carballo</span>
+          <span class="project">La Sangre Llama, 2014–en curso</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 16 — EJEMPLO DE CIERRE: CARTAGENA — INTRO -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">EJEMPLO DE CIERRE</p>
+      <h2 class="example-name">Alejandro Cartagena</h2>
+      <p class="example-project">Veinte años, una ciudad: Monterrey</p>
+      <blockquote class="quote" style="margin-top:.9rem;">
+        Está concentrado en el área metropolitana de Monterrey, que es donde vivo. He visto los cambios en la ciudad causados por la suburbanización... era teoría hecha visible para mí en mi propia ciudad.
+        <span class="quote-attr">— Alejandro Cartagena</span>
+      </blockquote>
+
+      <ol class="timeline">
+        <li><span class="year">2005</span><span class="label">Suburbia Mexicana</span></li>
+        <li><span class="year">2011</span><span class="label">Carpoolers</span></li>
+        <li><span class="year">2016</span><span class="label">Rivers of Power</span></li>
+        <li><span class="year">2020</span><span class="label">A Small Guide to Homeownership</span></li>
+        <li><span class="year">2025</span><span class="label">Retrospectiva, SFMOMA</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 17 — CARTAGENA — FOTO 1: SUBURBIA MEXICANA -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="04-cartagena-suburbia.jpg">
+        <img src="images/04-cartagena-suburbia.jpg" alt="Suburbia Mexicana, Alejandro Cartagena" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Alejandro Cartagena</span>
+          <span class="project">Suburbia Mexicana, 2005–2010</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 18 — CARTAGENA — FOTO 2: CARPOOLERS -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="05-cartagena-carpoolers.jpg">
+        <img src="images/05-cartagena-carpoolers.jpg" alt="Carpoolers, Alejandro Cartagena" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Alejandro Cartagena</span>
+          <span class="project">Carpoolers, 2011–2012</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 19 — CARTAGENA — FOTO 3: A SMALL GUIDE TO HOMEOWNERSHIP -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="06-cartagena-homeownership.jpg">
+        <img src="images/06-cartagena-homeownership.jpg" alt="A Small Guide to Homeownership, Alejandro Cartagena" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Alejandro Cartagena</span>
+          <span class="project">A Small Guide to Homeownership, 2020</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 20 — BISAGRA: SILENCIO -->
+  <section class="slide slide--center slide--narrow">
+    <div class="slide-inner">
+      <h2 class="display-lg">Un minuto en silencio.</h2>
+      <p class="lede" style="margin-top:1rem;">¿Por qué empecé a fotografiar esto? Todavía no lo compartas.</p>
+    </div>
+  </section>
+
+  <!-- 21 — EJERCICIO: MAPA DE PREGUNTAS -->
+  <section class="slide slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">EJERCICIO</p>
+      <h2 class="display-lg title-gap">Mapa de preguntas</h2>
+
+      <div class="step-block">
+        <span class="step-num">1</span>
+        <p>Escribe de 5 a 10 preguntas sobre el lugar donde vives. Elige la que más te llama.</p>
+      </div>
+      <div class="step-block">
+        <span class="step-num">2</span>
+        <p>Debajo, escribe por qué esa pregunta y no otra. ¿Qué tiene que ver contigo?</p>
+      </div>
+
+      <div class="panel-arena">
+        <p class="eyebrow">¿TE BLOQUEAS? PRUEBA CON:</p>
+        <ul class="simple-list">
+          <li>¿Qué se pierde cuando alguien se va de Colima?</li>
+          <li>¿Qué queda de un oficio cuando ya casi nadie lo hace?</li>
+          <li>¿Qué historia cuenta tu colonia que nadie más conoce?</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 22 — DISCUSIÓN GRUPAL -->
+  <section class="slide slide--center slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">DISCUSIÓN GRUPAL</p>
+      <h2 class="display-lg">¿Tema, o pregunta?</h2>
+    </div>
+  </section>
+
+  <!-- 23 — TAREA PARA LA SESIÓN 2 -->
+  <section class="slide slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">TAREA PARA LA SESIÓN 2</p>
+      <h2 class="display-lg title-gap">Sal a fotografiar</h2>
+      <ul class="simple-list">
+        <li>Desde la pregunta que elegiste hoy</li>
+        <li>Mínimo 30 fotografías</li>
+        <li>Sin editar, sin seleccionar — tráelas todas</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 24 — CIERRE: MAPA COLECTIVO -->
+  <section class="slide slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">ANTES DE IRNOS</p>
+      <h2 class="display-lg title-gap">Mapa colectivo de indagaciones</h2>
+      <p class="lede">Escribe tu pregunta en una tarjeta y colócala sobre el mapa, en el lugar donde vas a fotografiar.</p>
+    </div>
+  </section>
+
+  <!-- 25 — REFERENTES DE LA SEMANA -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">PARA EXPLORAR ESTA SEMANA</p>
+      <h2 class="display-md title-gap">Referentes</h2>
+      <ul class="ref-grid">
+        <li><strong>Melba Arellano</strong><span>Carretera Nacional</span></li>
+        <li><strong>Daniela Unger</strong><span>¿Cuánto viven las casas?</span></li>
+        <li><strong>Ingrid Hernández</strong><span>Under Construction — nos visita en la Sesión 3</span></li>
+        <li><strong>Ron Jude</strong><span>Emmett</span></li>
+        <li><strong>Gregory Halpern</strong><span>ZZYZX</span></li>
+        <li><strong>Mara Sánchez Renero</strong><span>El Cimarrón y su Fandango</span></li>
+        <li><strong>Cristina de Middel</strong><span>The Afronauts</span></li>
+        <li><strong>Diana Markosian</strong><span>Santa Barbara</span></li>
+        <li><strong>LaToya Ruby Frazier</strong><span>The Notion of Family</span></li>
+        <li><strong>Larry Sultan</strong><span>Pictures from Home</span></li>
+        <li><strong>Sohrab Hura</strong><span>Life is Elsewhere</span></li>
+        <li><strong>Nadia Sablin</strong><span>Aunties</span></li>
+        <li><strong>Tania Franco Klein</strong><span>Proceed to the Route</span></li>
+        <li><strong>Rahim Fortune</strong><span>I Can't Stand to See You Cry</span></li>
+        <li><strong>Richard Misrach</strong><span>Cancer Alley vs. Golden Gate</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 26 — CIERRE FINAL -->
+  <section class="slide slide--center portada">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">PUNTO DE PARTIDA</p>
+      <h2 class="display-lg">Nos vemos el 29 de septiembre</h2>
+      <p class="lede" style="margin-top:.9rem;">Sesión 2 — El territorio como material</p>
+    </div>
+  </section>
+
+</main>
+
+<div class="side-controls">
+  <button class="icon-btn" id="fsBtn" title="Pantalla completa (F)" aria-label="Pantalla completa">⛶</button>
+</div>
+
+<footer class="deck-footer">
+  <span class="coord">19.24°N · 103.72°O — COLIMA</span>
+  <nav class="tide-nav" id="tideNav" aria-label="Navegación de diapositivas"></nav>
+  <div style="display:flex; align-items:center; gap:.9rem;">
+    <span class="counter"><span id="current">01</span> — <span id="total">14</span></span>
+    <button class="nav-btn" id="prevBtn" aria-label="Diapositiva anterior">‹</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Siguiente diapositiva">›</button>
+  </div>
+</footer>
+
+<div class="hint-toast" id="hintToast">USA ← → O TOCA LOS BOTONES PARA NAVEGAR</div>
+
+<script>
+(function(){
+  var slides = document.querySelectorAll('.slide');
+  var total = slides.length;
+  var current = 0;
+
+  document.getElementById('total').textContent = String(total).padStart(2,'0');
+
+  // fill photo-frame filename hints from data-filename
+  document.querySelectorAll('.photo-frame').forEach(function(slot){
+    var hint = slot.querySelector('.hint');
+    if(hint){ hint.textContent = 'images/' + slot.getAttribute('data-filename'); }
+  });
+
+  // build tide-mark nav
+  var tideNav = document.getElementById('tideNav');
+  slides.forEach(function(s, i){
+    var btn = document.createElement('button');
+    btn.className = 'tide-mark';
+    btn.setAttribute('aria-label', 'Ir a la diapositiva ' + (i+1));
+    btn.addEventListener('click', function(){ goTo(i); });
+    tideNav.appendChild(btn);
+  });
+  var marks = tideNav.querySelectorAll('.tide-mark');
+
+  function render(){
+    slides.forEach(function(s, i){ s.classList.toggle('active', i === current); });
+    marks.forEach(function(m, i){ m.classList.toggle('active', i === current); });
+    document.getElementById('current').textContent = String(current+1).padStart(2,'0');
+  }
+
+  function goTo(i){
+    current = Math.max(0, Math.min(total - 1, i));
+    render();
+  }
+  function next(){ goTo(current + 1); }
+  function prev(){ goTo(current - 1); }
+
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', prev);
+
+  document.addEventListener('keydown', function(e){
+    switch(e.key){
+      case 'ArrowRight':
+      case ' ':
+      case 'PageDown':
+        e.preventDefault(); next(); break;
+      case 'ArrowLeft':
+      case 'PageUp':
+        e.preventDefault(); prev(); break;
+      case 'Home':
+        e.preventDefault(); goTo(0); break;
+      case 'End':
+        e.preventDefault(); goTo(total - 1); break;
+      case 'f':
+      case 'F':
+        toggleFullscreen(); break;
+    }
+  });
+
+  // click on left/right half of the deck to navigate (avoids interactive elements)
+  document.getElementById('deck').addEventListener('click', function(e){
+    if(e.target.closest('button') || e.target.closest('a')) return;
+    var w = window.innerWidth;
+    if(e.clientX > w * 0.6){ next(); }
+    else if(e.clientX < w * 0.4){ prev(); }
+  });
+
+  function toggleFullscreen(){
+    if(!document.fullscreenElement){
+      document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(function(){});
+    } else {
+      document.exitFullscreen && document.exitFullscreen();
+    }
+  }
+  document.getElementById('fsBtn').addEventListener('click', toggleFullscreen);
+
+  // fade out the usage hint after a few seconds
+  var toast = document.getElementById('hintToast');
+  setTimeout(function(){ toast.classList.add('gone'); }, 4500);
+
+  render();
+})();
+
+function handleImgError(img){
+  var slot = img.closest('.photo-frame');
+  if(!slot) return;
+  img.style.display = 'none';
+  slot.classList.add('missing');
+  var ph = slot.querySelector('.placeholder');
+  if(ph) ph.hidden = false;
+}
+</script>
+</body>
+</html>
