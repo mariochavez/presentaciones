@@ -69,3 +69,7 @@ yarn-debug.log*
 /public/uploads
 
 .DS_Store
+
+# Punto de Partida workshop
+/punto/guías/
+/punto/punto-partida-taller-completo.zip
