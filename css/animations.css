@@ -1,0 +1,253 @@
+/* animations.css - Animation definitions and applications */
+
+/* ===================================
+   Keyframe Definitions
+   =================================== */
+
+/* Fade in with upward movement */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(1.875rem); /* 30px */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Fade in with scale */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Slide in from left */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-1.875rem); /* -30px */
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Slide in from right */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(1.875rem); /* 30px */
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Fade in only */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Subtle bounce */
+@keyframes subtleBounce {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    60% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Rotate in */
+@keyframes rotateIn {
+    from {
+        opacity: 0;
+        transform: rotate(-10deg) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(0) scale(1);
+    }
+}
+
+/* ===================================
+   Animation Applications
+   =================================== */
+
+/* Headings - Scale animation */
+.slide.active h1,
+.slide.active h2 {
+    animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Subtitles - Fade up animation */
+.slide.active .subtitle {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+    opacity: 0;
+}
+
+/* URLs - Fade up with delay */
+.slide.active .url {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+    opacity: 0;
+}
+
+/* Author info - Fade up with more delay */
+.slide.active .author {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+    opacity: 0;
+}
+
+/* Browser mockup - Fade up animation */
+.slide.active .browser-mockup {
+    animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+    opacity: 0;
+}
+
+/* Code blocks - Slide in from left */
+.slide.active .code-block {
+    animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+    opacity: 0;
+}
+
+/* Image containers - Scale animation */
+.slide.active .image-container {
+    animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+    opacity: 0;
+}
+
+/* ===================================
+   Special Slide Animations
+   =================================== */
+
+/* Title slide (slide-1) - Staggered animations */
+.slide-1.active h1 {
+    animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide-1.active .author {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+    opacity: 0;
+}
+
+/* Code block lines - Staggered animation */
+.slide.active .code-block div {
+    animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+}
+
+.slide.active .code-block div:nth-child(1) { animation-delay: 0.4s; }
+.slide.active .code-block div:nth-child(2) { animation-delay: 0.5s; }
+.slide.active .code-block div:nth-child(3) { animation-delay: 0.6s; }
+.slide.active .code-block div:nth-child(4) { animation-delay: 0.7s; }
+.slide.active .code-block div:nth-child(5) { animation-delay: 0.8s; }
+.slide.active .code-block div:nth-child(6) { animation-delay: 0.9s; }
+
+/* ===================================
+   Navigation Animations
+   =================================== */
+
+/* Position indicator fade */
+.position-indicator {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Nav hint subtle animation */
+.nav-hint {
+    animation: fadeIn 1s ease-in-out 1s forwards;
+    opacity: 0;
+}
+
+/* Author info animation */
+.author-info {
+    animation: fadeIn 1s ease-in-out 1.2s forwards;
+    opacity: 0;
+}
+
+/* ===================================
+   Interactive Animations
+   =================================== */
+
+/* Hover effects for links */
+.author-info a {
+    transition: color 0.3s ease;
+}
+
+/* Browser dots hover effect */
+.browser-dots .dot {
+    transition: transform 0.2s ease;
+}
+
+.browser-dots:hover .dot {
+    transform: scale(1.2);
+}
+
+/* ===================================
+   Page Transition Animations
+   =================================== */
+
+/* Slide exit animation (when removing active class) */
+.slide.exiting {
+    animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+}
+
+/* ===================================
+   Loading Animation (Optional)
+   =================================== */
+
+/* Initial page load animation */
+@keyframes initialLoad {
+    0% {
+        opacity: 0;
+        transform: translateY(1.25rem);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body {
+    animation: initialLoad 0.6s ease-out;
+}
+
+/* ===================================
+   Reduced Motion Support
+   =================================== */
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

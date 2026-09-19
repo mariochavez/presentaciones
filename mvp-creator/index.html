@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en" data-direction="forward" data-transition="content">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MVP Discovery Workflow — maquina.app</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── TOKENS ─────────────────────────────────────────────────── */
+    :root {
+      --bg:          #0b0b0b;
+      --surface:     #161616;
+      --surface-2:   #1e1e1e;
+      --border:      #282828;
+      --border-2:    #333;
+      --text:        #f5f4f0;
+      --text-muted:  #a09c96;
+      --text-dim:    #524f4a;
+      --accent:      #f97316;
+      --accent-glow: rgba(249,115,22,0.12);
+      --code-bg:     #131313;
+      --code-text:   #e2ddd8;
+      --green:       #4ade80;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── DECK SHELL ─────────────────────────────────────────────── */
+    .deck { width: 100vw; height: 100vh; position: relative; }
+
+    /* ── SLIDES ─────────────────────────────────────────────────── */
+    /* Only the active slide is visible; VT API handles animation */
+    .slide {
+      display: none;
+      position: absolute; inset: 0;
+      flex-direction: column;
+    }
+    .slide.active {
+      display: flex;
+      view-transition-name: active-slide;
+    }
+
+    /* ── VIEW TRANSITIONS ───────────────────────────────────────── */
+
+    /* Suppress the default root cross-fade — we're controlling everything */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+
+    /* — CONTENT: forward (old exits left, new enters from right) — */
+    [data-direction="forward"][data-transition="content"]::view-transition-old(active-slide) {
+      animation: 360ms cubic-bezier(0.4, 0, 0.2, 1) both vt-slide-out-left;
+    }
+    [data-direction="forward"][data-transition="content"]::view-transition-new(active-slide) {
+      animation: 360ms cubic-bezier(0.4, 0, 0.2, 1) both vt-slide-in-right;
+    }
+
+    /* — CONTENT: backward (old exits right, new enters from left) — */
+    [data-direction="backward"][data-transition="content"]::view-transition-old(active-slide) {
+      animation: 360ms cubic-bezier(0.4, 0, 0.2, 1) both vt-slide-out-right;
+    }
+    [data-direction="backward"][data-transition="content"]::view-transition-new(active-slide) {
+      animation: 360ms cubic-bezier(0.4, 0, 0.2, 1) both vt-slide-in-left;
+    }
+
+    /* — SECTION BREAK: zoom + fade — */
+    [data-transition="section"]::view-transition-old(active-slide) {
+      animation: 420ms cubic-bezier(0.4, 0, 0.2, 1) both vt-section-out;
+    }
+    [data-transition="section"]::view-transition-new(active-slide) {
+      animation: 420ms cubic-bezier(0.16, 1, 0.3, 1) both vt-section-in;
+    }
+
+    /* Keyframes */
+    @keyframes vt-slide-out-left  { to   { transform: translateX(-72px); opacity: 0; } }
+    @keyframes vt-slide-in-right  { from { transform: translateX(72px);  opacity: 0; } }
+    @keyframes vt-slide-out-right { to   { transform: translateX(72px);  opacity: 0; } }
+    @keyframes vt-slide-in-left   { from { transform: translateX(-72px); opacity: 0; } }
+    @keyframes vt-section-out     { to   { opacity: 0; transform: scale(0.95); filter: blur(4px); } }
+    @keyframes vt-section-in      { from { opacity: 0; transform: scale(1.04); filter: blur(2px); } }
+
+    /* ── CHROME ─────────────────────────────────────────────────── */
+    .progress {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 2px; background: var(--border); z-index: 200;
+    }
+    .progress-fill {
+      height: 100%; background: var(--accent);
+      transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .counter {
+      position: fixed; bottom: 14px; right: 20px;
+      font-size: 11px; color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.06em; z-index: 200;
+    }
+
+    .nav-hint {
+      position: fixed; bottom: 14px; left: 20px;
+      display: flex; gap: 20px; z-index: 200;
+      font-size: 11px; color: var(--text-dim);
+      align-items: center;
+    }
+    kbd {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--surface); border: 1px solid var(--border-2);
+      padding: 1px 5px; border-radius: 3px;
+      font-size: 10px; color: var(--text-muted);
+    }
+
+    /* ── ATOMS ──────────────────────────────────────────────────── */
+    .logo { height: 32px; opacity: 0.92; }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-dim);
+    }
+
+    .tag-label {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; color: var(--accent);
+      border: 1px solid rgba(249,115,22,0.3);
+      padding: 5px 14px; border-radius: 3px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    .accent { color: var(--accent); }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82em;
+      background: rgba(255,255,255,0.06);
+      padding: 2px 6px; border-radius: 3px;
+      color: var(--accent);
+    }
+
+    .divider {
+      width: 48px; height: 2px;
+      background: var(--accent); border-radius: 2px;
+      margin-bottom: 28px;
+    }
+
+    /* ── LAYOUT TYPES ───────────────────────────────────────────── */
+
+    /* COVER */
+    .slide-cover {
+      justify-content: center; align-items: center; text-align: center;
+      overflow: hidden; gap: 0;
+    }
+    .slide-cover::before {
+      content: '';
+      position: absolute; width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .cover-logo { margin-bottom: 56px; }
+    .cover-eyebrow { margin-bottom: 20px; }
+    .cover-title {
+      font-size: clamp(36px, 5.5vw, 68px);
+      font-weight: 700; letter-spacing: -0.025em; line-height: 1.05;
+      margin-bottom: 18px;
+    }
+    .cover-subtitle {
+      font-size: clamp(16px, 1.8vw, 22px);
+      color: var(--text-muted); font-weight: 300;
+      margin-bottom: 56px;
+    }
+    .cover-presenter {
+      font-size: 15px; color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      padding-top: 20px; display: flex; flex-direction: column; gap: 4px;
+    }
+    .cover-presenter strong { color: var(--text-muted); font-weight: 500; }
+
+    /* SECTION BREAK */
+    .slide-section {
+      justify-content: center; padding: 72px 96px; overflow: hidden;
+    }
+    .slide-section::after {
+      content: '';
+      position: absolute; right: -120px; top: -80px;
+      width: 520px; height: 520px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(249,115,22,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .section-phase { margin-bottom: 14px; }
+    .section-title {
+      font-size: clamp(44px, 6.5vw, 84px);
+      font-weight: 700; letter-spacing: -0.035em; line-height: 0.95;
+      margin-bottom: 28px;
+    }
+    .section-desc {
+      font-size: clamp(16px, 1.8vw, 22px);
+      color: var(--text-muted); font-weight: 300; max-width: 520px;
+      line-height: 1.65;
+    }
+
+    /* CONTENT */
+    .slide-content { padding: 40px 68px; }
+
+    .slide-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 28px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .slide-title {
+      font-size: clamp(24px, 2.8vw, 36px);
+      font-weight: 600; letter-spacing: -0.015em;
+    }
+
+    /* CLOSING */
+    .slide-closing {
+      justify-content: center; align-items: center; text-align: center;
+      overflow: hidden;
+    }
+    .slide-closing::before {
+      content: '';
+      position: absolute; width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    /* ── LAYOUT HELPERS ─────────────────────────────────────────── */
+    .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; flex: 1; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; flex: 1; }
+
+    /* ── COMPONENTS ─────────────────────────────────────────────── */
+
+    /* Phase overview cards */
+    .phase-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; flex: 1; }
+    .phase-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 24px; display: flex; flex-direction: column;
+    }
+    .phase-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; color: var(--accent); letter-spacing: 0.14em;
+      text-transform: uppercase; margin-bottom: 14px;
+    }
+    .phase-name { font-size: 20px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.01em; }
+    .phase-skill {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      color: var(--text-dim); background: rgba(255,255,255,0.04);
+      padding: 4px 10px; border-radius: 3px; display: inline-block; margin-bottom: 14px;
+    }
+    .phase-desc { font-size: 14px; color: var(--text-muted); line-height: 1.65; flex: 1; }
+    .phase-outputs {
+      margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);
+      list-style: none;
+    }
+    .phase-outputs li {
+      font-size: 13px; color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace; padding: 3px 0;
+    }
+    .phase-outputs li::before { content: '→ '; color: var(--accent); }
+
+    /* Card */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 22px;
+    }
+    .card.accent-top { border-top: 2px solid var(--accent); }
+    .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+    .card p  { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    .card-list { list-style: none; margin-top: 10px; }
+    .card-list li {
+      font-size: 14px; color: var(--text-muted); padding: 4px 0 4px 16px; position: relative;
+    }
+    .card-list li::before { content: '—'; position: absolute; left: 0; color: var(--text-dim); }
+
+    /* Highlight box */
+    .highlight {
+      background: rgba(249,115,22,0.05);
+      border: 1px solid rgba(249,115,22,0.18);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px; padding: 14px 18px;
+      font-size: 14px; color: var(--text-muted); line-height: 1.6;
+    }
+    .highlight strong {
+      display: block; font-size: 11px; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px;
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      text-align: left; font-size: 11px; font-weight: 500;
+      color: var(--text-dim); text-transform: uppercase;
+      letter-spacing: 0.09em; padding: 0 0 10px; border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      color: var(--text-muted); vertical-align: top; line-height: 1.5;
+    }
+    td:first-child { color: var(--text); font-weight: 500; padding-right: 20px; }
+
+    .table-mono td:first-child {
+      font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent);
+    }
+
+    /* Numbered item list */
+    .item-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .item-list li { display: flex; gap: 14px; align-items: flex-start; }
+    .item-badge {
+      min-width: 30px; height: 30px;
+      background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.22);
+      border-radius: 4px; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; color: var(--accent);
+      font-family: 'JetBrains Mono', monospace; flex-shrink: 0;
+    }
+    .item-badge.check { background: rgba(74,222,128,0.07); border-color: rgba(74,222,128,0.2); color: var(--green); }
+    .item-body strong { display: block; font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .item-body span   { font-size: 13px; color: var(--text-muted); }
+
+    /* Flow bar */
+    .flow { display: flex; align-items: flex-start; gap: 0; margin: 16px 0 20px; }
+    .flow-step { flex: 1; text-align: center; }
+    .flow-eyebrow {
+      font-size: 11px; color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .flow-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; padding: 12px 8px; font-size: 14px; font-weight: 500;
+    }
+    .flow-box.lit { border-color: var(--accent); color: var(--accent); background: rgba(249,115,22,0.06); }
+    .flow-arrow { color: var(--text-dim); font-size: 16px; padding: 0 4px; flex: 0; margin-top: 30px; }
+
+    /* Workflow phase columns */
+    .wf-phases { display: flex; flex: 1; }
+    .wf-col {
+      flex: 1; padding: 18px 16px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+    .wf-col:first-child { border-left: 1px solid var(--border); border-radius: 6px 0 0 6px; }
+    .wf-col:last-child  { border-radius: 0 6px 6px 0; }
+    .wf-col h4 {
+      font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-bottom: 10px;
+    }
+    .wf-col p { font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-bottom: 8px; }
+    .wf-col ul { list-style: none; }
+    .wf-col li { font-size: 13px; color: var(--text-dim); padding: 2px 0; }
+    .wf-col li::before { content: '· '; color: var(--accent); }
+
+    /* Priority steps */
+    .priority-steps { display: flex; flex-direction: column; gap: 8px; }
+    .pstep {
+      display: flex; gap: 14px; align-items: center;
+      padding: 13px 16px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 6px;
+    }
+    .pstep.first { border-color: rgba(249,115,22,0.35); background: rgba(249,115,22,0.04); }
+    .pstep-num {
+      min-width: 26px; height: 26px; border-radius: 3px; background: var(--border-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted); flex-shrink: 0;
+    }
+    .pstep.first .pstep-num { background: rgba(249,115,22,0.15); color: var(--accent); }
+    .pstep-name { font-size: 15px; font-weight: 500; flex: 1; }
+    .pstep-desc { font-size: 13px; color: var(--text-dim); text-align: right; }
+
+    /* Stack grid */
+    .stack-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stack-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 13px 16px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 6px;
+    }
+    .stack-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+    .stack-value {
+      font-size: 14px; font-weight: 500;
+      font-family: 'JetBrains Mono', monospace; color: var(--text);
+    }
+
+    /* Code block */
+    .code-block {
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 20px 22px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px; color: var(--code-text); line-height: 1.75;
+    }
+    .code-block .cm { color: var(--accent); }
+    .code-block .cs { color: #86efac; }
+    .code-block .cd { color: var(--text-dim); }
+
+    /* Social links */
+    .social-links { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    .social-link {
+      text-decoration: none; color: var(--text-muted); font-size: 17px;
+      display: flex; align-items: center; gap: 10px;
+      transition: color 0.2s;
+    }
+    .social-link:hover { color: var(--text); }
+
+    /* Scrollable area for dense slides */
+    .scroll-content { overflow-y: auto; flex: 1; }
+    .scroll-content::-webkit-scrollbar { width: 4px; }
+    .scroll-content::-webkit-scrollbar-track { background: transparent; }
+    .scroll-content::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ─────────────────────────────── 01: COVER -->
+  <div class="slide slide-cover active" data-index="0">
+    <div class="cover-logo">
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="cover-eyebrow">
+      <span class="tag-label">Workflow Guide</span>
+    </div>
+    <h1 class="cover-title">MVP Discovery<br>Workflow</h1>
+    <p class="cover-subtitle">From idea to implementation-ready specifications</p>
+    <div class="cover-presenter">
+      <strong>Mario Alberto Chávez</strong>
+      Rails architect &amp; AI toolmaker — Colima, México
+      maquina.app
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 02: OVERVIEW -->
+  <div class="slide slide-content" data-index="1">
+    <div class="slide-header">
+      <span class="slide-title">The <span class="accent">three-phase</span> workflow</span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="phase-grid">
+      <div class="phase-card">
+        <div class="phase-badge">Phase 01</div>
+        <div class="phase-name">Discovery &amp; Documentation</div>
+        <div class="phase-skill">mvp-creator</div>
+        <p class="phase-desc">Understand the market, define the product, and produce five foundation documents that every subsequent phase references.</p>
+        <ul class="phase-outputs">
+          <li>RESEARCH_REPORT.md</li>
+          <li>MVP_BUSINESS_PLAN.md</li>
+          <li>BRAND_GUIDE.md</li>
+          <li>TECHNICAL_GUIDE.md</li>
+          <li>CLAUDE.md + setup files</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-badge">Phase 02</div>
+        <div class="phase-name">Design &amp; Brand</div>
+        <div class="phase-skill">frontend-design</div>
+        <p class="phase-desc">Translate the approved brand guide into a living voice document and visual mockups that SDD references as ground truth.</p>
+        <ul class="phase-outputs">
+          <li>BRAND_VOICE.md</li>
+          <li>UI mockups (HTML/CSS)</li>
+          <li>Design rationale notes</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-badge">Phase 03</div>
+        <div class="phase-name">Spec-Driven Development</div>
+        <div class="phase-skill">spec-driven-development</div>
+        <p class="phase-desc">Convert approved MVP documents into formal specs, task breakdowns, and implementation prompts ready for Claude Code.</p>
+        <ul class="phase-outputs">
+          <li>sdd/product/ planning</li>
+          <li>sdd/standards/index.yml</li>
+          <li>sdd/specs/ + tasks.md</li>
+          <li>.claude/commands/</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 03: SECTION — PHASE 1 -->
+  <div class="slide slide-section" data-index="2" data-type="section">
+    <div class="section-phase mono">Phase 01</div>
+    <div class="divider"></div>
+    <h2 class="section-title">MVP<br>Creator</h2>
+    <p class="section-desc">Research the market, ask the right questions, and generate five foundation documents — one approved at a time.</p>
+  </div>
+
+  <!-- ─────────────────────────────── 04: TRIGGER PROMPT -->
+  <div class="slide slide-content" data-index="3">
+    <div class="slide-header">
+      <span class="slide-title">Writing the <span class="accent">trigger prompt</span></span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="two-col">
+      <div>
+        <table class="table-mono" style="margin-bottom:20px">
+          <thead><tr><th>Include</th><th>Why it matters</th></tr></thead>
+          <tbody>
+            <tr><td>Business problem</td><td>Anchors research to real user needs</td></tr>
+            <tr><td>Target users + region</td><td>Shapes language, I18n, and tone strategy</td></tr>
+            <tr><td>Core differentiator</td><td>Prevents generic competitor analysis</td></tr>
+            <tr><td>Candidate app name</td><td>Grounds brand and technical docs</td></tr>
+            <tr><td>Competitor URLs</td><td>Directs research to the right market</td></tr>
+            <tr><td>What NOT to be</td><td>Shapes output away from generic results</td></tr>
+          </tbody>
+        </table>
+        <div class="highlight">
+          <strong>⚠ Anti-pattern</strong>
+          Don't open with a tech stack. Starting with <code>"I need a Rails 8.1 app that..."</code> signals a technical task and short-circuits the research and discovery phases.
+        </div>
+      </div>
+      <div>
+        <div style="height:100%;display:flex;flex-direction:column;justify-content:center;gap:24px">
+          <div>
+            <div style="font-size:52px;color:var(--text-dim);margin-bottom:14px">✦</div>
+            <h3 style="font-size:20px;font-weight:600;margin-bottom:10px">The golden rule</h3>
+            <p style="font-size:15px;color:var(--text-muted);line-height:1.65">Lead with the <strong style="color:var(--text)">business problem and the people.</strong> Defer technical decisions to the discovery questions.</p>
+            <p style="font-size:14px;color:var(--text-dim);line-height:1.6;margin-top:10px">The skill is designed to ask you the right questions — front-loading implementation details bypasses the research phase that makes every document better.</p>
+          </div>
+          <div class="code-block" style="font-size:13px">
+            <span class="cd">Example trigger</span><br><br>
+            <span class="cs">"Help me create an MVP for [business problem].<br>
+            Target users: [region + persona].<br>
+            Research: [competitor URLs]."</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 05: RESEARCH & DISCOVERY -->
+  <div class="slide slide-content" data-index="4">
+    <div class="slide-header">
+      <span class="slide-title">Research &amp; <span class="accent">discovery</span></span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="mono" style="margin-bottom:10px">Step 1 — Research</div>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:14px">Claude searches 2–5 competitors and presents findings before asking any questions. Review carefully before approving.</p>
+        <div class="card" style="margin-bottom:14px">
+          <h3>During the research review</h3>
+          <ul class="card-list">
+            <li>Correct any misidentified competitors</li>
+            <li>Flag market gaps Claude may have missed</li>
+            <li>Confirm or adjust the differentiator</li>
+            <li>Validate the feature comparison matrix</li>
+          </ul>
+        </div>
+        <div class="highlight">
+          <strong>Rule</strong>
+          Research is the foundation. Even a quick review improves every subsequent document.
+        </div>
+      </div>
+      <div>
+        <div class="mono" style="margin-bottom:10px">Step 2 — Discovery Questions</div>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:16px">Answer completely — vague answers produce vague documents. If you don't have an answer, ask Claude to propose options.</p>
+        <ul class="item-list">
+          <li><div class="item-badge">01</div><div class="item-body"><strong>App name and meaning</strong><span>If multilingual — what does it mean?</span></div></li>
+          <li><div class="item-badge">02</div><div class="item-body"><strong>Core problem in one sentence</strong><span>The clearer the better</span></div></li>
+          <li><div class="item-badge">03</div><div class="item-body"><strong>Primary user persona</strong><span>Demographics, behaviors, pain points</span></div></li>
+          <li><div class="item-badge">04</div><div class="item-body"><strong>Geographic focus + constraints</strong><span>Affects language, payments, API availability</span></div></li>
+          <li><div class="item-badge">05</div><div class="item-body"><strong>Core differentiator</strong><span>What makes this different from what you saw</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 06: FIVE DOCUMENTS -->
+  <div class="slide slide-content" data-index="5">
+    <div class="slide-header">
+      <span class="slide-title">The <span class="accent">five documents</span></span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Document</th>
+          <th>Contents</th>
+          <th>What to review</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">RESEARCH_REPORT.md</td>
+          <td>Competitor analysis, feature matrix, market opportunities, sources</td>
+          <td>Competitor accuracy, gap analysis</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">MVP_BUSINESS_PLAN.md</td>
+          <td>Vision, user personas, core features, user flows, success metrics</td>
+          <td>Problem statement, feature scope boundaries</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">BRAND_GUIDE.md</td>
+          <td>Logo SVGs, color palette, typography, Tailwind <code>@theme</code> config</td>
+          <td>Color palette, logo concept, type pairing</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">TECHNICAL_GUIDE.md</td>
+          <td>Data models, Rails patterns, I18n strategy, architecture decisions</td>
+          <td>Multi-tenancy model, data relationships</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">CLAUDE.md + setup</td>
+          <td>Project context, MCP config, <code>.claudeignore</code>, custom commands</td>
+          <td>Commands, MCP server configuration</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight" style="margin-top:20px">
+      <strong>Rule</strong>
+      Review and approve each document before requesting the next. Don't batch them — each document informs the one that follows. Don't skip MVP Creator.
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 07: SECTION — PHASE 2 -->
+  <div class="slide slide-section" data-index="6" data-type="section">
+    <div class="section-phase mono">Phase 02</div>
+    <div class="divider"></div>
+    <h2 class="section-title">Design<br>&amp; Brand</h2>
+    <p class="section-desc">Two deliverables. One defines how the app speaks. The other defines how it looks. Both inform every SDD spec that follows.</p>
+  </div>
+
+  <!-- ─────────────────────────────── 08: BRAND VOICE -->
+  <div class="slide slide-content" data-index="7">
+    <div class="slide-header">
+      <span class="slide-title">The <span class="accent">brand voice</span> document</span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <h3>Brand Guide vs. Brand Voice</h3>
+          <p>The Brand Guide defines <strong>visual identity.</strong> The Voice document defines <strong>how the app speaks.</strong><br>They are separate deliverables — generate them in that order.</p>
+        </div>
+        <div class="mono" style="margin-bottom:8px">Include in your prompt</div>
+        <table>
+          <tbody>
+            <tr><td>Reference brand guide</td><td>Keeps voice consistent with visual identity</td></tr>
+            <tr><td>Emotional territory</td><td>"Economical, deliberate" beats "professional"</td></tr>
+            <tr><td>The relationship mediated</td><td>Who speaks to whom, in what context</td></tr>
+            <tr><td>Stylistic reference</td><td>Name a publication or person — not adjectives</td></tr>
+            <tr><td>Explicit anti-patterns</td><td>What the voice must never sound like</td></tr>
+            <tr><td>Spanish + English if LATAM</td><td>Both languages, examples side by side</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div style="height:100%;display:flex;flex-direction:column;justify-content:center;gap:20px">
+          <div>
+            <div style="font-size:40px;color:var(--text-dim);margin-bottom:10px">✎</div>
+            <h3 style="font-size:18px;font-weight:600;margin-bottom:8px">The key principle</h3>
+            <p style="font-size:14px;color:var(--text-muted);line-height:1.65">Give Claude <strong style="color:var(--text)">a person to embody,</strong> not just adjectives to match.</p>
+          </div>
+          <div>
+            <div class="mono" style="margin-bottom:6px;color:var(--green)">✓ Specific</div>
+            <div class="card" style="margin-bottom:12px">
+              <p style="font-size:13px">"Write it as if a photographer who edits a small literary journal sat down to define how the app speaks. Someone who has opinions about punctuation."</p>
+            </div>
+            <div class="mono" style="margin-bottom:6px;color:var(--text-dim)">✗ Vague</div>
+            <div class="card">
+              <p style="font-size:13px;color:var(--text-dim)">"Professional, caring about photography."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 09: UI MOCKS -->
+  <div class="slide slide-content" data-index="8">
+    <div class="slide-header">
+      <span class="slide-title">UI mocks — <span class="accent">screen priority</span></span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="two-col">
+      <div>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.6;margin-bottom:20px">Always mock in this order. The product's first impression matters more than the authenticated dashboard.</p>
+        <div class="priority-steps">
+          <div class="pstep first"><div class="pstep-num">01</div><div class="pstep-name">Unauthenticated entry point</div><div class="pstep-desc">First impression</div></div>
+          <div class="pstep"><div class="pstep-num">02</div><div class="pstep-name">Core action screen</div><div class="pstep-desc">Why they return</div></div>
+          <div class="pstep"><div class="pstep-num">03</div><div class="pstep-name">Critical interaction</div><div class="pstep-desc">Like, comment, download</div></div>
+          <div class="pstep"><div class="pstep-num">04</div><div class="pstep-name">Management view</div><div class="pstep-desc">Authenticated, creates/organizes</div></div>
+          <div class="pstep"><div class="pstep-num">05</div><div class="pstep-name">Supporting screens</div><div class="pstep-desc">Settings, secondary flows</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="mono" style="margin-bottom:8px">Prompt elements</div>
+        <table style="margin-bottom:20px">
+          <tbody>
+            <tr><td>Brand palette + typography</td><td>Pass explicitly — prevents skill inventing its own</td></tr>
+            <tr><td>Screens in priority order</td><td>Unauthenticated always first</td></tr>
+            <tr><td>Frame each screen</td><td>Who sees it, when, what they need to feel</td></tr>
+            <tr><td>Real placeholder content</td><td>No Lorem Ipsum — forces realistic layouts</td></tr>
+            <tr><td>Aesthetic direction</td><td>Name a person or aesthetic to embody</td></tr>
+            <tr><td>Anti-patterns list</td><td>Equally important as what to aim for</td></tr>
+          </tbody>
+        </table>
+        <div class="highlight">
+          <strong>Key phrase that works</strong>
+          "Designed by someone who photographs, not someone who ships dashboards."
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 10: SECTION — PHASE 3 -->
+  <div class="slide slide-section" data-index="9" data-type="section">
+    <div class="section-phase mono">Phase 03</div>
+    <div class="divider"></div>
+    <h2 class="section-title">Spec-Driven<br>Development</h2>
+    <p class="section-desc">Convert approved MVP documents into formal specs, task breakdowns, and implementation prompts ready for Claude Code.</p>
+  </div>
+
+  <!-- ─────────────────────────────── 11: INITIALIZE SDD -->
+  <div class="slide slide-content" data-index="10">
+    <div class="slide-header">
+      <span class="slide-title"><span class="accent">Initialize</span> SDD</span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="mono" style="margin-bottom:8px">Transition prompt</div>
+        <div class="code-block" style="margin-bottom:18px">
+          <span class="cs">"Initialize SDD using the MVP documents<br>
+          we created. Convert:<br></span>
+          <span class="cm">- Business Plan</span>   <span class="cd">→ mission.md + roadmap.md</span><br>
+          <span class="cm">- Technical Guide</span> <span class="cd">→ tech-stack.md + standards/backend/</span><br>
+          <span class="cm">- Brand Guide</span>     <span class="cd">→ standards/frontend/</span><span class="cs">"</span>
+        </div>
+        <div class="highlight" style="margin-bottom:12px">
+          <strong>Prioritize ruthlessly</strong>
+          Review <code>mission.md</code> and <code>roadmap.md</code> carefully after they're generated. This is the moment to cut scope. Not every Business Plan feature belongs in v1.
+        </div>
+        <div class="highlight">
+          <strong>✦ Also creates</strong>
+          <code>init_sdd.sh</code> writes <code>.claude/commands/sdd-*.md</code> — slash commands (<code>/sdd-shape</code>, <code>/sdd-tasks</code>, <code>/sdd-status</code>, etc.) become available in Claude Code immediately after init.
+        </div>
+      </div>
+      <div>
+        <div class="mono" style="margin-bottom:8px">Document mapping</div>
+        <table>
+          <thead><tr><th>From MVP Creator</th><th>To SDD</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">MVP_BUSINESS_PLAN.md</td>
+              <td>mission.md, roadmap.md</td>
+            </tr>
+            <tr>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">TECHNICAL_GUIDE.md</td>
+              <td>tech-stack.md, standards/backend/</td>
+            </tr>
+            <tr>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">BRAND_GUIDE.md</td>
+              <td>standards/frontend/</td>
+            </tr>
+            <tr>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">BRAND_VOICE.md</td>
+              <td>standards/frontend/voice</td>
+            </tr>
+            <tr>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">UI Mockups</td>
+              <td>specs/[feature]/planning/visuals/</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 12: FEATURE WORKFLOW -->
+  <div class="slide slide-content" data-index="11">
+    <div class="slide-header">
+      <span class="slide-title">Feature <span class="accent">workflow</span></span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="flow" style="margin-bottom:20px">
+      <div class="flow-step">
+        <div class="flow-eyebrow">01</div>
+        <div class="flow-box lit">Shape</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-eyebrow">02</div>
+        <div class="flow-box">Spec</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-eyebrow">03</div>
+        <div class="flow-box">Tasks</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-eyebrow">04</div>
+        <div class="flow-box">Implement</div>
+      </div>
+    </div>
+    <div class="wf-phases" style="margin-bottom:16px">
+      <div class="wf-col">
+        <h4>Shape</h4>
+        <p>4–6 questions, then codebase search.</p>
+        <ul><li>Write references.md</li><li>Inject standards.md</li><li>Visuals if needed</li></ul>
+      </div>
+      <div class="wf-col">
+        <h4>Spec</h4>
+        <p>Formal spec from requirements.</p>
+        <ul><li>Goal + User Stories</li><li>Requirements</li><li>Visual Design ref</li><li>Out of Scope</li></ul>
+      </div>
+      <div class="wf-col">
+        <h4>Tasks</h4>
+        <p>4 groups. Each embeds a self-contained Claude Code prompt.</p>
+        <ul><li>DB → Backend</li><li>Frontend → Integration</li><li>2–5 tests/group</li></ul>
+      </div>
+      <div class="wf-col">
+        <h4>Implement</h4>
+        <p>Hand spec folder to Claude Code.</p>
+        <ul><li>Full session or group-by-group</li><li>Prompts are independent</li><li>Parallel subagents OK</li></ul>
+      </div>
+    </div>
+    <div class="highlight">
+      <strong>Recommended feature order</strong>
+      Authentication first → Core data model → Core UX flow → Secondary features in priority order.
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 13: TASK GROUPS -->
+  <div class="slide slide-content" data-index="12">
+    <div class="slide-header">
+      <span class="slide-title">Task <span class="accent">groups</span></span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="three-col" style="margin-bottom:16px">
+      <div class="card accent-top">
+        <h3>01 — Database</h3>
+        <ul class="card-list" style="margin-top:10px">
+          <li>Migrations</li>
+          <li>Models + validations</li>
+          <li>Associations + scopes</li>
+          <li>Fixtures for testing</li>
+        </ul>
+      </div>
+      <div class="card accent-top">
+        <h3>02 — Backend</h3>
+        <ul class="card-list" style="margin-top:10px">
+          <li>Controllers + routes</li>
+          <li>Business logic (concerns)</li>
+          <li>Authorization (roles)</li>
+          <li>Background jobs</li>
+        </ul>
+      </div>
+      <div class="card accent-top">
+        <h3>03 — Frontend</h3>
+        <ul class="card-list" style="margin-top:10px">
+          <li>ERB views (Tailwind 4)</li>
+          <li>Turbo Frames / Streams</li>
+          <li>Stimulus controllers</li>
+          <li>maquina_components</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card accent-top" style="margin-bottom:16px">
+      <h3>04 — Integration</h3>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:10px">
+        <p style="font-size:13px;color:var(--text-muted)">System tests for full user flows</p>
+        <p style="font-size:13px;color:var(--text-muted)">Model unit tests</p>
+        <p style="font-size:13px;color:var(--text-muted)">Controller integration tests</p>
+        <p style="font-size:13px;color:var(--text-muted)">Edge cases &amp; error states</p>
+      </div>
+    </div>
+    <div class="highlight">
+      <strong>Pattern per group</strong>
+      Each group has a self-contained Claude Code prompt (standards + references embedded inline). Write tests → Implement → Verify. 2–5 tests per group, 10–20 total per feature.
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 14: TECHNICAL STACK -->
+  <div class="slide slide-content" data-index="13">
+    <div class="slide-header">
+      <span class="slide-title">Technical stack — <span class="accent">non-negotiable</span></span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="stack-grid">
+          <div class="stack-item"><span class="stack-label">Framework</span><span class="stack-value">Rails 8.x</span></div>
+          <div class="stack-item"><span class="stack-label">Frontend</span><span class="stack-value">Hotwire</span></div>
+          <div class="stack-item"><span class="stack-label">CSS</span><span class="stack-value">Tailwind 4</span></div>
+          <div class="stack-item"><span class="stack-label">Components</span><span class="stack-value">maquina_components</span></div>
+          <div class="stack-item"><span class="stack-label">Jobs</span><span class="stack-value">Solid Queue</span></div>
+          <div class="stack-item"><span class="stack-label">Cache</span><span class="stack-value">Solid Cache</span></div>
+          <div class="stack-item"><span class="stack-label">Auth</span><span class="stack-value">Rails 8 built-in</span></div>
+          <div class="stack-item"><span class="stack-label">Testing</span><span class="stack-value">Minitest + Fixtures</span></div>
+          <div class="stack-item"><span class="stack-label">Deploy</span><span class="stack-value">Kamal 2</span></div>
+          <div class="stack-item"><span class="stack-label">Database</span><span class="stack-value">SQLite → PostgreSQL</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="mono" style="margin-bottom:12px">Enforced patterns</div>
+        <ul class="item-list">
+          <li>
+            <div class="item-badge check">✓</div>
+            <div class="item-body"><strong>Rich domain models with concerns</strong><span>No service objects</span></div>
+          </li>
+          <li>
+            <div class="item-badge check">✓</div>
+            <div class="item-body"><strong>CRUD resources for everything</strong><span>No custom controller actions</span></div>
+          </li>
+          <li>
+            <div class="item-badge check">✓</div>
+            <div class="item-body"><strong>State as records, not booleans</strong><span>Explicit state transitions</span></div>
+          </li>
+          <li>
+            <div class="item-badge check">✓</div>
+            <div class="item-body"><strong>Money as integer cents</strong><span>No floats for currency</span></div>
+          </li>
+          <li>
+            <div class="item-badge check">✓</div>
+            <div class="item-body"><strong>Turbo Morph by default</strong><span>Frames used sparingly</span></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 15: TRIGGER REFERENCE -->
+  <div class="slide slide-content" data-index="14">
+    <div class="slide-header">
+      <span class="slide-title">Skill <span class="accent">trigger reference</span></span>
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="mono" style="margin-bottom:8px">Phase 1 — mvp-creator</div>
+        <table class="table-mono" style="margin-bottom:24px">
+          <tbody>
+            <tr><td>"Help me create an MVP for..."</td><td>Full workflow from scratch</td></tr>
+            <tr><td>"Research competitors for..."</td><td>Jumps to Phase 1 research</td></tr>
+            <tr><td>"Create a business plan for..."</td><td>Skips to docs if research done</td></tr>
+            <tr><td>"Continue with the brand guide"</td><td>Resumes previous work</td></tr>
+          </tbody>
+        </table>
+        <div class="mono" style="margin-bottom:8px">Phase 2 — frontend-design</div>
+        <table class="table-mono">
+          <tbody>
+            <tr><td>"Write a brand voice document..."</td><td>Voice deliverable</td></tr>
+            <tr><td>"Using the frontend-design skill..."</td><td>UI mocks + design rationale</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="mono" style="margin-bottom:8px">Phase 3 — spec-driven-development</div>
+        <table class="table-mono" style="margin-bottom:20px">
+          <tbody>
+            <tr><td>"Initialize SDD using the MVP docs..."</td><td>Creates sdd/ + .claude/commands/</td></tr>
+            <tr><td>/sdd-plan</td><td>Product docs from MVP or scratch</td></tr>
+            <tr><td>/sdd-shape</td><td>Shape: questions → references → standards → spec</td></tr>
+            <tr><td>/sdd-tasks</td><td>4 task groups with embedded prompts</td></tr>
+            <tr><td>/sdd-status</td><td>Check progress.yml + next action</td></tr>
+            <tr><td>/sdd-discover-standards</td><td>Extract tribal knowledge from codebase</td></tr>
+          </tbody>
+        </table>
+        <div class="highlight">
+          <strong>The handoff prompt</strong>
+          "I've completed the MVP documentation. Let's initialize SDD and convert these documents into the product planning format. Start with mission.md."
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── 16: CLOSING -->
+  <div class="slide slide-closing" data-index="15">
+    <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:0">
+      <div style="margin-bottom:48px">
+        <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo">
+      </div>
+      <h1 style="font-size:clamp(32px,4.5vw,60px);font-weight:700;letter-spacing:-0.025em;margin-bottom:10px">Thank you</h1>
+      <p style="font-size:18px;color:var(--text-muted);margin-bottom:8px">Mario Alberto Chávez</p>
+      <p style="font-size:15px;color:var(--text-dim);margin-bottom:44px">Rails architect &amp; AI toolmaker — Colima, México</p>
+      <div class="social-links">
+        <a href="https://maquina.app" class="social-link">◆ &nbsp;maquina.app</a>
+        <a href="https://mariochavez.io" class="social-link">✎ &nbsp;mariochavez.io</a>
+        <a href="https://github.com/mariochavez" class="social-link">☷ &nbsp;github.com/mariochavez</a>
+        <a href="https://x.com/mario_chavez" class="social-link">✖ &nbsp;@mario_chavez</a>
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-top:44px">Open source — all tools available at maquina.app</p>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Chrome -->
+<div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+<div class="counter" id="counter">1 / 16</div>
+<div class="nav-hint">
+  <span><kbd>←</kbd> <kbd>→</kbd> navigate</span>
+  <span><kbd>f</kbd> fullscreen</span>
+</div>
+
+<script>
+  const slides  = Array.from(document.querySelectorAll('.slide'));
+  const total   = slides.length;
+  let   current = 0;
+  let   busy    = false;
+
+  function updateChrome() {
+    document.getElementById('progressFill').style.width = ((current + 1) / total * 100) + '%';
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+  }
+
+  function isSection(idx) {
+    return slides[idx].dataset.type === 'section';
+  }
+
+  function swapSlide(from, to) {
+    slides[from].classList.remove('active');
+    slides[to].classList.add('active');
+    current = to;
+    updateChrome();
+  }
+
+  function goTo(n) {
+    if (busy || n < 0 || n >= total || n === current) return;
+
+    const direction = n > current ? 'forward' : 'backward';
+    const transitionType = (isSection(n) || isSection(current)) ? 'section' : 'content';
+
+    document.documentElement.dataset.direction  = direction;
+    document.documentElement.dataset.transition = transitionType;
+
+    // Use View Transitions API if available
+    if (document.startViewTransition) {
+      busy = true;
+      const vt = document.startViewTransition(() => swapSlide(current, n));
+      vt.finished.finally(() => { busy = false; });
+    } else {
+      // Graceful fallback: instant swap
+      swapSlide(current, n);
+    }
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+    if (e.key === 'ArrowRight' || e.key === ' ')  goTo(current + 1);
+    if (e.key === 'ArrowLeft')                     goTo(current - 1);
+    if (e.key === 'Home')                          goTo(0);
+    if (e.key === 'End')                           goTo(total - 1);
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    }
+  });
+
+  // Touch / swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(dx) > 50) goTo(dx > 0 ? current + 1 : current - 1);
+  }, { passive: true });
+
+  // Click zones: right half = forward, left half = backward
+  document.getElementById('deck').addEventListener('click', e => {
+    // Don't trigger on links or interactive elements
+    if (e.target.closest('a, button, input, textarea')) return;
+    const mid = window.innerWidth / 2;
+    goTo(e.clientX > mid ? current + 1 : current - 1);
+  });
+
+  updateChrome();
+</script>
+</body>
+</html>
