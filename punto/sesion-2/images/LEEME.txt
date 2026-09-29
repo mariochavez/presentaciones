@@ -9,10 +9,10 @@ vistazo qué falta antes de la sesión.
 Cada fotografía ocupa su propia diapositiva, casi a pantalla completa,
 con un cintillo abajo indicando fotógrafo/a y proyecto.
 
-RICHARD MISRACH — Desert Cantos
-  01-misrach-desert-cantos-1.jpg
-  01-misrach-desert-cantos-2.jpg
-  01-misrach-desert-cantos-3.jpg
+RICHARD MISRACH — Border Cantos (fotos) · Desert Cantos (contexto)
+  01-richard-misrach-border-cantos-1.jpg
+  01-richard-misrach-border-cantos-2.jpg
+  01-richard-misrach-border-cantos-3.jpg
 
 MARIO ALBERTO CHÁVEZ — Cofradía de Volcanes
   02-chavez-cofradia-volcanes-1.jpg
@@ -23,9 +23,9 @@ MARIO ALBERTO CHÁVEZ — Cofradía de Volcanes
   crecido, niebla, etc., ya que es justo el punto que ilustran)
 
 INGRID HERNÁNDEZ — Under Construction
-  03-hernandez-under-construction-1.jpg
-  03-hernandez-under-construction-2.jpg
-  03-hernandez-under-construction-3.jpg
+  03-ingrid-hernandez-under-construction-1.jpg
+  03-ingrid-hernandez-under-construction-2.jpg
+  03-ingrid-hernandez-under-construction-3.jpg
 
 RECOMENDACIONES
 ----------------
