@@ -1,0 +1,55 @@
+IMÁGENES PARA LA PRESENTACIÓN — SESIÓN 1
+==========================================
+
+Coloca aquí tus archivos con estos nombres exactos (respeta mayúsculas,
+minúsculas y guiones). Mientras un archivo no exista, esa diapositiva
+muestra un recuadro punteado con el nombre pendiente — así sabes de un
+vistazo qué falta antes de la sesión.
+
+Cada fotografía ocupa su propia diapositiva, casi a pantalla completa,
+con un cintillo abajo indicando fotógrafo/a y proyecto. Son 12 en total:
+
+JUAN BRENNER — Tonatiuh
+  01-brenner-tonatiuh-1.jpg
+  01-brenner-tonatiuh-2.jpg
+  01-brenner-tonatiuh-3.jpg
+
+YAEL MARTÍNEZ — La Casa que Sangra
+  02-martinez-casa-sangra-1.jpg
+  02-martinez-casa-sangra-2.jpg
+  02-martinez-casa-sangra-3.jpg
+
+KORAL CARBALLO — La Sangre Llama
+  03-carballo-sangre-llama-1.jpg
+  03-carballo-sangre-llama-2.jpg
+  03-carballo-sangre-llama-3.jpg
+
+ALEJANDRO CARTAGENA — tres proyectos distintos de su trabajo en Monterrey
+  04-cartagena-suburbia.jpg          (Suburbia Mexicana)
+  05-cartagena-carpoolers.jpg        (Carpoolers)
+  06-cartagena-homeownership.jpg     (A Small Guide to Homeownership)
+
+RECOMENDACIONES
+----------------
+- Formato: JPG, de preferencia horizontal (landscape) — es la orientación
+  más común en estos proyectos y la que usa el recuadro de referencia
+  cuando falta una imagen. Si alguna fotografía es vertical, no hay
+  problema: se muestra completa igual, sin recortar, solo un poco más
+  angosta en pantalla.
+- Tamaño: con que el lado más largo mida 1500–2000px es más que suficiente
+  para proyección; no hace falta resolución de impresión.
+- Todas las imágenes son de los proyectos de cada fotógrafo/a citado —
+  revisa que tengas derecho de uso para proyectarlas en un taller
+  (la mayoría de estos fotógrafos/as tienen las imágenes disponibles en
+  sus sitios o en PhMuseum/galerías con fines educativos; si tienes duda
+  sobre alguna, mejor omite esa imagen y deja el recuadro con el nombre
+  del proyecto — funciona igual como referencia visual para el grupo).
+- Para Brenner, Martínez y Carballo: elige 3 fotografías que muestren
+  variedad dentro del mismo proyecto (por ejemplo, un paisaje, un retrato
+  y un detalle) — el objetivo es que el grupo vea la diversidad de
+  imágenes que puede sostener una sola pregunta.
+
+Si agregas o quitas fotografías, solo necesitas cambiar el atributo
+data-filename y el src="images/..." correspondiente dentro de index.html,
+en la diapositiva de esa fotografía (busca el nombre de archivo con
+Ctrl+F / Cmd+F para encontrarla rápido).
