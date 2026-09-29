@@ -353,6 +353,14 @@
   }
   .hint-toast.gone{ opacity:0; }
 
+  .reclamo{
+    font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--pacifico-200); white-space:nowrap;
+    max-width:22ch; overflow:hidden; text-overflow:ellipsis;
+  }
+  .reclamo::before{ content:'→ '; color:var(--pacifico-400); }
+  .reclamo:empty{ display:none; }
+
 </style>
 </head>
 <body>
@@ -360,7 +368,7 @@
 <main class="deck" id="deck">
 
   <!-- 01 — PORTADA -->
-  <section class="slide active portada">
+  <section class="slide active portada" data-reclamo="Portada">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA · TALLER DE INICIACIÓN A PROYECTOS FOTOGRÁFICOS</p>
       <h1 class="display-xl">El contexto del trabajo</h1>
@@ -372,7 +380,7 @@
   </section>
 
   <!-- 02 — HOY (OUTLINE) -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Hoy">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">HOY</p>
       <h2 class="display-lg title-gap">¿Con qué conversa mi proyecto?</h2>
@@ -385,7 +393,7 @@
   </section>
 
   <!-- 03 — DIVISOR: PANORAMA -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Panorama">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">BLOQUE 2</p>
       <h2 class="display-lg">Panorama</h2>
@@ -394,7 +402,7 @@
   </section>
 
   <!-- 04 — REFERENTES MEXICANOS -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Mexicanos">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">FOTÓGRAFOS MEXICANOS DE REFERENCIA</p>
       <h2 class="display-md title-gap">Cinco nombres</h2>
@@ -409,7 +417,7 @@
   </section>
 
   <!-- 05 — REFERENTES INTERNACIONALES -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Internacionales">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">REFERENTES INTERNACIONALES CON TRABAJO RELACIONADO</p>
       <h2 class="display-md title-gap">Tres nombres más</h2>
@@ -422,7 +430,7 @@
   </section>
 
   <!-- 06 — BISAGRA HACIA EL EJERCICIO -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Bisagra">
     <div class="slide-inner">
       <h2 class="display-lg">No se trata de tener un referente.</h2>
       <p class="lede" style="margin-top:1rem;">Se trata de poder decir qué hace único tu trabajo.</p>
@@ -430,7 +438,7 @@
   </section>
 
   <!-- 07 — EJERCICIO: ¿CON QUIÉN CONVERSA MI TRABAJO? -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Ejercicio">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">EJERCICIO — EN VOZ ALTA, CON TU TRABAJO PROYECTADO</p>
       <h2 class="display-lg title-gap">¿Con quién conversa mi trabajo?</h2>
@@ -443,7 +451,7 @@
   </section>
 
   <!-- 08 — DIVISOR: REVISIÓN DE SECUENCIAS -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Secuencias">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">BLOQUE 4 — SEGUNDA RONDA DE CLÍNICA</p>
       <h2 class="display-lg">Revisión de secuencias</h2>
@@ -452,7 +460,7 @@
   </section>
 
   <!-- 09 — ANTES DE ESCRIBIR: TRES CARACTERÍSTICAS -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Tres características">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">ANTES DE ESCRIBIR TU STATEMENT</p>
       <h2 class="display-lg title-gap">Tres características</h2>
@@ -465,7 +473,7 @@
   </section>
 
   <!-- 10 — UN PROCESO EN CINCO PASOS -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Cinco pasos">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">SI TE TRABAS AL ESCRIBIR</p>
       <h2 class="display-lg title-gap">Un proceso en cinco pasos</h2>
@@ -494,7 +502,7 @@
   </section>
 
   <!-- 11 — TAREA PARA LA SESIÓN 6 -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Tarea">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">TAREA PARA LA SESIÓN 6 — LA MÁS IMPORTANTE</p>
       <h2 class="display-lg title-gap">Escribe tu statement</h2>
@@ -508,7 +516,7 @@
   </section>
 
   <!-- 12 — CIERRE -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Despedida">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">ANTES DE IRNOS</p>
       <h2 class="display-lg">La próxima sesión es la última.</h2>
@@ -516,7 +524,7 @@
   </section>
 
   <!-- 13 — CIERRE FINAL -->
-  <section class="slide slide--center portada">
+  <section class="slide slide--center portada" data-reclamo="Cierre">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA</p>
       <h2 class="display-lg">Nos vemos el 27 de octubre</h2>
@@ -534,6 +542,7 @@
   <span class="coord">19.24°N · 103.72°O — COLIMA</span>
   <nav class="tide-nav" id="tideNav" aria-label="Navegación de diapositivas"></nav>
   <div style="display:flex; align-items:center; gap:.9rem;">
+    <span class="reclamo" id="reclamo" title="Siguiente diapositiva"></span>
     <span class="counter"><span id="current">01</span> — <span id="total">14</span></span>
     <button class="nav-btn" id="prevBtn" aria-label="Diapositiva anterior">‹</button>
     <button class="nav-btn" id="nextBtn" aria-label="Siguiente diapositiva">›</button>
@@ -571,6 +580,8 @@
     slides.forEach(function(s, i){ s.classList.toggle('active', i === current); });
     marks.forEach(function(m, i){ m.classList.toggle('active', i === current); });
     document.getElementById('current').textContent = String(current+1).padStart(2,'0');
+    var nextSlide = slides[current + 1];
+    document.getElementById('reclamo').textContent = nextSlide ? (nextSlide.getAttribute('data-reclamo') || '') : '';
   }
 
   function goTo(i){

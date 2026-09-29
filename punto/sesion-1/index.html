@@ -349,6 +349,14 @@
   }
   .hint-toast.gone{ opacity:0; }
 
+  .reclamo{
+    font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--pacifico-200); white-space:nowrap;
+    max-width:22ch; overflow:hidden; text-overflow:ellipsis;
+  }
+  .reclamo::before{ content:'→ '; color:var(--pacifico-400); }
+  .reclamo:empty{ display:none; }
+
 </style>
 </head>
 <body>
@@ -356,7 +364,7 @@
 <main class="deck" id="deck">
 
   <!-- 01 — PORTADA -->
-  <section class="slide active portada">
+  <section class="slide active portada" data-reclamo="Portada">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA · TALLER DE INICIACIÓN A PROYECTOS FOTOGRÁFICOS</p>
       <h1 class="display-xl">¿Qué me importa?</h1>
@@ -368,7 +376,7 @@
   </section>
 
   <!-- 02 — CÓMO FUNCIONA -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Cómo funciona">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">ANTES DE EMPEZAR</p>
       <h2 class="display-lg title-gap">Cómo funciona este taller</h2>
@@ -381,7 +389,7 @@
   </section>
 
   <!-- 03 — TEMA VS PREGUNTA -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Tema vs pregunta">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">COMPONENTE TEÓRICO</p>
       <h2 class="display-md title-gap">Partir de un tema no es lo mismo que partir de una pregunta</h2>
@@ -400,7 +408,7 @@
   </section>
 
   <!-- 04 — EJEMPLO 1: BRENNER — INTRO -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Brenner">
     <div class="slide-inner">
       <p class="eyebrow">EJEMPLO 1</p>
       <h2 class="example-name">Juan Brenner</h2>
@@ -411,7 +419,7 @@
   </section>
 
   <!-- 05 — BRENNER — FOTO 1 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Brenner · foto 1">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="01-brenner-tonatiuh-1.jpg">
         <img src="images/01-brenner-tonatiuh-1.jpg" alt="Tonatiuh, Juan Brenner, fotografía 1" onerror="handleImgError(this)">
@@ -425,7 +433,7 @@
   </section>
 
   <!-- 06 — BRENNER — FOTO 2 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Brenner · foto 2">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="01-brenner-tonatiuh-2.jpg">
         <img src="images/01-brenner-tonatiuh-2.jpg" alt="Tonatiuh, Juan Brenner, fotografía 2" onerror="handleImgError(this)">
@@ -439,7 +447,7 @@
   </section>
 
   <!-- 07 — BRENNER — FOTO 3 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Brenner · foto 3">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="01-brenner-tonatiuh-3.jpg">
         <img src="images/01-brenner-tonatiuh-3.jpg" alt="Tonatiuh, Juan Brenner, fotografía 3" onerror="handleImgError(this)">
@@ -453,7 +461,7 @@
   </section>
 
   <!-- 08 — EJEMPLO 2: YAEL MARTÍNEZ — INTRO -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Yael Martínez">
     <div class="slide-inner">
       <p class="eyebrow">EJEMPLO 2</p>
       <h2 class="example-name">Yael Martínez</h2>
@@ -466,7 +474,7 @@
   </section>
 
   <!-- 09 — MARTÍNEZ — FOTO 1 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Martínez · foto 1">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="02-martinez-casa-sangra-1.jpg">
         <img src="images/02-martinez-casa-sangra-1.jpg" alt="La Casa que Sangra, Yael Martínez, fotografía 1" onerror="handleImgError(this)">
@@ -480,7 +488,7 @@
   </section>
 
   <!-- 10 — MARTÍNEZ — FOTO 2 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Martínez · foto 2">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="02-martinez-casa-sangra-2.jpg">
         <img src="images/02-martinez-casa-sangra-2.jpg" alt="La Casa que Sangra, Yael Martínez, fotografía 2" onerror="handleImgError(this)">
@@ -494,7 +502,7 @@
   </section>
 
   <!-- 11 — MARTÍNEZ — FOTO 3 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Martínez · foto 3">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="02-martinez-casa-sangra-3.jpg">
         <img src="images/02-martinez-casa-sangra-3.jpg" alt="La Casa que Sangra, Yael Martínez, fotografía 3" onerror="handleImgError(this)">
@@ -508,7 +516,7 @@
   </section>
 
   <!-- 12 — EJEMPLO 3: KORAL CARBALLO — INTRO -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Koral Carballo">
     <div class="slide-inner">
       <p class="eyebrow">EJEMPLO 3</p>
       <h2 class="example-name">Koral Carballo</h2>
@@ -522,7 +530,7 @@
   </section>
 
   <!-- 13 — CARBALLO — FOTO 1 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Carballo · foto 1">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="03-carballo-sangre-llama-1.jpg">
         <img src="images/03-carballo-sangre-llama-1.jpg" alt="La Sangre Llama, Koral Carballo, fotografía 1" onerror="handleImgError(this)">
@@ -536,7 +544,7 @@
   </section>
 
   <!-- 14 — CARBALLO — FOTO 2 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Carballo · foto 2">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="03-carballo-sangre-llama-2.jpg">
         <img src="images/03-carballo-sangre-llama-2.jpg" alt="La Sangre Llama, Koral Carballo, fotografía 2" onerror="handleImgError(this)">
@@ -550,7 +558,7 @@
   </section>
 
   <!-- 15 — CARBALLO — FOTO 3 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Carballo · foto 3">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="03-carballo-sangre-llama-3.jpg">
         <img src="images/03-carballo-sangre-llama-3.jpg" alt="La Sangre Llama, Koral Carballo, fotografía 3" onerror="handleImgError(this)">
@@ -564,7 +572,7 @@
   </section>
 
   <!-- 16 — EJEMPLO DE CIERRE: CARTAGENA — INTRO -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Cartagena">
     <div class="slide-inner">
       <p class="eyebrow">EJEMPLO DE CIERRE</p>
       <h2 class="example-name">Alejandro Cartagena</h2>
@@ -585,7 +593,7 @@
   </section>
 
   <!-- 17 — CARTAGENA — FOTO 1: SUBURBIA MEXICANA -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Suburbia mexicana">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="04-cartagena-suburbia.jpg">
         <img src="images/04-cartagena-suburbia.jpg" alt="Suburbia Mexicana, Alejandro Cartagena" onerror="handleImgError(this)">
@@ -599,7 +607,7 @@
   </section>
 
   <!-- 18 — CARTAGENA — FOTO 2: CARPOOLERS -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Carpoolers">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="05-cartagena-carpoolers.jpg">
         <img src="images/05-cartagena-carpoolers.jpg" alt="Carpoolers, Alejandro Cartagena" onerror="handleImgError(this)">
@@ -613,7 +621,7 @@
   </section>
 
   <!-- 19 — CARTAGENA — FOTO 3: A SMALL GUIDE TO HOMEOWNERSHIP -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Homeownership">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="06-cartagena-homeownership.jpg">
         <img src="images/06-cartagena-homeownership.jpg" alt="A Small Guide to Homeownership, Alejandro Cartagena" onerror="handleImgError(this)">
@@ -627,7 +635,7 @@
   </section>
 
   <!-- 20 — BISAGRA: SILENCIO -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Silencio">
     <div class="slide-inner">
       <h2 class="display-lg">Un minuto en silencio.</h2>
       <p class="lede" style="margin-top:1rem;">¿Por qué empecé a fotografiar esto? Todavía no lo compartas.</p>
@@ -635,7 +643,7 @@
   </section>
 
   <!-- 21 — EJERCICIO: MAPA DE PREGUNTAS -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Mapa de preguntas">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">EJERCICIO</p>
       <h2 class="display-lg title-gap">Mapa de preguntas</h2>
@@ -661,7 +669,7 @@
   </section>
 
   <!-- 22 — DISCUSIÓN GRUPAL -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Discusión">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">DISCUSIÓN GRUPAL</p>
       <h2 class="display-lg">¿Tema, o pregunta?</h2>
@@ -669,7 +677,7 @@
   </section>
 
   <!-- 23 — TAREA PARA LA SESIÓN 2 -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Tarea">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">TAREA PARA LA SESIÓN 2</p>
       <h2 class="display-lg title-gap">Sal a fotografiar</h2>
@@ -682,7 +690,7 @@
   </section>
 
   <!-- 24 — CIERRE: MAPA COLECTIVO -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Mapa colectivo">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">ANTES DE IRNOS</p>
       <h2 class="display-lg title-gap">Mapa colectivo de indagaciones</h2>
@@ -691,7 +699,7 @@
   </section>
 
   <!-- 25 — REFERENTES DE LA SEMANA -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Referentes">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PARA EXPLORAR ESTA SEMANA</p>
       <h2 class="display-md title-gap">Referentes</h2>
@@ -716,7 +724,7 @@
   </section>
 
   <!-- 26 — CIERRE FINAL -->
-  <section class="slide slide--center portada">
+  <section class="slide slide--center portada" data-reclamo="Cierre">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA</p>
       <h2 class="display-lg">Nos vemos el 29 de septiembre</h2>
@@ -734,6 +742,7 @@
   <span class="coord">19.24°N · 103.72°O — COLIMA</span>
   <nav class="tide-nav" id="tideNav" aria-label="Navegación de diapositivas"></nav>
   <div style="display:flex; align-items:center; gap:.9rem;">
+    <span class="reclamo" id="reclamo" title="Siguiente diapositiva"></span>
     <span class="counter"><span id="current">01</span> — <span id="total">14</span></span>
     <button class="nav-btn" id="prevBtn" aria-label="Diapositiva anterior">‹</button>
     <button class="nav-btn" id="nextBtn" aria-label="Siguiente diapositiva">›</button>
@@ -771,6 +780,8 @@
     slides.forEach(function(s, i){ s.classList.toggle('active', i === current); });
     marks.forEach(function(m, i){ m.classList.toggle('active', i === current); });
     document.getElementById('current').textContent = String(current+1).padStart(2,'0');
+    var nextSlide = slides[current + 1];
+    document.getElementById('reclamo').textContent = nextSlide ? (nextSlide.getAttribute('data-reclamo') || '') : '';
   }
 
   function goTo(i){

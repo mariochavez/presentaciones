@@ -361,6 +361,14 @@
   }
   .hint-toast.gone{ opacity:0; }
 
+  .reclamo{
+    font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--pacifico-200); white-space:nowrap;
+    max-width:22ch; overflow:hidden; text-overflow:ellipsis;
+  }
+  .reclamo::before{ content:'→ '; color:var(--pacifico-400); }
+  .reclamo:empty{ display:none; }
+
 </style>
 </head>
 <body>
@@ -368,7 +376,7 @@
 <main class="deck" id="deck">
 
   <!-- 01 — PORTADA -->
-  <section class="slide active portada">
+  <section class="slide active portada" data-reclamo="Portada">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA · TALLER DE INICIACIÓN A PROYECTOS FOTOGRÁFICOS</p>
       <h1 class="display-xl">El statement y la presentación</h1>
@@ -380,7 +388,7 @@
   </section>
 
   <!-- 02 — HOY (OUTLINE) -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Hoy">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">HOY — LA ÚLTIMA SESIÓN</p>
       <h2 class="display-lg title-gap">Dar palabras al propio trabajo</h2>
@@ -393,7 +401,7 @@
   </section>
 
   <!-- 03 — POR QUÉ EL STATEMENT IMPORTA -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Por qué importa">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">COMPONENTE TEÓRICO</p>
       <h2 class="display-lg">No es un resumen. No es un justificativo.</h2>
@@ -402,7 +410,7 @@
   </section>
 
   <!-- 04 — TRES ERRORES FRECUENTES -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Tres errores">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">TRES ERRORES FRECUENTES</p>
       <h2 class="display-lg title-gap">Lo que hay que evitar</h2>
@@ -415,7 +423,7 @@
   </section>
 
   <!-- 05 — TRES CARACTERÍSTICAS -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Lo que funciona">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">TRES CARACTERÍSTICAS DE UN STATEMENT QUE FUNCIONA</p>
       <h2 class="display-lg title-gap">Lo que sí funciona</h2>
@@ -428,7 +436,7 @@
   </section>
 
   <!-- 06 — PROCESO EN CINCO PASOS -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Cinco pasos">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">SI TE TRABAS</p>
       <h2 class="display-lg title-gap">Un proceso en cinco pasos</h2>
@@ -457,7 +465,7 @@
   </section>
 
   <!-- 07 — EJEMPLO: DISAPPEARING DREAMS -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Disappearing Dreams">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">EJEMPLO — UN STATEMENT REAL</p>
       <h2 class="display-md title-gap">Disappearing Dreams</h2>
@@ -471,7 +479,7 @@
   </section>
 
   <!-- 08 — DIVISOR: PRESENTACIONES FINALES -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Presentaciones">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">BLOQUE 2</p>
       <h2 class="display-lg">Presentaciones finales</h2>
@@ -480,7 +488,7 @@
   </section>
 
   <!-- 09 — FORMATO DE CADA PRESENTACIÓN -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="El formato">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">10 MINUTOS POR PERSONA</p>
       <h2 class="display-lg title-gap">El formato</h2>
@@ -500,7 +508,7 @@
   </section>
 
   <!-- 10 — BISAGRA HACIA EL CIERRE -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Bisagra">
     <div class="slide-inner">
       <h2 class="display-lg">Seis semanas después.</h2>
       <p class="lede" style="margin-top:1rem;">¿Qué aprendiste sobre tu propio proceso?</p>
@@ -508,7 +516,7 @@
   </section>
 
   <!-- 11 — DISCUSIÓN COLECTIVA -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Discusión">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">DISCUSIÓN COLECTIVA</p>
       <h2 class="display-lg title-gap">Tres preguntas</h2>
@@ -521,7 +529,7 @@
   </section>
 
   <!-- 12 — RUTAS DE CONTINUACIÓN -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Rutas">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">MÁS ALLÁ DEL TALLER</p>
       <h2 class="display-md title-gap">Rutas de continuación</h2>
@@ -536,7 +544,7 @@
   </section>
 
   <!-- 13 — EJERCICIO: CARTA AL PROYECTO -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Carta al proyecto">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">EJERCICIO DE CIERRE — 10 MINUTOS, ESCRITURA LIBRE</p>
       <h2 class="display-lg title-gap">Carta al proyecto</h2>
@@ -550,7 +558,7 @@
   </section>
 
   <!-- 14 — CIERRE FINAL DEL TALLER -->
-  <section class="slide slide--center portada">
+  <section class="slide slide--center portada" data-reclamo="Cierre">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA</p>
       <h2 class="display-lg">El trabajo sigue.</h2>
@@ -568,6 +576,7 @@
   <span class="coord">19.24°N · 103.72°O — COLIMA</span>
   <nav class="tide-nav" id="tideNav" aria-label="Navegación de diapositivas"></nav>
   <div style="display:flex; align-items:center; gap:.9rem;">
+    <span class="reclamo" id="reclamo" title="Siguiente diapositiva"></span>
     <span class="counter"><span id="current">01</span> — <span id="total">14</span></span>
     <button class="nav-btn" id="prevBtn" aria-label="Diapositiva anterior">‹</button>
     <button class="nav-btn" id="nextBtn" aria-label="Siguiente diapositiva">›</button>
@@ -605,6 +614,8 @@
     slides.forEach(function(s, i){ s.classList.toggle('active', i === current); });
     marks.forEach(function(m, i){ m.classList.toggle('active', i === current); });
     document.getElementById('current').textContent = String(current+1).padStart(2,'0');
+    var nextSlide = slides[current + 1];
+    document.getElementById('reclamo').textContent = nextSlide ? (nextSlide.getAttribute('data-reclamo') || '') : '';
   }
 
   function goTo(i){

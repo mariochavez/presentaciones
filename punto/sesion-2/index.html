@@ -352,6 +352,14 @@
   }
   .hint-toast.gone{ opacity:0; }
 
+  .reclamo{
+    font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--pacifico-200); white-space:nowrap;
+    max-width:22ch; overflow:hidden; text-overflow:ellipsis;
+  }
+  .reclamo::before{ content:'→ '; color:var(--pacifico-400); }
+  .reclamo:empty{ display:none; }
+
 </style>
 </head>
 <body>
@@ -359,7 +367,7 @@
 <main class="deck" id="deck">
 
   <!-- 01 — PORTADA -->
-  <section class="slide active portada">
+  <section class="slide active portada" data-reclamo="Portada">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA · TALLER DE INICIACIÓN A PROYECTOS FOTOGRÁFICOS</p>
       <h1 class="display-xl">El territorio como material</h1>
@@ -371,7 +379,7 @@
   </section>
 
   <!-- 02 — HOY (OUTLINE) -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Hoy">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">HOY</p>
       <h2 class="display-lg title-gap">De la pregunta al método</h2>
@@ -384,7 +392,7 @@
   </section>
 
   <!-- 03 — DIVISOR: REVISIÓN DE TRABAJO -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Revisión">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">BLOQUE 1</p>
       <h2 class="display-lg">Revisión de trabajo</h2>
@@ -393,7 +401,7 @@
   </section>
 
   <!-- 04 — PREGUNTAS GUÍA REVISIÓN -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Preguntas guía">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">MIENTRAS VEMOS TUS FOTOS</p>
       <h2 class="display-lg title-gap">Preguntas guía</h2>
@@ -406,7 +414,7 @@
   </section>
 
   <!-- 05 — EL TERRITORIO COMO SUJETO -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Territorio sujeto">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">COMPONENTE TEÓRICO</p>
       <h2 class="display-lg title-gap">El territorio no es un fondo. Es un sujeto.</h2>
@@ -419,7 +427,7 @@
   </section>
 
   <!-- 06 — RECAPITULANDO: QUÉ+PORQUÉ VS CÓMO -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Qué y cómo">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">RECAPITULANDO</p>
       <h2 class="display-md title-gap">Sesión 1 fue el qué y el por qué. Hoy toca el cómo.</h2>
@@ -438,7 +446,7 @@
   </section>
 
   <!-- 07 — CUATRO MANERAS DE ACERCARTE -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Cuatro maneras">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">EL CÓMO</p>
       <h2 class="display-lg title-gap">Cuatro maneras de acercarte</h2>
@@ -452,7 +460,7 @@
   </section>
 
   <!-- 08 — EJEMPLO: RICHARD MISRACH -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Misrach">
     <div class="slide-inner">
       <p class="eyebrow">REFERENTE</p>
       <h2 class="example-name">Richard Misrach</h2>
@@ -462,7 +470,7 @@
   </section>
 
   <!-- 09 — MISRACH — FOTO 1 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Misrach · foto 1">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="01-misrach-desert-cantos-1.jpg">
         <img src="images/01-misrach-desert-cantos-1.jpg" alt="Desert Cantos, Richard Misrach, fotografía 1" onerror="handleImgError(this)">
@@ -476,7 +484,7 @@
   </section>
 
   <!-- 10 — MISRACH — FOTO 2 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Misrach · foto 2">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="01-misrach-desert-cantos-2.jpg">
         <img src="images/01-misrach-desert-cantos-2.jpg" alt="Desert Cantos, Richard Misrach, fotografía 2" onerror="handleImgError(this)">
@@ -490,7 +498,7 @@
   </section>
 
   <!-- 11 — MISRACH — FOTO 3 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Misrach · foto 3">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="01-misrach-desert-cantos-3.jpg">
         <img src="images/01-misrach-desert-cantos-3.jpg" alt="Desert Cantos, Richard Misrach, fotografía 3" onerror="handleImgError(this)">
@@ -504,7 +512,7 @@
   </section>
 
   <!-- 12 — EJEMPLO: COFRADÍA DE VOLCANES (EJEMPLO PROPIO) -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Cofradía">
     <div class="slide-inner">
       <p class="eyebrow">REFERENTE — EJEMPLO PROPIO</p>
       <h2 class="example-name">Mario Alberto Chávez</h2>
@@ -517,7 +525,7 @@
   </section>
 
   <!-- 13 — COFRADÍA — FOTO 1 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Cofradía · foto 1">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="02-chavez-cofradia-volcanes-1.jpg">
         <img src="images/02-chavez-cofradia-volcanes-1.jpg" alt="Cofradía de Volcanes, Mario Alberto Chávez, fotografía 1" onerror="handleImgError(this)">
@@ -531,7 +539,7 @@
   </section>
 
   <!-- 14 — COFRADÍA — FOTO 2 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Cofradía · foto 2">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="02-chavez-cofradia-volcanes-2.jpg">
         <img src="images/02-chavez-cofradia-volcanes-2.jpg" alt="Cofradía de Volcanes, Mario Alberto Chávez, fotografía 2" onerror="handleImgError(this)">
@@ -545,7 +553,7 @@
   </section>
 
   <!-- 15 — COFRADÍA — FOTO 3 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Cofradía · foto 3">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="02-chavez-cofradia-volcanes-3.jpg">
         <img src="images/02-chavez-cofradia-volcanes-3.jpg" alt="Cofradía de Volcanes, Mario Alberto Chávez, fotografía 3" onerror="handleImgError(this)">
@@ -559,7 +567,7 @@
   </section>
 
   <!-- 16 — EJEMPLO: INGRID HERNÁNDEZ -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Ingrid Hernández">
     <div class="slide-inner">
       <p class="eyebrow">REFERENTE</p>
       <h2 class="example-name">Ingrid Hernández</h2>
@@ -570,7 +578,7 @@
   </section>
 
   <!-- 17 — HERNÁNDEZ — FOTO 1 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Hernández · foto 1">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="03-hernandez-under-construction-1.jpg">
         <img src="images/03-hernandez-under-construction-1.jpg" alt="Under Construction, Ingrid Hernández, fotografía 1" onerror="handleImgError(this)">
@@ -584,7 +592,7 @@
   </section>
 
   <!-- 18 — HERNÁNDEZ — FOTO 2 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Hernández · foto 2">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="03-hernandez-under-construction-2.jpg">
         <img src="images/03-hernandez-under-construction-2.jpg" alt="Under Construction, Ingrid Hernández, fotografía 2" onerror="handleImgError(this)">
@@ -598,7 +606,7 @@
   </section>
 
   <!-- 19 — HERNÁNDEZ — FOTO 3 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Hernández · foto 3">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="03-hernandez-under-construction-3.jpg">
         <img src="images/03-hernandez-under-construction-3.jpg" alt="Under Construction, Ingrid Hernández, fotografía 3" onerror="handleImgError(this)">
@@ -612,7 +620,7 @@
   </section>
 
   <!-- 20 — BISAGRA HACIA EL EJERCICIO -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Bisagra">
 
     <div class="slide-inner">
       <h2 class="display-lg">Vas a volver a un lugar que ya conoces.</h2>
@@ -621,7 +629,7 @@
   </section>
 
   <!-- 21 — EJERCICIO: EL MISMO LUGAR, OTRA VEZ -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="El mismo lugar">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">EJERCICIO</p>
       <h2 class="display-lg title-gap">El mismo lugar, otra vez</h2>
@@ -645,7 +653,7 @@
   </section>
 
   <!-- 22 — DISCUSIÓN GRUPAL -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Discusión">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">DISCUSIÓN GRUPAL</p>
       <h2 class="display-lg title-gap">¿Cambió tu pregunta?</h2>
@@ -658,7 +666,7 @@
   </section>
 
   <!-- 23 — TAREA PARA LA SESIÓN 3 -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Tarea">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">TAREA PARA LA SESIÓN 3</p>
       <h2 class="display-lg title-gap">Sigue fotografiando</h2>
@@ -672,7 +680,7 @@
   </section>
 
   <!-- 24 — CIERRE: RONDA DEL CÓMO -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Ronda del cómo">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">ANTES DE IRNOS</p>
       <h2 class="display-lg title-gap">Ronda del cómo</h2>
@@ -681,7 +689,7 @@
   </section>
 
   <!-- 25 — REFERENTES DE LA SEMANA -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Referentes">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PARA EXPLORAR ESTA SEMANA</p>
       <h2 class="display-md title-gap">Referentes</h2>
@@ -694,7 +702,7 @@
   </section>
 
   <!-- 26 — CIERRE FINAL -->
-  <section class="slide slide--center portada">
+  <section class="slide slide--center portada" data-reclamo="Cierre">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA</p>
       <h2 class="display-lg">Nos vemos el 6 de octubre</h2>
@@ -712,6 +720,7 @@
   <span class="coord">19.24°N · 103.72°O — COLIMA</span>
   <nav class="tide-nav" id="tideNav" aria-label="Navegación de diapositivas"></nav>
   <div style="display:flex; align-items:center; gap:.9rem;">
+    <span class="reclamo" id="reclamo" title="Siguiente diapositiva"></span>
     <span class="counter"><span id="current">01</span> — <span id="total">14</span></span>
     <button class="nav-btn" id="prevBtn" aria-label="Diapositiva anterior">‹</button>
     <button class="nav-btn" id="nextBtn" aria-label="Siguiente diapositiva">›</button>
@@ -749,6 +758,8 @@
     slides.forEach(function(s, i){ s.classList.toggle('active', i === current); });
     marks.forEach(function(m, i){ m.classList.toggle('active', i === current); });
     document.getElementById('current').textContent = String(current+1).padStart(2,'0');
+    var nextSlide = slides[current + 1];
+    document.getElementById('reclamo').textContent = nextSlide ? (nextSlide.getAttribute('data-reclamo') || '') : '';
   }
 
   function goTo(i){

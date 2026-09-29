@@ -352,6 +352,14 @@
   }
   .hint-toast.gone{ opacity:0; }
 
+  .reclamo{
+    font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--pacifico-200); white-space:nowrap;
+    max-width:22ch; overflow:hidden; text-overflow:ellipsis;
+  }
+  .reclamo::before{ content:'→ '; color:var(--pacifico-400); }
+  .reclamo:empty{ display:none; }
+
 </style>
 </head>
 <body>
@@ -359,7 +367,7 @@
 <main class="deck" id="deck">
 
   <!-- 01 — PORTADA -->
-  <section class="slide active portada">
+  <section class="slide active portada" data-reclamo="Portada">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA · TALLER DE INICIACIÓN A PROYECTOS FOTOGRÁFICOS</p>
       <h1 class="display-xl">Editar y secuenciar</h1>
@@ -371,7 +379,7 @@
   </section>
 
   <!-- 02 — HOY (OUTLINE) -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Hoy">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">HOY</p>
       <h2 class="display-lg title-gap">Construir sentido con imágenes</h2>
@@ -384,7 +392,7 @@
   </section>
 
   <!-- 03 — LA IDEA CENTRAL -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Idea central">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">COMPONENTE TEÓRICO</p>
       <h2 class="display-lg">Editar no es eliminar.</h2>
@@ -393,7 +401,7 @@
   </section>
 
   <!-- 04 — DOS LÓGICAS DE SECUENCIA -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Dos lógicas">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">DOS FORMAS DE ORDENAR</p>
       <h2 class="display-md title-gap">¿Qué relación quieres que construya el espectador?</h2>
@@ -412,7 +420,7 @@
   </section>
 
   <!-- 05 — INTRO: LÓGICA RETÓRICA -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Lógica retórica">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">UNA TERCERA FORMA</p>
       <h2 class="display-lg title-gap">Lógica retórica</h2>
@@ -421,7 +429,7 @@
   </section>
 
   <!-- 06 — VOCABULARIO: SINÉCDOQUE, HIPÉRBATON, DERIVACIÓN -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Tres tropos">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">VOCABULARIO</p>
       <h2 class="display-lg title-gap">Tres tropos</h2>
@@ -434,7 +442,7 @@
   </section>
 
   <!-- 07 — VOCABULARIO: ANTÍTESIS, ELIPSIS -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Dos tropos más">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">VOCABULARIO</p>
       <h2 class="display-lg title-gap">Dos tropos más</h2>
@@ -446,7 +454,7 @@
   </section>
 
   <!-- 08 — CONCEPTOS BÁSICOS DE SECUENCIACIÓN -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Conceptos básicos">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">VOCABULARIO</p>
       <h2 class="display-lg title-gap">Cuatro conceptos básicos</h2>
@@ -460,7 +468,7 @@
   </section>
 
   <!-- 09 — BISAGRA HACIA EL EJERCICIO -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Bisagra">
     <div class="slide-inner">
       <h2 class="display-lg">Vamos a probarlo con el trabajo de alguien más primero.</h2>
       <p class="lede" style="margin-top:1rem;">Sin apego. Es más fácil ver el orden cuando no es tuyo.</p>
@@ -468,7 +476,7 @@
   </section>
 
   <!-- 10 — EJERCICIO: SECUENCIACIÓN RÁPIDA -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Secuenciación">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">EJERCICIO · 8 MINUTOS</p>
       <h2 class="display-lg title-gap">Secuenciación rápida</h2>
@@ -493,7 +501,7 @@
   </section>
 
   <!-- 11 — DIVISOR: CLÍNICA DE EDICIÓN -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Clínica">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">BLOQUE 4</p>
       <h2 class="display-lg">Clínica de edición</h2>
@@ -502,7 +510,7 @@
   </section>
 
   <!-- 12 — PREGUNTAS GUÍA PARA LA CLÍNICA -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Cuatro preguntas">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">DESPUÉS DE CADA PRESENTACIÓN</p>
       <h2 class="display-lg title-gap">Cuatro preguntas</h2>
@@ -516,7 +524,7 @@
   </section>
 
   <!-- 13 — TAREA PARA LA SESIÓN 5 -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Tarea">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">TAREA PARA LA SESIÓN 5</p>
       <h2 class="display-lg title-gap">Selección definitiva</h2>
@@ -530,7 +538,7 @@
   </section>
 
   <!-- 14 — CIERRE -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Despedida">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">ANTES DE IRNOS</p>
       <h2 class="display-lg">Nos vemos la próxima semana.</h2>
@@ -538,7 +546,7 @@
   </section>
 
   <!-- 15 — REFERENTES DE LA SEMANA -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Referentes">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PARA EXPLORAR ESTA SEMANA</p>
       <h2 class="display-md title-gap">Referentes</h2>
@@ -552,7 +560,7 @@
   </section>
 
   <!-- 16 — CIERRE FINAL -->
-  <section class="slide slide--center portada">
+  <section class="slide slide--center portada" data-reclamo="Cierre">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA</p>
       <h2 class="display-lg">Nos vemos el 20 de octubre</h2>
@@ -570,6 +578,7 @@
   <span class="coord">19.24°N · 103.72°O — COLIMA</span>
   <nav class="tide-nav" id="tideNav" aria-label="Navegación de diapositivas"></nav>
   <div style="display:flex; align-items:center; gap:.9rem;">
+    <span class="reclamo" id="reclamo" title="Siguiente diapositiva"></span>
     <span class="counter"><span id="current">01</span> — <span id="total">14</span></span>
     <button class="nav-btn" id="prevBtn" aria-label="Diapositiva anterior">‹</button>
     <button class="nav-btn" id="nextBtn" aria-label="Siguiente diapositiva">›</button>
@@ -607,6 +616,8 @@
     slides.forEach(function(s, i){ s.classList.toggle('active', i === current); });
     marks.forEach(function(m, i){ m.classList.toggle('active', i === current); });
     document.getElementById('current').textContent = String(current+1).padStart(2,'0');
+    var nextSlide = slides[current + 1];
+    document.getElementById('reclamo').textContent = nextSlide ? (nextSlide.getAttribute('data-reclamo') || '') : '';
   }
 
   function goTo(i){
