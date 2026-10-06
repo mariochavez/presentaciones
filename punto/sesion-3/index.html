@@ -5,35 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>De las fotos al proyecto — Sesión 3 — Punto de Partida</title>
 
-<!--
-  CÓMO USAR ESTE ARCHIVO
-  =======================
-  1. Agrega tus fotografías dentro de la carpeta "images/" con los nombres
-     exactos que se indican en images/LEEME.txt. Mientras no exista el
-     archivo, la diapositiva muestra un recuadro con el nombre pendiente.
-  2. Abre index.html directamente en el navegador (doble clic) o desde un
-     servidor local. No necesita internet salvo para cargar las tipografías
-     de Google Fonts; si no hay conexión, cae a tipografías del sistema y
-     se sigue viendo bien.
-  3. Navegación durante la sesión:
-       → / espacio / clic derecho de la pantalla   → avanza
-       ← / clic izquierdo de la pantalla            → retrocede
-       Inicio / Fin                                  → primera / última diapositiva
-       F                                              → pantalla completa
-       También puedes usar las marcas de marea (las líneas del pie de página)
-       o los botones de flecha para saltar directo a una diapositiva.
-  4. Para editar texto: cada diapositiva es un bloque <section class="slide">
-     comentado con su número. Edita el HTML directamente ahí.
-
-  Nota sobre esta sesión: es deliberadamente corta (10 diapositivas). Los
-  90 minutos centrales son la clínica en vivo con las imágenes que traen
-  los participantes — eso no necesita diapositivas propias, solo lo que
-  esté proyectado desde el USB/tarjeta de cada persona en ese momento.
-
-  Este archivo se generó a partir de la plantilla del skill
-  punto-partida-sesion-builder — mismo sistema visual que las Sesiones
-  1 y 2, sin modificaciones.
--->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -231,6 +202,7 @@
     display:flex; flex-direction:column; align-items:center; gap:.6rem;
     color:var(--pacifico-400); text-align:center; padding:0 1.4rem;
   }
+  .photo-frame .placeholder[hidden]{ display:none; }
   .photo-frame .placeholder .plus{ font-family:var(--font-display); font-size:2.6rem; line-height:1; opacity:.7; }
   .photo-frame .placeholder .hint{ font-family:var(--font-mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; opacity:.85; }
   .photo-frame.missing{
@@ -357,14 +329,6 @@
   }
   .hint-toast.gone{ opacity:0; }
 
-  .reclamo{
-    font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
-    color:var(--pacifico-200); white-space:nowrap;
-    max-width:22ch; overflow:hidden; text-overflow:ellipsis;
-  }
-  .reclamo::before{ content:'→ '; color:var(--pacifico-400); }
-  .reclamo:empty{ display:none; }
-
 </style>
 </head>
 <body>
@@ -372,7 +336,7 @@
 <main class="deck" id="deck">
 
   <!-- 01 — PORTADA -->
-  <section class="slide active portada" data-reclamo="Portada">
+  <section class="slide active portada">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA · TALLER DE INICIACIÓN A PROYECTOS FOTOGRÁFICOS</p>
       <h1 class="display-xl">De las fotos al proyecto</h1>
@@ -383,21 +347,11 @@
     </div>
   </section>
 
-  <!-- 02 — BIENVENIDA A INGRID HERNÁNDEZ -->
-  <section class="slide slide--center slide--narrow" data-reclamo="Ingrid Hernández">
-    <div class="slide-inner">
-      <p class="eyebrow kicker-gap">HOY NOS ACOMPAÑA</p>
-      <h2 class="display-lg">Ingrid Hernández</h2>
-      <p class="lede" style="margin-top:1rem;">Veinte años documentando Tijuana. Hoy da retroalimentación junto con nosotros.</p>
-    </div>
-  </section>
-
-  <!-- 03 — TRES PALABRAS, TRES COSAS DISTINTAS -->
-  <section class="slide slide--narrow" data-reclamo="Tres palabras">
+  <!-- 02 — TRES PALABRAS (secuencia real: cada nivel contiene al anterior) -->
+  <section class="slide slide--narrow">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">COMPONENTE TEÓRICO</p>
       <h2 class="display-lg title-gap">Tres palabras, tres cosas distintas</h2>
-
       <div class="step-block">
         <span class="step-num">1</span>
         <p><strong>Conjunto de fotos</strong> — comparten un tema o lugar, pero no necesariamente una pregunta o punto de vista.</p>
@@ -413,8 +367,256 @@
     </div>
   </section>
 
-  <!-- 04 — CUATRO SEÑALES -->
-  <section class="slide slide--narrow" data-reclamo="Cuatro señales">
+  <!-- 03 — BISAGRA -->
+  <section class="slide slide--center slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">UNA MISMA FOTOGRAFÍA</p>
+      <h2 class="display-lg">Puede vivir en los tres niveles.</h2>
+      <p class="lede" style="margin-top:1rem;">Lo que cambia no es la imagen. Es la pregunta que la organiza.</p>
+    </div>
+  </section>
+
+  <!-- 04 — CASO 1: CAXITLÁN -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">CASO 1 — TRABAJO PROPIO</p>
+      <h2 class="example-name">Mario Alberto Chávez</h2>
+      <p class="example-project">Caxitlán — Colima, 2023–presente</p>
+      <blockquote class="quote" style="margin-top:.9rem;">
+        Lo que sabía de la historia de esta región lo fui recogiendo de manera fragmentaria. Al conmemorarse los 500 años de la intervención colonial, decidí convertir esos fragmentos dispersos en una investigación deliberada.
+        <span class="quote-attr">— Mario Alberto Chávez, statement de Caxitlán</span>
+      </blockquote>
+      <p class="example-footnote">Más de 190 fotografías · caxitlan.org</p>
+    </div>
+  </section>
+
+  <!-- 05 — NIVEL 1: CONJUNTO -->
+  <section class="slide slide--center slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">NIVEL 1 — CONJUNTO</p>
+      <h2 class="display-lg">Colima, fotografiada durante años</h2>
+      <p class="lede" style="margin-top:1rem;">Comparten lugar. No comparten pregunta.</p>
+    </div>
+  </section>
+
+  <!-- 06 — CONJUNTO — FOTO 1 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="01-chavez-conjunto-1.jpg">
+        <img src="images/01-chavez-conjunto-1.jpg" alt="Fotografía suelta de Colima, Mario Alberto Chávez, 1" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Colima, fotografías sueltas</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 07 — CONJUNTO — FOTO 2 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="01-chavez-conjunto-2.jpg">
+        <img src="images/01-chavez-conjunto-2.jpg" alt="Fotografía suelta de Colima, Mario Alberto Chávez, 2" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Colima, fotografías sueltas</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 08 — CONJUNTO — FOTO 3 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="01-chavez-conjunto-3.jpg">
+        <img src="images/01-chavez-conjunto-3.jpg" alt="Fotografía suelta de Colima, Mario Alberto Chávez, 3" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Colima, fotografías sueltas</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 09 — NIVEL 2: SERIE -->
+  <section class="slide slide--center slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">NIVEL 2 — SERIE</p>
+      <h2 class="display-lg">La sal de Cuyutlán</h2>
+      <p class="lede" style="margin-top:1rem;">Coherencia visual y temática. Describe bien cómo se hace la sal, y ahí se detiene.</p>
+    </div>
+  </section>
+
+  <!-- 10 — SERIE — FOTO 1 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="02-chavez-sal-1.jpg">
+        <img src="images/02-chavez-sal-1.jpg" alt="Salinas de Cuyutlán, Mario Alberto Chávez, fotografía 1" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Salinas de Cuyutlán</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 11 — SERIE — FOTO 2 (esta misma imagen reaparece en el nivel 3) -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="02-chavez-sal-2.jpg">
+        <img src="images/02-chavez-sal-2.jpg" alt="Salinas de Cuyutlán, Mario Alberto Chávez, fotografía 2" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Salinas de Cuyutlán</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 12 — SERIE — FOTO 3 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="02-chavez-sal-3.jpg">
+        <img src="images/02-chavez-sal-3.jpg" alt="Salinas de Cuyutlán, Mario Alberto Chávez, fotografía 3" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Salinas de Cuyutlán</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 13 — NIVEL 3: PROYECTO -->
+  <section class="slide slide--center slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">NIVEL 3 — PROYECTO</p>
+      <h2 class="display-lg">¿Quiénes somos los habitantes actuales de este territorio?</h2>
+      <p class="lede" style="margin-top:1rem;">La misma foto de sal, ahora junto a otras que no se parecen a ella pero responden a la misma pregunta.</p>
+    </div>
+  </section>
+
+  <!-- 14 — PROYECTO — FOTO 1 (MISMO ARCHIVO QUE LA DIAPOSITIVA 11, A PROPÓSITO) -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="02-chavez-sal-2.jpg">
+        <img src="images/02-chavez-sal-2.jpg" alt="Caxitlán, Mario Alberto Chávez, la sal" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Caxitlán, 2023–presente</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 15 — PROYECTO — FOTO 2 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="03-chavez-caxitlan-cocos.jpg">
+        <img src="images/03-chavez-caxitlan-cocos.jpg" alt="Caxitlán, Mario Alberto Chávez, cosecha de coco" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Caxitlán, 2023–presente</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 16 — PROYECTO — FOTO 3 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="03-chavez-caxitlan-virgen-mar.jpg">
+        <img src="images/03-chavez-caxitlan-virgen-mar.jpg" alt="Caxitlán, Mario Alberto Chávez, procesión de la Virgen al mar" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Caxitlán, 2023–presente</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 17 — COMPARACIÓN SERIE / PROYECTO -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">LA DIFERENCIA</p>
+      <h2 class="display-md title-gap">La misma fotografía, otra pregunta</h2>
+      <div class="compare">
+        <div class="compare-col tema">
+          <span class="compare-label">Serie</span>
+          <span class="compare-text">"¿Qué muestran estas fotos?"</span>
+        </div>
+        <div class="compare-rule"></div>
+        <div class="compare-col pregunta">
+          <span class="compare-label">Proyecto</span>
+          <span class="compare-text">¿Qué preguntan estas fotos?</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 18 — CASO 2: DISAPPEARING DREAMS -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">CASO 2 — TRABAJO PROPIO</p>
+      <h2 class="example-name">Mario Alberto Chávez</h2>
+      <p class="example-project">Disappearing Dreams — Colima, 2019–2022</p>
+      <p class="example-body" style="margin-top:.9rem;">Seis familias de la Red Desaparecidos Colima, A.C. Tres maneras de fotografiar que casi no se parecen entre sí — ropa suspendida en una laguna seca, retratos de espaldas, objetos personales sobre fondo blanco — sostenidas por una sola indagación: cómo se fotografía una ausencia.</p>
+      <p class="example-footnote">Un proyecto no es uniformidad visual · Northern Exposure Scholarship, MediumPhoto 2023</p>
+    </div>
+  </section>
+
+  <!-- 19 — DISAPPEARING DREAMS — FOTO 1 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="04-chavez-disappearing-dreams-1.jpg">
+        <img src="images/04-chavez-disappearing-dreams-1.jpg" alt="Disappearing Dreams, Mario Alberto Chávez, ropa suspendida en laguna seca" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Disappearing Dreams, 2019–2022</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 20 — DISAPPEARING DREAMS — FOTO 2 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="04-chavez-disappearing-dreams-2.jpg">
+        <img src="images/04-chavez-disappearing-dreams-2.jpg" alt="Disappearing Dreams, Mario Alberto Chávez, retrato de espaldas" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Disappearing Dreams, 2019–2022</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 21 — DISAPPEARING DREAMS — FOTO 3 -->
+  <section class="slide slide--photo">
+    <div class="slide-inner">
+      <figure class="photo-frame" data-filename="04-chavez-disappearing-dreams-3.jpg">
+        <img src="images/04-chavez-disappearing-dreams-3.jpg" alt="Disappearing Dreams, Mario Alberto Chávez, objetos personales" onerror="handleImgError(this)">
+        <div class="placeholder" hidden><span class="plus">+</span><span class="hint"></span></div>
+        <figcaption class="cintillo">
+          <span class="name">Mario Alberto Chávez</span>
+          <span class="project">Disappearing Dreams, 2019–2022</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 22 — CUATRO SEÑALES -->
+  <section class="slide slide--narrow">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">¿TIENES UN PROYECTO?</p>
       <h2 class="display-lg title-gap">Cuatro señales</h2>
@@ -427,17 +629,57 @@
     </div>
   </section>
 
-  <!-- 05 — DIVISOR: PRIMERA CLÍNICA -->
-  <section class="slide slide--center slide--narrow" data-reclamo="Clínica">
+  <!-- 23 — EJERCICIO: AUTODIAGNÓSTICO -->
+  <section class="slide slide--narrow">
     <div class="slide-inner">
-      <p class="eyebrow kicker-gap">BLOQUE 3</p>
-      <h2 class="display-lg">Primera clínica individual</h2>
-      <p class="lede" style="margin-top:1rem;">3 minutos por persona para presentar. Después, retroalimentación del grupo.</p>
+      <p class="eyebrow kicker-gap">EJERCICIO — 10 MINUTOS</p>
+      <h2 class="display-lg title-gap">¿Dónde está tu trabajo hoy?</h2>
+      <div class="step-block">
+        <span class="step-num">1</span>
+        <p>Mira tu selección de 15–20 imágenes. ¿Es conjunto, serie o proyecto? Escríbelo.</p>
+      </div>
+      <div class="step-block">
+        <span class="step-num">2</span>
+        <p>Escribe tu pregunta en una sola oración, aunque todavía no te convenza.</p>
+      </div>
+      <div class="step-block">
+        <span class="step-num">3</span>
+        <p>Marca la imagen que no podrías haber hecho en ningún otro lugar.</p>
+      </div>
+      <div class="panel-arena">
+        <p class="eyebrow">TEN EN CUENTA</p>
+        <ul class="simple-list">
+          <li>Estar en "conjunto" en la semana 3 es normal. Lo que importa es saber dónde estás.</li>
+          <li>Esto es lo primero que vas a decir en la clínica.</li>
+        </ul>
+      </div>
     </div>
   </section>
 
-  <!-- 06 — PREGUNTAS GUÍA PARA LA RETROALIMENTACIÓN -->
-  <section class="slide slide--narrow" data-reclamo="Tres preguntas">
+  <!-- 24 — DESCANSO -->
+  <section class="slide slide--center slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">15 MINUTOS</p>
+      <h2 class="display-lg">Descanso</h2>
+    </div>
+  </section>
+
+  <!-- 25 — CLÍNICA: FORMATO -->
+  <section class="slide slide--narrow">
+    <div class="slide-inner">
+      <p class="eyebrow kicker-gap">BLOQUE 3</p>
+      <h2 class="display-lg title-gap">Primera clínica individual</h2>
+      <ul class="simple-list">
+        <li>3 minutos para presentar: tu nivel, tu pregunta, tu selección</li>
+        <li>Dos lectores asignados responden primero</li>
+        <li>Después, el resto del grupo y yo</li>
+        <li>Unos 4 minutos de retroalimentación por persona</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 26 — TRES PREGUNTAS PARA QUIEN LEE -->
+  <section class="slide slide--narrow">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PARA QUIEN DA RETROALIMENTACIÓN</p>
       <h2 class="display-lg title-gap">Tres preguntas</h2>
@@ -449,8 +691,8 @@
     </div>
   </section>
 
-  <!-- 07 — TAREA PARA LA SESIÓN 4 -->
-  <section class="slide slide--narrow" data-reclamo="Tarea">
+  <!-- 27 — TAREA PARA LA SESIÓN 4 -->
+  <section class="slide slide--narrow">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">TAREA PARA LA SESIÓN 4</p>
       <h2 class="display-lg title-gap">Fotografía más intencional</h2>
@@ -462,17 +704,17 @@
     </div>
   </section>
 
-  <!-- 08 — CIERRE -->
-  <section class="slide slide--center slide--narrow" data-reclamo="Gracias">
+  <!-- 28 — CIERRE: RONDA -->
+  <section class="slide slide--center slide--narrow">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">ANTES DE IRNOS</p>
-      <h2 class="display-lg">Gracias, Ingrid.</h2>
-      <p class="lede" style="margin-top:1rem;">En una palabra: ¿cómo se sintió recibir retroalimentación hoy?</p>
+      <h2 class="display-lg">En una palabra</h2>
+      <p class="lede" style="margin-top:1rem;">¿Cómo se sintió recibir retroalimentación hoy?</p>
     </div>
   </section>
 
-  <!-- 09 — REFERENTES DE LA SEMANA -->
-  <section class="slide" data-reclamo="Referentes">
+  <!-- 29 — REFERENTES DE LA SEMANA -->
+  <section class="slide">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PARA EXPLORAR ESTA SEMANA</p>
       <h2 class="display-md title-gap">Referentes</h2>
@@ -484,8 +726,8 @@
     </div>
   </section>
 
-  <!-- 10 — CIERRE FINAL -->
-  <section class="slide slide--center portada" data-reclamo="Cierre">
+  <!-- 30 — CIERRE FINAL -->
+  <section class="slide slide--center portada">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA</p>
       <h2 class="display-lg">Nos vemos el 13 de octubre</h2>
@@ -503,7 +745,6 @@
   <span class="coord">19.24°N · 103.72°O — COLIMA</span>
   <nav class="tide-nav" id="tideNav" aria-label="Navegación de diapositivas"></nav>
   <div style="display:flex; align-items:center; gap:.9rem;">
-    <span class="reclamo" id="reclamo" title="Siguiente diapositiva"></span>
     <span class="counter"><span id="current">01</span> — <span id="total">14</span></span>
     <button class="nav-btn" id="prevBtn" aria-label="Diapositiva anterior">‹</button>
     <button class="nav-btn" id="nextBtn" aria-label="Siguiente diapositiva">›</button>
@@ -541,8 +782,6 @@
     slides.forEach(function(s, i){ s.classList.toggle('active', i === current); });
     marks.forEach(function(m, i){ m.classList.toggle('active', i === current); });
     document.getElementById('current').textContent = String(current+1).padStart(2,'0');
-    var nextSlide = slides[current + 1];
-    document.getElementById('reclamo').textContent = nextSlide ? (nextSlide.getAttribute('data-reclamo') || '') : '';
   }
 
   function goTo(i){
