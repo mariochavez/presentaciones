@@ -329,6 +329,14 @@
   }
   .hint-toast.gone{ opacity:0; }
 
+  .reclamo{
+    font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--pacifico-200); white-space:nowrap;
+    max-width:22ch; overflow:hidden; text-overflow:ellipsis;
+  }
+  .reclamo::before{ content:'→ '; color:var(--pacifico-400); }
+  .reclamo:empty{ display:none; }
+
 </style>
 </head>
 <body>
@@ -336,7 +344,7 @@
 <main class="deck" id="deck">
 
   <!-- 01 — PORTADA -->
-  <section class="slide active portada">
+  <section class="slide active portada" data-reclamo="Portada">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA · TALLER DE INICIACIÓN A PROYECTOS FOTOGRÁFICOS</p>
       <h1 class="display-xl">De las fotos al proyecto</h1>
@@ -348,7 +356,7 @@
   </section>
 
   <!-- 02 — TRES PALABRAS (secuencia real: cada nivel contiene al anterior) -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Tres palabras">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">COMPONENTE TEÓRICO</p>
       <h2 class="display-lg title-gap">Tres palabras, tres cosas distintas</h2>
@@ -368,7 +376,7 @@
   </section>
 
   <!-- 03 — BISAGRA -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Tres niveles">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">UNA MISMA FOTOGRAFÍA</p>
       <h2 class="display-lg">Puede vivir en los tres niveles.</h2>
@@ -377,7 +385,7 @@
   </section>
 
   <!-- 04 — CASO 1: CAXITLÁN -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Caso 1">
     <div class="slide-inner">
       <p class="eyebrow">CASO 1 — TRABAJO PROPIO</p>
       <h2 class="example-name">Mario Alberto Chávez</h2>
@@ -391,7 +399,7 @@
   </section>
 
   <!-- 05 — NIVEL 1: CONJUNTO -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Conjunto">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">NIVEL 1 — CONJUNTO</p>
       <h2 class="display-lg">Colima, fotografiada durante años</h2>
@@ -400,7 +408,7 @@
   </section>
 
   <!-- 06 — CONJUNTO — FOTO 1 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Conjunto · foto 1">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="01-chavez-conjunto-1.jpg">
         <img src="images/01-chavez-conjunto-1.jpg" alt="Fotografía suelta de Colima, Mario Alberto Chávez, 1" onerror="handleImgError(this)">
@@ -414,7 +422,7 @@
   </section>
 
   <!-- 07 — CONJUNTO — FOTO 2 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Conjunto · foto 2">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="01-chavez-conjunto-2.jpg">
         <img src="images/01-chavez-conjunto-2.jpg" alt="Fotografía suelta de Colima, Mario Alberto Chávez, 2" onerror="handleImgError(this)">
@@ -428,7 +436,7 @@
   </section>
 
   <!-- 08 — CONJUNTO — FOTO 3 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Conjunto · foto 3">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="01-chavez-conjunto-3.jpg">
         <img src="images/01-chavez-conjunto-3.jpg" alt="Fotografía suelta de Colima, Mario Alberto Chávez, 3" onerror="handleImgError(this)">
@@ -442,7 +450,7 @@
   </section>
 
   <!-- 09 — NIVEL 2: SERIE -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Serie">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">NIVEL 2 — SERIE</p>
       <h2 class="display-lg">La sal de Cuyutlán</h2>
@@ -451,7 +459,7 @@
   </section>
 
   <!-- 10 — SERIE — FOTO 1 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Serie · foto 1">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="02-chavez-sal-1.jpg">
         <img src="images/02-chavez-sal-1.jpg" alt="Salinas de Cuyutlán, Mario Alberto Chávez, fotografía 1" onerror="handleImgError(this)">
@@ -465,7 +473,7 @@
   </section>
 
   <!-- 11 — SERIE — FOTO 2 (esta misma imagen reaparece en el nivel 3) -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Serie · foto 2">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="02-chavez-sal-2.jpg">
         <img src="images/02-chavez-sal-2.jpg" alt="Salinas de Cuyutlán, Mario Alberto Chávez, fotografía 2" onerror="handleImgError(this)">
@@ -479,7 +487,7 @@
   </section>
 
   <!-- 12 — SERIE — FOTO 3 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Serie · foto 3">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="02-chavez-sal-3.jpg">
         <img src="images/02-chavez-sal-3.jpg" alt="Salinas de Cuyutlán, Mario Alberto Chávez, fotografía 3" onerror="handleImgError(this)">
@@ -493,7 +501,7 @@
   </section>
 
   <!-- 13 — NIVEL 3: PROYECTO -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Proyecto">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">NIVEL 3 — PROYECTO</p>
       <h2 class="display-lg">¿Quiénes somos los habitantes actuales de este territorio?</h2>
@@ -502,7 +510,7 @@
   </section>
 
   <!-- 14 — PROYECTO — FOTO 1 (MISMO ARCHIVO QUE LA DIAPOSITIVA 11, A PROPÓSITO) -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Proyecto · foto 1">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="02-chavez-sal-2.jpg">
         <img src="images/02-chavez-sal-2.jpg" alt="Caxitlán, Mario Alberto Chávez, la sal" onerror="handleImgError(this)">
@@ -516,7 +524,7 @@
   </section>
 
   <!-- 15 — PROYECTO — FOTO 2 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Proyecto · foto 2">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="03-chavez-caxitlan-cocos.jpg">
         <img src="images/03-chavez-caxitlan-cocos.jpg" alt="Caxitlán, Mario Alberto Chávez, cosecha de coco" onerror="handleImgError(this)">
@@ -530,7 +538,7 @@
   </section>
 
   <!-- 16 — PROYECTO — FOTO 3 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Proyecto · foto 3">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="03-chavez-caxitlan-virgen-mar.jpg">
         <img src="images/03-chavez-caxitlan-virgen-mar.jpg" alt="Caxitlán, Mario Alberto Chávez, procesión de la Virgen al mar" onerror="handleImgError(this)">
@@ -544,7 +552,7 @@
   </section>
 
   <!-- 17 — COMPARACIÓN SERIE / PROYECTO -->
-  <section class="slide">
+  <section class="slide" data-reclamo="La diferencia">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">LA DIFERENCIA</p>
       <h2 class="display-md title-gap">La misma fotografía, otra pregunta</h2>
@@ -563,7 +571,7 @@
   </section>
 
   <!-- 18 — CASO 2: DISAPPEARING DREAMS -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Disappearing Dreams">
     <div class="slide-inner">
       <p class="eyebrow">CASO 2 — TRABAJO PROPIO</p>
       <h2 class="example-name">Mario Alberto Chávez</h2>
@@ -574,7 +582,7 @@
   </section>
 
   <!-- 19 — DISAPPEARING DREAMS — FOTO 1 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Dreams · foto 1">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="04-chavez-disappearing-dreams-1.jpg">
         <img src="images/04-chavez-disappearing-dreams-1.jpg" alt="Disappearing Dreams, Mario Alberto Chávez, ropa suspendida en laguna seca" onerror="handleImgError(this)">
@@ -588,7 +596,7 @@
   </section>
 
   <!-- 20 — DISAPPEARING DREAMS — FOTO 2 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Dreams · foto 2">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="04-chavez-disappearing-dreams-2.jpg">
         <img src="images/04-chavez-disappearing-dreams-2.jpg" alt="Disappearing Dreams, Mario Alberto Chávez, retrato de espaldas" onerror="handleImgError(this)">
@@ -602,7 +610,7 @@
   </section>
 
   <!-- 21 — DISAPPEARING DREAMS — FOTO 3 -->
-  <section class="slide slide--photo">
+  <section class="slide slide--photo" data-reclamo="Dreams · foto 3">
     <div class="slide-inner">
       <figure class="photo-frame" data-filename="04-chavez-disappearing-dreams-3.jpg">
         <img src="images/04-chavez-disappearing-dreams-3.jpg" alt="Disappearing Dreams, Mario Alberto Chávez, objetos personales" onerror="handleImgError(this)">
@@ -616,7 +624,7 @@
   </section>
 
   <!-- 22 — CUATRO SEÑALES -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Cuatro señales">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">¿TIENES UN PROYECTO?</p>
       <h2 class="display-lg title-gap">Cuatro señales</h2>
@@ -630,7 +638,7 @@
   </section>
 
   <!-- 23 — EJERCICIO: AUTODIAGNÓSTICO -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Ejercicio">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">EJERCICIO — 10 MINUTOS</p>
       <h2 class="display-lg title-gap">¿Dónde está tu trabajo hoy?</h2>
@@ -657,7 +665,7 @@
   </section>
 
   <!-- 24 — DESCANSO -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="Descanso">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">15 MINUTOS</p>
       <h2 class="display-lg">Descanso</h2>
@@ -665,7 +673,7 @@
   </section>
 
   <!-- 25 — CLÍNICA: FORMATO -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Clínica">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">BLOQUE 3</p>
       <h2 class="display-lg title-gap">Primera clínica individual</h2>
@@ -679,7 +687,7 @@
   </section>
 
   <!-- 26 — TRES PREGUNTAS PARA QUIEN LEE -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Tres preguntas">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PARA QUIEN DA RETROALIMENTACIÓN</p>
       <h2 class="display-lg title-gap">Tres preguntas</h2>
@@ -692,7 +700,7 @@
   </section>
 
   <!-- 27 — TAREA PARA LA SESIÓN 4 -->
-  <section class="slide slide--narrow">
+  <section class="slide slide--narrow" data-reclamo="Tarea">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">TAREA PARA LA SESIÓN 4</p>
       <h2 class="display-lg title-gap">Fotografía más intencional</h2>
@@ -705,7 +713,7 @@
   </section>
 
   <!-- 28 — CIERRE: RONDA -->
-  <section class="slide slide--center slide--narrow">
+  <section class="slide slide--center slide--narrow" data-reclamo="En una palabra">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">ANTES DE IRNOS</p>
       <h2 class="display-lg">En una palabra</h2>
@@ -714,7 +722,7 @@
   </section>
 
   <!-- 29 — REFERENTES DE LA SEMANA -->
-  <section class="slide">
+  <section class="slide" data-reclamo="Referentes">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PARA EXPLORAR ESTA SEMANA</p>
       <h2 class="display-md title-gap">Referentes</h2>
@@ -727,7 +735,7 @@
   </section>
 
   <!-- 30 — CIERRE FINAL -->
-  <section class="slide slide--center portada">
+  <section class="slide slide--center portada" data-reclamo="Cierre">
     <div class="slide-inner">
       <p class="eyebrow kicker-gap">PUNTO DE PARTIDA</p>
       <h2 class="display-lg">Nos vemos el 13 de octubre</h2>
@@ -745,6 +753,7 @@
   <span class="coord">19.24°N · 103.72°O — COLIMA</span>
   <nav class="tide-nav" id="tideNav" aria-label="Navegación de diapositivas"></nav>
   <div style="display:flex; align-items:center; gap:.9rem;">
+    <span class="reclamo" id="reclamo" title="Siguiente diapositiva"></span>
     <span class="counter"><span id="current">01</span> — <span id="total">14</span></span>
     <button class="nav-btn" id="prevBtn" aria-label="Diapositiva anterior">‹</button>
     <button class="nav-btn" id="nextBtn" aria-label="Siguiente diapositiva">›</button>
@@ -782,6 +791,8 @@
     slides.forEach(function(s, i){ s.classList.toggle('active', i === current); });
     marks.forEach(function(m, i){ m.classList.toggle('active', i === current); });
     document.getElementById('current').textContent = String(current+1).padStart(2,'0');
+    var nextSlide = slides[current + 1];
+    document.getElementById('reclamo').textContent = nextSlide ? (nextSlide.getAttribute('data-reclamo') || '') : '';
   }
 
   function goTo(i){
