@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building a Modern Rails App &mdash; Maquina</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      /* Maquina brand */
+      --mq-blue: #50B1FD;
+      --mq-pink: #DE77DE;
+      --mq-gradient: linear-gradient(135deg, #50B1FD, #DE77DE);
+      --mq-gradient-subtle: linear-gradient(135deg, rgba(80,177,253,0.12), rgba(222,119,222,0.12));
+      --mq-gradient-hover: linear-gradient(135deg, rgba(80,177,253,0.18), rgba(222,119,222,0.18));
+      --mq-blue-dim: rgba(80,177,253,0.15);
+      --mq-pink-dim: rgba(222,119,222,0.15);
+
+      /* Neutrals */
+      --n-50: #fafafa;
+      --n-100: #f4f4f5;
+      --n-200: #e4e4e7;
+      --n-300: #d4d4d8;
+      --n-400: #a1a1aa;
+      --n-500: #71717a;
+      --n-600: #52525b;
+      --n-700: #3f3f46;
+      --n-800: #27272a;
+      --n-850: #1e1e21;
+      --n-900: #18181b;
+      --n-950: #09090b;
+
+      /* Accents */
+      --emerald: #34d399;
+      --emerald-dim: rgba(52,211,153,0.15);
+      --amber: #fbbf24;
+      --amber-dim: rgba(251,191,36,0.15);
+      --rose: #fb7185;
+      --rose-dim: rgba(251,113,133,0.15);
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--n-950);
+      color: var(--n-100);
+      overflow: hidden;
+      height: 100dvh;
+      width: 100dvw;
+    }
+
+    /* Subtle grain texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(80,177,253,0.03) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 50%, rgba(222,119,222,0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ---- View Transitions ---- */
+    ::view-transition-old(slide-content) {
+      animation: vt-out 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    ::view-transition-new(slide-content) {
+      animation: vt-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .going-back::view-transition-old(slide-content) {
+      animation: vt-out-rev 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .going-back::view-transition-new(slide-content) {
+      animation: vt-in-rev 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Cross-fade the slide number */
+    ::view-transition-old(slide-number) { animation: num-out 0.3s ease forwards; }
+    ::view-transition-new(slide-number) { animation: num-in 0.3s ease 0.2s forwards; opacity: 0; }
+
+    /* Forward: old shrinks back and fades, new grows in from ahead */
+    @keyframes vt-out {
+      0%   { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+      100% { opacity: 0; transform: translateX(-120px) scale(0.92); filter: blur(4px); }
+    }
+    @keyframes vt-in {
+      0%   { opacity: 0; transform: translateX(120px) scale(0.92); filter: blur(4px); }
+      100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+    }
+
+    /* Backward: mirror */
+    @keyframes vt-out-rev {
+      0%   { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+      100% { opacity: 0; transform: translateX(120px) scale(0.92); filter: blur(4px); }
+    }
+    @keyframes vt-in-rev {
+      0%   { opacity: 0; transform: translateX(-120px) scale(0.92); filter: blur(4px); }
+      100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+    }
+
+    @keyframes num-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(6px); } }
+    @keyframes num-in  { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ---- Layout ---- */
+    .deck {
+      height: 100dvh;
+      width: 100dvw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1100px;
+      padding: 2rem 3rem;
+      view-transition-name: slide-content;
+    }
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    /* Progress */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      background: var(--mq-gradient);
+      transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 100;
+    }
+
+    /* Logo watermark */
+    .logo-watermark {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 18px;
+      opacity: 0.25;
+      z-index: 100;
+    }
+
+    /* Slide counter */
+    .slide-number {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 2rem;
+      font-size: 0.75rem;
+      color: var(--n-500);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.05em;
+      view-transition-name: slide-number;
+    }
+
+    /* Nav hints */
+    .nav-hint {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 2rem;
+      font-size: 0.7rem;
+      color: var(--n-600);
+      display: flex;
+      gap: 0.75rem;
+    }
+    .nav-hint kbd {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.1rem 0.4rem;
+      border: 1px solid var(--n-700);
+      border-radius: 3px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      color: var(--n-400);
+      background: var(--n-900);
+    }
+
+    /* ---- Typography ---- */
+    h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+      color: var(--n-50);
+    }
+    h1 .gradient {
+      background: var(--mq-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h2 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--n-50);
+    }
+    h2 .step {
+      background: var(--mq-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 900;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--n-200);
+      margin-bottom: 0.3rem;
+    }
+
+    p { font-size: 1.05rem; line-height: 1.7; color: var(--n-300); }
+
+    .subtitle { font-size: 1.25rem; color: var(--n-400); font-weight: 300; }
+    .small { font-size: 0.9rem; color: var(--n-500); }
+    .tagline {
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--mq-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    strong { color: var(--n-100); font-weight: 600; }
+
+    /* ---- Code ---- */
+    pre {
+      background: var(--n-900);
+      border: 1px solid var(--n-800);
+      border-radius: 10px;
+      padding: 1.15rem 1.4rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.65;
+    }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.84em; }
+    pre code { color: var(--n-300); }
+    :not(pre) > code {
+      background: var(--n-850);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      color: var(--mq-blue);
+      font-size: 0.84em;
+    }
+
+    /* Syntax */
+    .kw { color: #c792ea; }
+    .str { color: #c3e88d; }
+    .cm { color: #546e7a; }
+    .fn { color: #82aaff; }
+    .sym { color: #f78c6c; }
+    .op { color: #89ddff; }
+    .sh { color: var(--emerald); }
+    .prompt { color: var(--n-500); }
+
+    /* ---- Grid ---- */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+    /* ---- Cards ---- */
+    .card {
+      background: var(--n-900);
+      border: 1px solid var(--n-800);
+      border-radius: 10px;
+      padding: 1.15rem 1.3rem;
+    }
+    .card h3 { display: flex; align-items: center; gap: 0.5rem; }
+    .card p { font-size: 0.92rem; color: var(--n-400); line-height: 1.5; }
+    .card.highlight {
+      border-color: transparent;
+      background: var(--mq-gradient-subtle);
+      border-image: var(--mq-gradient) 1;
+      border-image: none;
+      border: 1px solid rgba(80,177,253,0.25);
+    }
+
+    /* ---- Pillar cards ---- */
+    .pillar {
+      background: var(--n-900);
+      border: 1px solid var(--n-800);
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .pillar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--mq-gradient);
+    }
+    .pillar .pillar-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .pillar h3 { text-align: center; margin-bottom: 0.5rem; font-size: 1rem; }
+    .pillar p { font-size: 0.88rem; color: var(--n-400); }
+
+    /* ---- Badges ---- */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .badge-mq { background: var(--mq-blue-dim); color: var(--mq-blue); }
+    .badge-pink { background: var(--mq-pink-dim); color: var(--mq-pink); }
+    .badge-emerald { background: var(--emerald-dim); color: var(--emerald); }
+    .badge-amber { background: var(--amber-dim); color: var(--amber); }
+    .badge-rose { background: var(--rose-dim); color: var(--rose); }
+
+    /* ---- Lists ---- */
+    ul, ol { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    li { font-size: 1rem; color: var(--n-300); padding-left: 1.4rem; position: relative; line-height: 1.5; }
+    ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55rem;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--mq-blue);
+    }
+    ol { counter-reset: item; }
+    ol li { counter-increment: item; }
+    ol li::before {
+      content: counter(item);
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: var(--mq-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    /* ---- Flow ---- */
+    .flow { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .flow-item {
+      background: var(--n-900);
+      border: 1px solid var(--n-700);
+      border-radius: 8px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--n-200);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .flow-arrow { color: var(--n-600); font-size: 1rem; }
+
+    /* ---- File tree ---- */
+    .file-tree {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      color: var(--n-400);
+    }
+    .file-tree .dir { color: var(--mq-blue); }
+    .file-tree .file { color: var(--n-300); }
+    .file-tree .note { color: var(--n-500); font-family: 'Inter', sans-serif; font-style: italic; font-size: 0.8rem; }
+
+    /* ---- Title slide ---- */
+    .title-slide {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 70vh;
+    }
+    .title-slide h1 { font-size: 3.5rem; }
+    .title-slide .subtitle { font-size: 1.35rem; max-width: 620px; }
+
+    /* ---- Maquina logo in slide ---- */
+    .mq-logo { height: 42px; }
+    .mq-logo-sm { height: 28px; }
+
+    /* ---- Credits ---- */
+    .credits {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.75rem;
+      margin-top: 0.5rem;
+    }
+    .credits-author { text-align: center; }
+    .credits-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--n-100);
+      margin-bottom: 0.25rem;
+    }
+    .credits-role {
+      font-size: 0.95rem;
+      color: var(--n-400);
+    }
+    .credits-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .credits-links a {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      background: var(--n-900);
+      border: 1px solid var(--n-800);
+      border-radius: 8px;
+      color: var(--n-300);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .credits-links a:hover {
+      border-color: rgba(80,177,253,0.3);
+      background: var(--mq-gradient-subtle);
+      color: var(--n-100);
+    }
+    .credits-link-icon {
+      background: var(--mq-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 0.85rem;
+    }
+
+    /* ---- Appear animation ---- */
+    .appear { animation: appear 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+    .appear:nth-child(2) { animation-delay: 0.08s; }
+    .appear:nth-child(3) { animation-delay: 0.16s; }
+    .appear:nth-child(4) { animation-delay: 0.24s; }
+    .appear:nth-child(5) { animation-delay: 0.32s; }
+    .appear:nth-child(6) { animation-delay: 0.40s; }
+    .appear:nth-child(7) { animation-delay: 0.48s; }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="logo-watermark">
+
+  <div class="deck" id="deck">
+
+    <!-- 1: Title -->
+    <div class="slide title-slide" data-slide="0">
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="mq-logo appear">
+      <h1 class="appear">Building a Modern<br><span class="gradient">Rails Application</span></h1>
+      <p class="subtitle appear">From <code>rails new</code> to production-ready &mdash; with authentication, multi-tenancy, and background jobs.</p>
+      <p class="tagline appear">Tools for developers who ship alone</p>
+    </div>
+
+    <!-- 2: What is Maquina -->
+    <div class="slide" data-slide="1">
+      <div style="display:flex; align-items:center; gap:1rem;" class="appear">
+        <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="mq-logo-sm">
+      </div>
+      <p class="appear">Open-source development tools for Ruby on Rails. UI components and generators extracted from production applications &mdash; <strong>not theoretical exercises</strong>.</p>
+      <div class="grid-3">
+        <div class="pillar appear">
+          <span class="pillar-icon">&#9881;</span>
+          <h3>Production First</h3>
+          <p>Every tool is battle-tested in real apps before it ships. No prototypes.</p>
+        </div>
+        <div class="pillar appear">
+          <span class="pillar-icon">&#9670;</span>
+          <h3>Standard Rails</h3>
+          <p>ERB partials, Tailwind CSS, Stimulus. No custom DSLs, no magic &mdash; just Rails conventions.</p>
+        </div>
+        <div class="pillar appear">
+          <span class="pillar-icon">&#10022;</span>
+          <h3>One Person Scale</h3>
+          <p>Designed for solo developers. Simple enough for one, powerful enough for production.</p>
+        </div>
+      </div>
+      <p class="small appear">maquina.app &mdash; Generators, Components, MCP Server, Claude Skills</p>
+    </div>
+
+    <!-- 3: The problem -->
+    <div class="slide" data-slide="2">
+      <h2 class="appear">Every Rails app starts the same way</h2>
+      <p class="appear">After <code>rails new</code>, you always end up doing the same setup:</p>
+      <div class="grid-2">
+        <div class="card appear">
+          <h3>Authentication</h3>
+          <p>Rails 8 gives you login but no signup. You need registration, roles, accounts&hellip; every single time.</p>
+        </div>
+        <div class="card appear">
+          <h3>Operations</h3>
+          <p>Error tracking, job queue dashboard, rate limiting &mdash; you set these up manually for every project.</p>
+        </div>
+        <div class="card appear">
+          <h3>Configuration</h3>
+          <p>Mailer setup, CI scripts, linter config, Procfile, environment variables&hellip; the same boilerplate.</p>
+        </div>
+        <div class="card appear">
+          <h3>UI Components</h3>
+          <p>Forms, tables, cards, alerts &mdash; you rebuild the same Tailwind patterns or reach for heavy JS frameworks.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4: The Maquina ecosystem -->
+    <div class="slide" data-slide="3">
+      <h2 class="appear">The <span class="step">Maquina</span> ecosystem</h2>
+      <div class="grid-2">
+        <div class="card highlight appear">
+          <h3><span class="badge badge-mq">Generators</span></h3>
+          <p style="margin-top:0.5rem;">Rails generators that produce standalone code with <strong>no runtime dependency</strong>. Generate once, own forever. The gem is development-only &mdash; remove it after running and everything still works.</p>
+          <pre style="margin-top:0.75rem;"><code><span class="prompt">$</span> <span class="sh">rails g maquina:app --auth registration</span></code></pre>
+        </div>
+        <div class="card highlight appear">
+          <h3><span class="badge badge-pink">Components</span></h3>
+          <p style="margin-top:0.5rem;">20+ UI components &mdash; ERB partials styled with Tailwind CSS 4.0 and Stimulus. Inspired by shadcn/ui but purpose-built for Rails. Zero dependencies beyond Tailwind.</p>
+          <pre style="margin-top:0.75rem;"><code><span class="prompt">$</span> <span class="sh">rails g maquina_components:install</span></code></pre>
+        </div>
+        <div class="card appear">
+          <h3><span class="badge badge-emerald">Rails MCP Server</span></h3>
+          <p style="margin-top:0.5rem;">LLM integration for Rails projects &mdash; connect AI tools directly to your codebase context.</p>
+        </div>
+        <div class="card appear">
+          <h3><span class="badge badge-amber">Claude Skills</span></h3>
+          <p style="margin-top:0.5rem;">Rails Upgrade, Rails Simplifier, Recuerd0 &mdash; specialized AI skills following 37signals patterns.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5: Available generators -->
+    <div class="slide" data-slide="4">
+      <h2 class="appear">Available generators</h2>
+      <div class="grid-3">
+        <div class="card appear">
+          <h3><span class="badge badge-mq">maquina:clave</span></h3>
+          <p>Passwordless email-code auth. Complete sign-in/sign-up with verification codes, mailer, cleanup job.</p>
+        </div>
+        <div class="card appear">
+          <h3><span class="badge badge-mq">maquina:registration</span></h3>
+          <p>Password-based auth on top of Rails 8. Account model, user roles (admin/member), styled registration flow.</p>
+        </div>
+        <div class="card appear">
+          <h3><span class="badge badge-emerald">maquina:rack_attack</span></h3>
+          <p>Request protection. Blocks scanners, throttles abusive IPs, safelists localhost.</p>
+        </div>
+        <div class="card appear">
+          <h3><span class="badge badge-emerald">maquina:solid_queue</span></h3>
+          <p>Solid Queue as Active Job backend. Config, application setup, Procfile integration.</p>
+        </div>
+        <div class="card appear">
+          <h3><span class="badge badge-amber">maquina:solid_errors</span></h3>
+          <p>Error tracking dashboard with HTTP auth, engine mounting, optional custom views.</p>
+        </div>
+        <div class="card appear">
+          <h3><span class="badge badge-amber">maquina:mission_control</span></h3>
+          <p>Job queue dashboard with credential-based access and engine mounting.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6: The app generator -->
+    <div class="slide" data-slide="5">
+      <h2 class="appear">The orchestrator: <span class="step">maquina:app</span></h2>
+      <p class="appear">One command that runs all generators and sets up your entire application.</p>
+      <pre class="appear"><code><span class="prompt">$</span> <span class="sh">rails g maquina:app --auth registration</span></code></pre>
+      <div class="grid-2">
+        <div class="card appear">
+          <h3>What it configures</h3>
+          <ol>
+            <li>Adds gems (brakeman, standard, rails-i18n, etc.)</li>
+            <li>Creates Procfile, config files, CI scripts</li>
+            <li>Configures environments (mailer, URLs)</li>
+            <li>Installs Action Text &amp; Active Storage</li>
+            <li>Sets up Turbo morphing in layout</li>
+            <li>Creates HomeController with root route</li>
+          </ol>
+        </div>
+        <div class="card appear">
+          <h3>Sub-generators it runs</h3>
+          <ul>
+            <li>Your auth choice (<code>clave</code> or <code>registration</code>)</li>
+            <li><code>maquina:rack_attack</code></li>
+            <li><code>maquina:solid_queue</code></li>
+            <li><code>maquina:mission_control_jobs</code></li>
+            <li><code>maquina:solid_errors</code></li>
+            <li><code>maquina_components:install</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7: Let's build -->
+    <div class="slide title-slide" data-slide="6">
+      <span class="badge badge-emerald appear">Hands-on</span>
+      <h1 class="appear">Let's build <span class="gradient">an app</span></h1>
+      <p class="subtitle appear">A production-ready Rails app with everything you need from day one.</p>
+      <div class="flow appear">
+        <span class="flow-item">rails new</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-item">maquina:app</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-item">db:migrate</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-item">bin/dev</span>
+      </div>
+    </div>
+
+    <!-- 8: Step 1 - rails new -->
+    <div class="slide" data-slide="7">
+      <h2 class="appear"><span class="step">01</span> Create the Rails app</h2>
+      <pre class="appear"><code><span class="prompt">$</span> <span class="sh">rails new myapp --css tailwind</span>
+<span class="prompt">$</span> <span class="sh">cd myapp</span></code></pre>
+      <p class="appear">Rails 8 gives you sensible defaults out of the box:</p>
+      <div class="grid-2 appear">
+        <div class="card">
+          <h3>Included by default</h3>
+          <ul>
+            <li>SQLite (production-ready with solid adapters)</li>
+            <li>Tailwind CSS via <code>tailwindcss-rails</code></li>
+            <li>Propshaft asset pipeline</li>
+            <li>Importmap (no Node.js needed)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Solid trifecta</h3>
+          <ul>
+            <li>Solid Queue for background jobs</li>
+            <li>Solid Cache for caching</li>
+            <li>Solid Cable for WebSockets</li>
+            <li>Kamal for deployment</li>
+          </ul>
+        </div>
+      </div>
+      <p class="small appear">You can already run <code>bin/dev</code> and visit <code>http://localhost:3000</code></p>
+    </div>
+
+    <!-- 9: Step 2 - add maquina -->
+    <div class="slide" data-slide="8">
+      <h2 class="appear"><span class="step">02</span> Add Maquina generators</h2>
+      <pre class="appear"><code><span class="prompt">$</span> <span class="sh">bundle add maquina_generators --group development</span></code></pre>
+      <p class="appear">Then run the app generator with your chosen authentication:</p>
+      <pre class="appear"><code><span class="prompt">$</span> <span class="sh">rails generate maquina:app --auth registration</span></code></pre>
+      <p class="appear">This is a <strong>development-only</strong> gem. Generated code lives entirely in your app &mdash; no runtime dependency. Delete the gem after running.</p>
+      <div class="card highlight appear">
+        <h3>Auth options</h3>
+        <p><code>--auth none</code> &mdash; no authentication (default)<br>
+           <code>--auth clave</code> &mdash; passwordless email-code authentication<br>
+           <code>--auth registration</code> &mdash; password-based with Account + roles</p>
+      </div>
+    </div>
+
+    <!-- 10: What it does -->
+    <div class="slide" data-slide="9">
+      <h2 class="appear"><span class="step">02</span> What the generator does</h2>
+      <div class="grid-2">
+        <div class="appear">
+          <ol>
+            <li>Adds gems (brakeman, standard, rails-i18n, maquina_components)</li>
+            <li>Creates <code>Procfile.dev</code> and config files</li>
+            <li>Creates <code>bin/setup</code> and <code>bin/ci</code> scripts</li>
+            <li>Configures environments (letter_opener, mailer)</li>
+            <li>Installs Action Text &amp; Active Storage</li>
+            <li>Runs <code>maquina:registration</code> auth generator</li>
+            <li>Runs rack_attack, solid_queue, mission_control, solid_errors</li>
+            <li>Creates HomeController with root route</li>
+          </ol>
+        </div>
+        <div class="appear">
+          <h3>Finish setup</h3>
+          <pre><code><span class="prompt">$</span> <span class="sh">bin/rails generate solid_errors:install</span>
+<span class="cm"># decline the initializer overwrite</span>
+
+<span class="prompt">$</span> <span class="sh">bin/rails db:migrate</span>
+
+<span class="prompt">$</span> <span class="sh">bin/rails credentials:edit</span>
+<span class="cm"># set backstage username/password</span>
+
+<span class="prompt">$</span> <span class="sh">bin/dev</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11: Registration generator -->
+    <div class="slide" data-slide="10">
+      <h2 class="appear"><span class="step">03</span> The registration generator</h2>
+      <p class="appear">Builds on top of Rails 8's <code>generate authentication</code>, which gives you login but <strong>no signup</strong>.</p>
+      <div class="grid-2">
+        <div class="card appear">
+          <h3>Rails auth creates</h3>
+          <ul>
+            <li>User model with <code>has_secure_password</code></li>
+            <li>Session model</li>
+            <li>Current model</li>
+            <li>Authentication concern</li>
+            <li>SessionsController (login/logout)</li>
+            <li>PasswordsController (reset)</li>
+          </ul>
+        </div>
+        <div class="card highlight appear">
+          <h3>Registration adds</h3>
+          <ul>
+            <li>Account model (tenant)</li>
+            <li>User &rarr; <code>belongs_to :account</code> + roles</li>
+            <li>Current &rarr; <code>Current.account</code></li>
+            <li>RegistrationsController (signup)</li>
+            <li>Tailwind-styled views</li>
+            <li>English + Spanish translations</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12: Key files -->
+    <div class="slide" data-slide="11">
+      <h2 class="appear"><span class="step">03</span> Key generated files</h2>
+      <div class="grid-2">
+        <div class="appear">
+          <h3>Account model</h3>
+          <pre><code><span class="kw">class</span> <span class="fn">Account</span> &lt; ApplicationRecord
+  <span class="fn">has_many</span> <span class="sym">:users</span>, <span class="sym">dependent:</span> <span class="sym">:destroy</span>
+
+  <span class="fn">validates</span> <span class="sym">:name</span>, <span class="sym">presence:</span> <span class="kw">true</span>
+<span class="kw">end</span></code></pre>
+        </div>
+        <div class="appear">
+          <h3>User model</h3>
+          <pre><code><span class="kw">class</span> <span class="fn">User</span> &lt; ApplicationRecord
+  <span class="fn">has_secure_password</span>
+  <span class="fn">has_many</span> <span class="sym">:sessions</span>, <span class="sym">dependent:</span> <span class="sym">:destroy</span>
+  <span class="fn">belongs_to</span> <span class="sym">:account</span>
+
+  <span class="fn">validates</span> <span class="sym">:name</span>, <span class="sym">presence:</span> <span class="kw">true</span>
+
+  <span class="fn">enum</span> <span class="sym">:role</span>,
+    {<span class="sym">member:</span> <span class="str">"member"</span>, <span class="sym">admin:</span> <span class="str">"admin"</span>},
+    <span class="sym">default:</span> <span class="str">"member"</span>
+<span class="kw">end</span></code></pre>
+        </div>
+        <div class="appear">
+          <h3>Current model</h3>
+          <pre><code><span class="kw">class</span> <span class="fn">Current</span> &lt; ActiveSupport::CurrentAttributes
+  <span class="fn">attribute</span> <span class="sym">:session</span>
+  <span class="fn">delegate</span> <span class="sym">:user</span>, <span class="sym">to:</span> <span class="sym">:session</span>, <span class="sym">allow_nil:</span> <span class="kw">true</span>
+  <span class="fn">delegate</span> <span class="sym">:account</span>, <span class="sym">to:</span> <span class="sym">:user</span>, <span class="sym">allow_nil:</span> <span class="kw">true</span>
+<span class="kw">end</span></code></pre>
+        </div>
+        <div class="appear">
+          <h3>Access anywhere</h3>
+          <pre><code><span class="cm"># In any controller or view:</span>
+Current.user     <span class="cm"># logged-in user</span>
+Current.account  <span class="cm"># user's account</span>
+Current.user.admin? <span class="cm"># role check</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13: Registration controller -->
+    <div class="slide" data-slide="12">
+      <h2 class="appear"><span class="step">03</span> Registration flow</h2>
+      <p class="appear">Creates Account + User (as admin) in a single transaction:</p>
+      <pre class="appear"><code><span class="kw">class</span> <span class="fn">RegistrationsController</span> &lt; ApplicationController
+  <span class="fn">allow_unauthenticated_access</span>
+  <span class="fn">rate_limit</span> <span class="sym">to:</span> <span class="sym">10</span>, <span class="sym">within:</span> <span class="sym">3</span>.minutes, <span class="sym">only:</span> <span class="sym">:create</span>
+
+  <span class="kw">def</span> <span class="fn">create</span>
+    ActiveRecord::Base.transaction <span class="kw">do</span>
+      account = Account.create!(<span class="sym">name:</span> params[<span class="sym">:account_name</span>])
+      user = account.users.create!(
+        <span class="sym">name:</span> params[<span class="sym">:name</span>],
+        <span class="sym">email_address:</span> params[<span class="sym">:email_address</span>],
+        <span class="sym">password:</span> params[<span class="sym">:password</span>],
+        <span class="sym">role:</span> <span class="sym">:admin</span>
+      )
+    <span class="kw">end</span>
+
+    start_new_session_for user
+    redirect_to root_path
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+      <p class="small appear">The first user who creates an account automatically becomes its <strong>admin</strong>.</p>
+    </div>
+
+    <!-- 14: Auth flow -->
+    <div class="slide" data-slide="13">
+      <h2 class="appear"><span class="step">03</span> Authentication flow</h2>
+      <div class="appear" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div class="card">
+          <h3><span class="badge badge-emerald">Public</span> &nbsp;No login required</h3>
+          <div class="flow" style="margin-top: 0.75rem;">
+            <span class="flow-item">/registrations/new</span>
+            <span class="flow-item">/session/new</span>
+            <span class="flow-item">/passwords/new</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3><span class="badge badge-rose">Protected</span> &nbsp;Everything else</h3>
+          <p style="margin-top: 0.5rem;">The <code>Authentication</code> concern is included in <code>ApplicationController</code>.<br>Every controller requires login <strong>by default</strong>. Only controllers with <code>allow_unauthenticated_access</code> are public.</p>
+        </div>
+        <div class="card">
+          <h3><span class="badge badge-amber">Ops dashboards</span> &nbsp;HTTP Basic Auth</h3>
+          <div class="flow" style="margin-top: 0.75rem;">
+            <span class="flow-item">/admin/solid_errors</span>
+            <span class="flow-item">/admin/mission_control_jobs</span>
+          </div>
+          <p style="margin-top: 0.5rem;">Separate from app auth. Credentials from <code>rails credentials:edit</code></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 15: First resource -->
+    <div class="slide" data-slide="14">
+      <h2 class="appear"><span class="step">04</span> Your first resource</h2>
+      <pre class="appear"><code><span class="prompt">$</span> <span class="sh">bin/rails generate scaffold Project name:string description:text account:references</span>
+<span class="prompt">$</span> <span class="sh">bin/rails db:migrate</span></code></pre>
+      <div class="grid-2">
+        <div class="appear">
+          <h3>Add the association</h3>
+          <pre><code><span class="cm"># app/models/account.rb</span>
+<span class="kw">class</span> <span class="fn">Account</span> &lt; ApplicationRecord
+  <span class="fn">has_many</span> <span class="sym">:users</span>, <span class="sym">dependent:</span> <span class="sym">:destroy</span>
+  <span class="fn">has_many</span> <span class="sym">:projects</span>, <span class="sym">dependent:</span> <span class="sym">:destroy</span>
+
+  <span class="fn">validates</span> <span class="sym">:name</span>, <span class="sym">presence:</span> <span class="kw">true</span>
+<span class="kw">end</span></code></pre>
+        </div>
+        <div class="appear">
+          <h3>Scope the model</h3>
+          <pre><code><span class="cm"># app/models/project.rb</span>
+<span class="kw">class</span> <span class="fn">Project</span> &lt; ApplicationRecord
+  <span class="fn">belongs_to</span> <span class="sym">:account</span>
+
+  <span class="fn">validates</span> <span class="sym">:name</span>, <span class="sym">presence:</span> <span class="kw">true</span>
+<span class="kw">end</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- 16: Multi-tenancy -->
+    <div class="slide" data-slide="15">
+      <h2 class="appear"><span class="step">04</span> Multi-tenancy pattern</h2>
+      <p class="appear">Always query through <code>Current.account</code> &mdash; users never see data from other accounts.</p>
+      <pre class="appear"><code><span class="kw">class</span> <span class="fn">ProjectsController</span> &lt; ApplicationController
+  <span class="kw">def</span> <span class="fn">index</span>
+    <span class="cm">@projects</span> = Current.account.projects
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> <span class="fn">create</span>
+    <span class="cm">@project</span> = Current.account.projects.build(project_params)
+
+    <span class="kw">if</span> <span class="cm">@project</span>.save
+      redirect_to <span class="cm">@project</span>
+    <span class="kw">else</span>
+      render <span class="sym">:new</span>, <span class="sym">status:</span> <span class="sym">:unprocessable_entity</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  <span class="kw">private</span>
+
+  <span class="kw">def</span> <span class="fn">set_project</span>
+    <span class="cm">@project</span> = Current.account.projects.find(params[<span class="sym">:id</span>])
+    <span class="cm"># raises RecordNotFound if project belongs to another account</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+    </div>
+
+    <!-- 17: Roles -->
+    <div class="slide" data-slide="16">
+      <h2 class="appear"><span class="step">05</span> Role-based authorization</h2>
+      <p class="appear">Use the <code>role</code> enum to restrict actions by user role.</p>
+      <pre class="appear"><code><span class="kw">class</span> <span class="fn">ProjectsController</span> &lt; ApplicationController
+  <span class="fn">before_action</span> <span class="sym">:require_admin</span>, <span class="sym">only:</span> [<span class="sym">:destroy</span>]
+
+  <span class="cm"># ...</span>
+
+  <span class="kw">private</span>
+
+  <span class="kw">def</span> <span class="fn">require_admin</span>
+    <span class="kw">unless</span> Current.user.admin?
+      redirect_to projects_path,
+        <span class="sym">alert:</span> t(<span class="str">"flash.general.forbidden"</span>)
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+      <div class="grid-2 appear">
+        <div class="card">
+          <h3><span class="badge badge-mq">admin</span></h3>
+          <p>First user created with an account. Full access to all actions.</p>
+        </div>
+        <div class="card">
+          <h3><span class="badge badge-emerald">member</span></h3>
+          <p>Default role for subsequent users. Restricted from destructive actions.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 18: Full picture -->
+    <div class="slide" data-slide="17">
+      <h2 class="appear"><span class="step">06</span> The full picture</h2>
+      <div class="grid-2">
+        <div class="file-tree card appear">
+          <span class="dir">app/</span><br>
+          &nbsp;&nbsp;<span class="dir">controllers/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">concerns/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">authentication.rb</span> <span class="note">session mgmt</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">sessions_controller.rb</span> <span class="note">login</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">passwords_controller.rb</span> <span class="note">reset</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">registrations_controller.rb</span> <span class="note">signup</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">home_controller.rb</span> <span class="note">root</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">projects_controller.rb</span> <span class="note">yours</span><br>
+          &nbsp;&nbsp;<span class="dir">models/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">account.rb</span> <span class="note">tenant</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">user.rb</span> <span class="note">roles + auth</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">current.rb</span> <span class="note">request context</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">session.rb</span> <span class="note">browser sessions</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">project.rb</span> <span class="note">yours</span>
+        </div>
+        <div class="appear" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="card">
+            <h3>Security defaults</h3>
+            <ul>
+              <li>Rate limiting on registration and login</li>
+              <li>Rack Attack blocks scanners and bots</li>
+              <li>All controllers require auth by default</li>
+              <li>Account scoping prevents data leaks</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Ops dashboards</h3>
+            <ul>
+              <li><code>/admin/solid_errors</code> &mdash; error tracking</li>
+              <li><code>/admin/mission_control_jobs</code> &mdash; job queue</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 19: Recap -->
+    <div class="slide title-slide" data-slide="18">
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="mq-logo appear">
+      <h1 class="appear">Five commands to<br><span class="gradient">production-ready</span></h1>
+      <pre class="appear" style="text-align: left; max-width: 550px;"><code><span class="prompt">$</span> <span class="sh">rails new myapp --css tailwind</span>
+<span class="prompt">$</span> <span class="sh">bundle add maquina_generators -g development</span>
+<span class="prompt">$</span> <span class="sh">rails g maquina:app --auth registration</span>
+<span class="prompt">$</span> <span class="sh">bin/rails db:migrate</span>
+<span class="prompt">$</span> <span class="sh">bin/dev</span></code></pre>
+      <p class="subtitle appear">Auth, multi-tenancy, roles, jobs, error tracking, UI components, security &mdash; all generated, all yours.</p>
+      <p class="tagline appear">maquina.app</p>
+    </div>
+
+    <!-- 20: Credits -->
+    <div class="slide title-slide" data-slide="19">
+      <img src="https://maquina.app/images/maquina_logo_horizontal.svg" alt="Maquina" class="mq-logo appear">
+      <h1 class="appear" style="font-size: 2.5rem;">Thank you</h1>
+      <div class="credits appear">
+        <div class="credits-author">
+          <p class="credits-name">Mario Alberto Ch&aacute;vez</p>
+          <p class="credits-role">Rails architect &amp; AI toolmaker &mdash; Colima, M&eacute;xico</p>
+        </div>
+        <div class="credits-links">
+          <a href="https://maquina.app" target="_blank" rel="noopener">
+            <span class="credits-link-icon">&#9670;</span>
+            maquina.app
+          </a>
+          <a href="https://mariochavez.io" target="_blank" rel="noopener">
+            <span class="credits-link-icon">&#9998;</span>
+            mariochavez.io
+          </a>
+          <a href="https://github.com/mariochavez" target="_blank" rel="noopener">
+            <span class="credits-link-icon">&#9783;</span>
+            github.com/mariochavez
+          </a>
+          <a href="https://x.com/mario_chavez" target="_blank" rel="noopener">
+            <span class="credits-link-icon">&#10006;</span>
+            @mario_chavez
+          </a>
+        </div>
+      </div>
+      <p class="small appear" style="margin-top: 0.5rem;">Open source &mdash; all tools available at maquina.app</p>
+    </div>
+
+  </div>
+
+  <div class="slide-number" id="slideNumber"></div>
+  <div class="nav-hint">
+    <span><kbd>&larr;</kbd> <kbd>&rarr;</kbd> navigate</span>
+    <span><kbd>f</kbd> fullscreen</span>
+  </div>
+
+  <script>
+    const deck = document.getElementById('deck');
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progress');
+    const slideNumber = document.getElementById('slideNumber');
+    let current = 0;
+    let transitioning = false;
+
+    function updateSlide(index, direction = 'forward') {
+      if (transitioning || index < 0 || index >= slides.length || index === current) return;
+      transitioning = true;
+
+      const transition = document.startViewTransition(() => {
+        slides[current].classList.remove('active');
+        current = index;
+        slides[current].classList.add('active');
+        updateUI();
+      });
+
+      if (direction === 'back') document.documentElement.classList.add('going-back');
+
+      transition.finished.then(() => {
+        document.documentElement.classList.remove('going-back');
+        transitioning = false;
+      }).catch(() => { transitioning = false; });
+    }
+
+    function updateUI() {
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      slideNumber.textContent = `${current + 1} / ${slides.length}`;
+    }
+
+    function next() { updateSlide(current + 1, 'forward'); }
+    function prev() { updateSlide(current - 1, 'back'); }
+
+    document.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        case 'ArrowRight': case 'ArrowDown': case ' ': e.preventDefault(); next(); break;
+        case 'ArrowLeft': case 'ArrowUp': e.preventDefault(); prev(); break;
+        case 'Home': e.preventDefault(); updateSlide(0, 'back'); break;
+        case 'End': e.preventDefault(); updateSlide(slides.length - 1, 'forward'); break;
+        case 'f':
+          document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+          break;
+      }
+    });
+
+    let touchStartX = 0;
+    deck.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    deck.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) diff > 0 ? next() : prev();
+    });
+
+    deck.addEventListener('click', (e) => {
+      if (e.target.closest('a, button, code, pre')) return;
+      (e.clientX / window.innerWidth) > 0.5 ? next() : prev();
+    });
+
+    slides[0].classList.add('active');
+    updateUI();
+  </script>
+</body>
+</html>

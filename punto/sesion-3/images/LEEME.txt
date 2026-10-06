@@ -1,0 +1,49 @@
+IMÁGENES PARA LA PRESENTACIÓN — SESIÓN 3
+=============================================
+
+Coloca aquí tus archivos con estos nombres exactos (respeta mayúsculas,
+minúsculas y guiones). Mientras un archivo no exista, esa diapositiva
+muestra un recuadro punteado con el nombre pendiente — así sabes de un
+vistazo qué falta antes de la sesión.
+
+Todas las imágenes de esta sesión son tuyas.
+
+NIVEL 1 — CONJUNTO (fotografías sueltas de Colima)
+  01-chavez-conjunto-1.jpg
+  01-chavez-conjunto-2.jpg
+  01-chavez-conjunto-3.jpg
+  Elige tres fotos buenas que no hayan nacido de ninguna pregunta:
+  un paisaje, una fiesta, una calle. Que sean de temas distintos y
+  no dialoguen entre sí. Funcionan mejor si son fotos que de verdad
+  te gustan — el punto no es que sean malas, es que no tienen eje.
+
+NIVEL 2 — SERIE (la sal de Cuyutlán)
+  02-chavez-sal-1.jpg
+  02-chavez-sal-2.jpg   <- ESTA SE REPITE EN EL NIVEL 3
+  02-chavez-sal-3.jpg
+  Tres fotos de sal coherentes entre sí: pilos, piletas, salinero.
+  Para 02-chavez-sal-2 usa la imagen de sal con más presencia humana
+  (el salinero con canasta, por ejemplo), porque va a reaparecer.
+
+NIVEL 3 — PROYECTO (Caxitlán)
+  02-chavez-sal-2.jpg   (el mismo archivo de arriba, no hace falta copiarlo)
+  03-chavez-caxitlan-cocos.jpg
+  03-chavez-caxitlan-virgen-mar.jpg
+  La idea es que el grupo vea la misma foto de sal al lado de imágenes
+  que no se le parecen visualmente (coco, Virgen al mar) pero que
+  responden a la misma pregunta.
+
+DISAPPEARING DREAMS
+  04-chavez-disappearing-dreams-1.jpg   (vestido suspendido en la laguna seca)
+  04-chavez-disappearing-dreams-2.jpg   (retrato de espaldas)
+  04-chavez-disappearing-dreams-3.jpg   (cuadrícula de objetos personales)
+  Son las tres de la propuesta al Javier Ramírez Limón — una por cada
+  estrategia visual del proyecto.
+
+RECOMENDACIONES
+----------------
+- Formato JPG; con 1500–2000 px en el lado largo es suficiente.
+- Las verticales se muestran completas, sin recorte.
+- Si quieres usar otras fotos, cambia el data-filename y el
+  src="images/..." de la diapositiva correspondiente en index.html
+  (búscalo con Ctrl+F / Cmd+F).
