@@ -1,0 +1,305 @@
+/* styles.css - Main stylesheet for presentation */
+
+/* ===================================
+   Base Setup
+   =================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px; /* Base font size: 1rem = 16px */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: #ffffff;
+    color: #333;
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+/* Ensure images don't overflow */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ===================================
+   Slide Container
+   =================================== */
+.slide {
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 3.75rem; /* 60px */
+    background: #ffffff;
+}
+
+.slide.active {
+    display: flex;
+}
+
+/* ===================================
+   Typography
+   =================================== */
+.gradient-text {
+    background: linear-gradient(90deg, #ee7fd9 0%, #5e8af5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.text-pink {
+    color: #ee7fd9;
+}
+
+.subtitle {
+    font-size: 3rem; /* 48px */
+    color: #5e8af5;
+    font-weight: 600;
+    margin-top: 1.25rem; /* 20px */
+    margin-bottom: 1.25rem; /* 20px */
+    text-align: center;
+}
+
+.url {
+    font-size: 2.25rem; /* 36px */
+    color: #5e8af5;
+    font-weight: 500;
+    margin-bottom: 3.75rem; /* 60px */
+}
+
+/* ===================================
+   Slide Type 1 - Title Slides
+   =================================== */
+.slide-1 {
+    background: #ffffff;
+}
+
+.slide-1 h1 {
+    font-size: 7.5rem; /* 120px */
+    font-weight: 800;
+    margin-bottom: 2.5rem; /* 40px */
+    letter-spacing: -0.25rem; /* -4px */
+}
+
+.slide-1 .subtitle, 
+.slide-1 .author {
+    font-size: 2.25rem; /* 36px */
+    color: #5e8af5;
+    font-weight: 600;
+}
+
+/* ===================================
+   Slide Type 2 - General Content
+   =================================== */
+.slide-2 h2 {
+    font-size: 6rem; /* 96px */
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.slide-2 .author {
+    position: absolute;
+    bottom: 3.75rem; /* 60px */
+    font-size: 1.5rem; /* 24px */
+    font-weight: 500;
+}
+
+/* ===================================
+   Slide Type 3 - Browser Mockup
+   =================================== */
+.slide-3 h2 {
+    font-size: 4.5rem; /* 72px */
+    font-weight: 800;
+    margin-bottom: 1.25rem; /* 20px */
+}
+
+/* ===================================
+   Browser Mockup Component
+   =================================== */
+.browser-mockup {
+    width: 80%;
+    max-width: 75rem; /* 1200px */
+    background: white;
+    border-radius: 0.75rem; /* 12px */
+    box-shadow: 0 1.25rem 3.75rem rgba(0,0,0,0.5); /* 20px 60px */
+    overflow: hidden;
+}
+
+.browser-header {
+    background: #f8f8f8;
+    padding: 1rem 1.5rem; /* 16px 24px */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* 8px */
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.browser-dots {
+    display: flex;
+    gap: 0.5rem; /* 8px */
+}
+
+.dot {
+    width: 0.75rem; /* 12px */
+    height: 0.75rem; /* 12px */
+    border-radius: 50%;
+}
+
+.dot.red { 
+    background: #ff5f57; 
+}
+
+.dot.yellow { 
+    background: #ffbd2e; 
+}
+
+.dot.green { 
+    background: #28ca42; 
+}
+
+.browser-content {
+    height: 31.25rem; /* 500px */
+    background: #fafafa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem; /* 24px */
+    color: #999;
+    overflow: hidden;
+}
+
+.browser-content img {
+    width: 100%;
+    object-fit: cover;
+    height: 100%;
+}
+
+/* ===================================
+   Code Block Component
+   =================================== */
+.code-block {
+    background: #f8f8f8;
+    color: #333;
+    padding: 2.5rem 3.75rem; /* 40px 60px */
+    border-radius: 0.75rem; /* 12px */
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.8;
+    width: 80%;
+    max-width: 62.5rem; /* 1000px */
+    box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.08); /* 4px 20px */
+}
+
+.code-block .prompt {
+    color: #5e8af5;
+}
+
+.code-block .comment {
+    color: #ee7fd9;
+}
+
+/* ===================================
+   Image Container Component
+   =================================== */
+.image-container {
+    width: 80%;
+    max-width: 62.5rem; /* 1000px */
+    background: white;
+    border-radius: 1rem; /* 16px */
+    box-shadow: 0 1.25rem 3.75rem rgba(0,0,0,0.1); /* 20px 60px */
+    overflow: hidden;
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-width: 100%;
+}
+
+/* ===================================
+   Navigation Elements
+   =================================== */
+.nav-hint {
+    position: fixed;
+    bottom: 1.25rem; /* 20px */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.875rem; /* 14px */
+    color: #808080;
+}
+
+.author-info {
+    position: fixed;
+    bottom: 1.25rem; /* 20px */
+    left: 1.25rem; /* 20px */
+    font-size: 0.875rem; /* 14px */
+    color: #808080;
+}
+
+.author-info a {
+    color: #808080;
+    text-decoration: none;
+}
+
+.author-info a:hover {
+    color: #5e8af5;
+}
+
+.position-indicator {
+    position: fixed;
+    bottom: 1.25rem; /* 20px */
+    right: 1.25rem; /* 20px */
+    font-size: 0.875rem; /* 14px */
+    color: #808080;
+}
+
+/* ===================================
+   Optional: Slide Counter
+   =================================== */
+.slide-counter {
+    position: fixed;
+    top: 1.25rem; /* 20px */
+    right: 1.25rem; /* 20px */
+    font-size: 0.875rem; /* 14px */
+    color: #808080;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.1);
+}
+
+/* ===================================
+   Touch-friendly Adjustments
+   =================================== */
+@media (hover: none) and (pointer: coarse) {
+    .author-info a {
+        padding: 0.5rem; /* 8px */
+        display: inline-block;
+    }
+    
+    .slide {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* ===================================
+   High Resolution Displays
+   =================================== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .gradient-text {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}

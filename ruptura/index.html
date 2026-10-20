@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruptura — El nuevo documental fotográfico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200..900;1,9..144,200..900&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #100e0c;
+    --bg-soft: #181613;
+    --ink: #e8e1d4;
+    --ink-muted: #7c7569;
+    --ink-dim: #4a443c;
+    --rule: rgba(232, 225, 212, 0.12);
+    --rule-strong: rgba(232, 225, 212, 0.28);
+    --accent: #c8504b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Fraunces', Georgia, serif;
+    height: 100%;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%);
+  }
+
+  .deck { position: relative; width: 100vw; height: 100vh; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 3.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 400ms ease;
+  }
+
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  /* === TITLE === */
+  .slide-title { justify-content: space-between; padding: 4rem 5rem; }
+  .slide-title .top-bar {
+    display: flex; justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--ink-muted);
+  }
+  .slide-title .center { margin-top: -2rem; }
+  .slide-title h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(6rem, 16vw, 18rem);
+    font-weight: 200;
+    font-variation-settings: "opsz" 144;
+    line-height: 0.88;
+    letter-spacing: -0.045em;
+    font-style: italic;
+  }
+  .slide-title .lede {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.4rem, 2.3vw, 2rem);
+    font-weight: 300; font-style: italic;
+    line-height: 1.3; max-width: 32ch;
+    opacity: 0.88; margin-top: 2rem; margin-left: 0.5rem;
+  }
+  .slide-title .meta {
+    display: flex; justify-content: space-between;
+    align-items: end; gap: 3rem;
+  }
+  .slide-title .meta .author { font-family: 'Fraunces', serif; }
+  .slide-title .meta .author .name {
+    font-size: 1.4rem; font-weight: 400;
+    letter-spacing: -0.015em;
+    display: block; margin-bottom: 0.3rem;
+  }
+  .slide-title .meta .author .role {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-muted);
+  }
+  .slide-title .meta .edition {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-muted);
+    text-align: right; line-height: 1.8;
+  }
+
+  /* === SECTION DIVIDER === */
+  .slide-section {
+    justify-content: center; align-items: center; text-align: center;
+  }
+  .slide-section .kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--ink-muted);
+    margin-bottom: 2rem;
+  }
+  .slide-section .roman {
+    font-family: 'Fraunces', serif;
+    font-style: italic; font-weight: 200;
+    font-size: clamp(9rem, 22vw, 24rem);
+    line-height: 0.85;
+    font-variation-settings: "opsz" 144;
+    margin-bottom: 1.5rem;
+  }
+  .slide-section h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.2rem, 4.5vw, 4rem);
+    font-weight: 300; letter-spacing: -0.03em;
+    max-width: 22ch; line-height: 1.05;
+    font-variation-settings: "opsz" 144;
+  }
+  .slide-section h2 em { font-style: italic; font-weight: 200; }
+
+  /* === TEXT SLIDE === */
+  .slide-text { padding: 4rem 6rem; justify-content: center; }
+  .slide-text .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--ink-muted);
+    margin-bottom: 2rem;
+  }
+  .slide-text h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+    font-weight: 300; font-style: italic;
+    letter-spacing: -0.03em; line-height: 0.98;
+    margin-bottom: 3rem; max-width: 18ch;
+    font-variation-settings: "opsz" 144;
+  }
+  .slide-text .body-cols {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 4rem; max-width: 88ch;
+  }
+  .slide-text .body-single { max-width: 56ch; }
+  .slide-text p {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem; line-height: 1.55;
+    opacity: 0.92; font-weight: 300;
+  }
+  .slide-text p + p { margin-top: 1rem; }
+  .slide-text .lead {
+    font-style: italic; font-size: 1.4rem;
+    line-height: 1.4; margin-bottom: 1.5rem;
+  }
+  .slide-text .list {
+    list-style: none; counter-reset: tenet;
+    display: grid; gap: 1.5rem;
+  }
+  .slide-text .list li {
+    counter-increment: tenet;
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem; line-height: 1.5;
+    padding-left: 3rem; position: relative;
+    font-weight: 300;
+  }
+  .slide-text .list li::before {
+    content: counter(tenet, decimal-leading-zero);
+    position: absolute; left: 0; top: 0.2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.15em;
+    color: var(--ink-muted);
+  }
+  .slide-text .list strong {
+    font-style: italic; font-weight: 400; color: var(--ink);
+  }
+
+  /* === AUTHOR SLIDE === */
+  .slide-author { padding: 2.8rem 4rem 3.5rem; gap: 1.8rem; }
+  .author-header {
+    display: grid; grid-template-columns: auto 1fr;
+    align-items: end; gap: 4rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .author-header .left .name {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+    font-weight: 300; font-style: italic;
+    letter-spacing: -0.02em; line-height: 1;
+    font-variation-settings: "opsz" 144;
+  }
+  .author-header .left .place-year {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.18em;
+    color: var(--ink-muted); margin-top: 0.6rem;
+    text-transform: uppercase;
+  }
+  .author-header .right { text-align: right; }
+  .author-header .right .project-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.3rem, 1.8vw, 1.7rem);
+    font-style: italic; font-weight: 400;
+    letter-spacing: -0.015em; line-height: 1.1;
+  }
+  .author-header .right .project-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.18em;
+    color: var(--ink-muted); text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  .image-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0.8rem;
+    min-height: 0;
+  }
+  .image-grid .photo:nth-child(1) { grid-row: span 2; }
+
+  .image-grid.layout-triptych {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+  }
+  .image-grid.layout-triptych .photo:nth-child(1) { grid-row: span 1; }
+
+  .image-grid.layout-duo {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+  }
+  .image-grid.layout-duo .photo:nth-child(1) { grid-row: span 1; }
+
+  .photo {
+    position: relative;
+    background: var(--bg-soft);
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .photo::before {
+    content: attr(data-meta);
+    position: absolute;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.18em;
+    color: var(--ink-dim); text-transform: uppercase;
+  }
+  .photo img {
+    position: relative; width: 100%; height: 100%;
+    object-fit: cover; z-index: 1;
+  }
+
+  .author-footer {
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: end; gap: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+  }
+  .author-footer .pull-quote {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(1.05rem, 1.4vw, 1.35rem);
+    line-height: 1.4; max-width: 70ch;
+    font-weight: 300; opacity: 0.95;
+  }
+  .author-footer .pull-quote em {
+    font-style: normal; color: var(--ink-muted);
+  }
+  .author-footer .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.18em;
+    color: var(--ink-muted); text-transform: uppercase;
+    text-align: right; white-space: nowrap;
+  }
+
+  /* === CLOSING === */
+  .slide-closing {
+    justify-content: center; align-items: center;
+    text-align: center; padding: 6rem;
+  }
+  .slide-closing .quote {
+    font-family: 'Fraunces', serif;
+    font-style: italic; font-weight: 200;
+    font-size: clamp(2rem, 3.8vw, 3.4rem);
+    line-height: 1.18; letter-spacing: -0.025em;
+    max-width: 28ch;
+    font-variation-settings: "opsz" 144;
+  }
+  .slide-closing .signature {
+    margin-top: 5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem; letter-spacing: 0.22em;
+    color: var(--ink-muted); text-transform: uppercase;
+    line-height: 2;
+  }
+  .slide-closing .signature .name {
+    color: var(--ink);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1.2rem; text-transform: none;
+    letter-spacing: -0.01em;
+    display: block; margin-bottom: 0.5rem;
+  }
+
+  /* === UI === */
+  .counter {
+    position: fixed; bottom: 1.5rem; right: 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.18em;
+    color: var(--ink-muted); z-index: 100;
+  }
+  .hint {
+    position: fixed; bottom: 1.5rem; left: 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.14em;
+    color: var(--ink-dim); z-index: 100;
+    text-transform: uppercase;
+    transition: opacity 600ms ease;
+  }
+  .hint.fade { opacity: 0; }
+  .running-head {
+    position: fixed; top: 1.5rem; right: 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.22em;
+    color: var(--ink-dim); z-index: 100;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 900px) {
+    .slide { padding: 2rem; }
+    .slide-author { padding: 1.5rem 2rem 2.5rem; }
+    .author-header { grid-template-columns: 1fr; gap: 1rem; }
+    .author-header .right { text-align: left; }
+    .image-grid { grid-template-columns: 1fr; grid-template-rows: 1.5fr 1fr 1fr; }
+    .image-grid.layout-triptych,
+    .image-grid.layout-duo { grid-template-columns: 1fr; grid-template-rows: repeat(3, 1fr); }
+    .author-footer { grid-template-columns: 1fr; }
+    .slide-text .body-cols { grid-template-columns: 1fr; gap: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="running-head">Ruptura · Nuevo documental</div>
+<div class="counter">01 / 23</div>
+<div class="hint">← → navegar · F pantalla completa</div>
+
+<div class="deck">
+
+  <!-- 1. TITLE -->
+  <section class="slide slide-title active">
+    <div class="top-bar">
+      <span>Una conversación sobre el nuevo documental fotográfico</span>
+      <span>Mayo · 2026</span>
+    </div>
+    <div class="center">
+      <h1>Ruptura</h1>
+      <p class="lede">Cuando el fotógrafo deja de ser testigo y se vuelve parte del tejido.</p>
+    </div>
+    <div class="meta">
+      <div class="author">
+        <span class="name">Mario Alberto Chávez Cárdenas</span>
+        <span class="role">Fotógrafo documental</span>
+      </div>
+      <div class="edition">
+        Edición uno<br>
+        Colima · México
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. EL PACTO ROTO -->
+  <section class="slide slide-text">
+    <div class="eyebrow">— Punto de partida</div>
+    <h2>El pacto roto.</h2>
+    <div class="body-cols">
+      <div>
+        <p class="lead">El documentalismo del siglo XX operó sobre cinco supuestos. Hoy cada uno se ha vuelto frágil.</p>
+        <p>De la <em>Farm Security Administration</em> a los fundadores de Magnum, de Eugene Smith a la <em>concerned photography</em>, la fotografía documental estableció un pacto con su espectador: las imágenes serían la prueba de un mundo al que no íbamos a llegar.</p>
+      </div>
+      <div>
+        <ul class="list">
+          <li><strong>La objetividad</strong> — la foto como ventana transparente.</li>
+          <li><strong>El instante decisivo</strong> — una imagen lo dice todo.</li>
+          <li><strong>La separación sujeto/objeto</strong> — yo aquí, el otro allá.</li>
+          <li><strong>El viaje al elsewhere</strong> — traer noticias de donde no irás.</li>
+          <li><strong>La autoridad del pie de foto</strong> — la palabra ancla el sentido.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. SECTION: LA GENERACIÓN BISAGRA -->
+  <section class="slide slide-section">
+    <div class="kicker">— Generación bisagra</div>
+    <h2>Medina y Mata Rosas: <em>el tránsito desde dentro de</em> La Jornada.</h2>
+  </section>
+
+  <!-- 4. ELSA MEDINA — MULEGÉ -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">Elsa Medina</div>
+        <div class="place-year">Ciudad de México · 1952 — fotógrafa</div>
+      </div>
+      <div class="right">
+        <div class="project-title">Mulegé, Baja California Sur</div>
+        <div class="project-meta">Proyecto en curso · memoria y linaje materno</div>
+      </div>
+    </header>
+    <div class="image-grid">
+      <figure class="photo" data-meta="EM · MUL 01"><img src="images/elsa-medina/elsa-medina-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="EM · MUL 02"><img src="images/elsa-medina/elsa-medina-2.jpg" alt=""></figure>
+      <figure class="photo" data-meta="EM · MUL 03"><img src="images/elsa-medina/elsa-medina-3.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">Su bisabuela era de Mulegé. <em>—</em> El proyecto no documenta el norte: busca lo que de ella misma quedó allá antes de que existiera. La fotografía como duelo retroactivo de un linaje materno que se desvanece.</p>
+      <div class="tag">Caso · I</div>
+    </footer>
+  </section>
+
+  <!-- 5. FRANCISCO MATA ROSAS — LA LÍNEA -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">Francisco Mata Rosas</div>
+        <div class="place-year">Ciudad de México · 1958 — fotógrafo, UAM</div>
+      </div>
+      <div class="right">
+        <div class="project-title">La Línea</div>
+        <div class="project-meta">2010 — presente · documental interactivo en línea</div>
+      </div>
+    </header>
+    <div class="image-grid layout-duo">
+      <figure class="photo" data-meta="FMR · LIN 01"><img src="images/francisco-mata-rosas/francisco-mata-rosas-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="FMR · LIN 02"><img src="images/francisco-mata-rosas/francisco-mata-rosas-2.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">«Llevo tatuada la línea divisoria del norte.» <em>—</em> No es un fotógrafo del centro viajando al borde: es un fotógrafo cuya identidad es fronteriza. Película, formato medio, iPhone, Super 8, panorámica, video — porque la frontera ya es muchos lenguajes a la vez.</p>
+      <div class="tag">Caso · II</div>
+    </footer>
+  </section>
+
+  <!-- 6. LAS CINCO RUPTURAS — INDEX -->
+  <section class="slide slide-text">
+    <div class="eyebrow">— Lo que viene</div>
+    <h2>Las cinco rupturas.</h2>
+    <div class="body-single">
+      <ul class="list">
+        <li><strong>La objetividad es una ficción operativa</strong> — Cristina de Middel</li>
+        <li><strong>El autor se entrelaza con el tema</strong> — Martínez, Pons, Romero, Drake</li>
+        <li><strong>Del instante al proyecto de largo aliento</strong> — Abril, Rodríguez, Cinque</li>
+        <li><strong>El allá se vuelve aquí</strong> — geografías propias</li>
+        <li><strong>La imagen como construcción material</strong> — la foto como objeto</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7. SECTION: I -->
+  <section class="slide slide-section">
+    <div class="kicker">— Primera ruptura</div>
+    <div class="roman">I</div>
+    <h2>La objetividad es <em>una ficción operativa.</em></h2>
+  </section>
+
+  <!-- 8. CRISTINA DE MIDDEL -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">Cristina de Middel</div>
+        <div class="place-year">Alicante · 1975 — Magnum Photos · vive en Uruapan, Michoacán</div>
+      </div>
+      <div class="right">
+        <div class="project-title">Journey to the Center</div>
+        <div class="project-meta">2024 · caravanas migrantes · Guatemala → California</div>
+      </div>
+    </header>
+    <div class="image-grid">
+      <figure class="photo" data-meta="CDM · JTC 01"><img src="images/cristina-de-middel/cristina-de-middel-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="CDM · JTC 02"><img src="images/cristina-de-middel/cristina-de-middel-2.jpg" alt=""></figure>
+      <figure class="photo" data-meta="CDM · JTC 03"><img src="images/cristina-de-middel/cristina-de-middel-3.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">«Uso estética documental, pero no hago fotografía documental.» <em>—</em> Convierte el viaje migrante en una versión contemporánea de Verne. La ficción no se opone a la verdad: la habilita. Donde el periodismo busca el dato, ella busca la imaginería que sostiene los cuerpos en movimiento.</p>
+      <div class="tag">Ruptura · I</div>
+    </footer>
+  </section>
+
+  <!-- 9. SECTION: II -->
+  <section class="slide slide-section">
+    <div class="kicker">— Segunda ruptura · el corazón del argumento</div>
+    <div class="roman">II</div>
+    <h2>El autor <em>se entrelaza</em> con el tema.</h2>
+  </section>
+
+  <!-- 10. YAEL MARTÍNEZ -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">Yael Martínez</div>
+        <div class="place-year">Taxco, Guerrero · 1984 — Magnum Photos</div>
+      </div>
+      <div class="right">
+        <div class="project-title">La casa que sangra</div>
+        <div class="project-meta">2013 — 2019 · KWY Ediciones · Eugene Smith Grant 2019</div>
+      </div>
+    </header>
+    <div class="image-grid">
+      <figure class="photo" data-meta="YM · LCS 01"><img src="images/yael-martinez/yael-martinez-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="YM · LCS 02"><img src="images/yael-martinez/yael-martinez-2.jpg" alt=""></figure>
+      <figure class="photo" data-meta="YM · LCS 03"><img src="images/yael-martinez/yael-martinez-3.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">Dos de sus cuñados desaparecieron. <em>—</em> El proyecto arranca dentro de su propia familia y se expande como el dolor mismo hacia el mapa de geografías arrasadas por el crimen organizado. La obra funciona porque el dolor que evoca es uno que el autor habita, no uno al que viajó.</p>
+      <div class="tag">Ruptura · II</div>
+    </footer>
+  </section>
+
+  <!-- 11. ESPE PONS -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">Espe Pons</div>
+        <div class="place-year">Barcelona · 1973</div>
+      </div>
+      <div class="right">
+        <div class="project-title">Sota la llum del mar</div>
+        <div class="project-meta">2019 · Camp de la Bota · memoria del franquismo</div>
+      </div>
+    </header>
+    <div class="image-grid">
+      <figure class="photo" data-meta="EP · SLM 01"><img src="images/espe-pons/espe-pons-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="EP · SLM 02"><img src="images/espe-pons/espe-pons-2.jpg" alt=""></figure>
+      <figure class="photo" data-meta="EP · SLM 03"><img src="images/espe-pons/espe-pons-3.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">Tomàs Pons Albesa, hermano pequeño de su abuelo, fusilado a los 31 años. <em>—</em> «Es como si lo hubiera conocido en persona», dice ella después de meses en cartas de la cárcel y archivos. La investigación archivística se vuelve forma de duelo retroactivo, ochenta años después.</p>
+      <div class="tag">Ruptura · II</div>
+    </footer>
+  </section>
+
+  <!-- 12. ISADORA ROMERO -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">Isadora Romero</div>
+        <div class="place-year">Quito · 1987 — Ruda Colectiva</div>
+      </div>
+      <div class="right">
+        <div class="project-title">La sangre es una semilla</div>
+        <div class="project-meta">2022 · World Press Photo Formato Abierto, global</div>
+      </div>
+    </header>
+    <div class="image-grid">
+      <figure class="photo" data-meta="IR · LSES 01"><img src="images/isadora-romero/isadora-romero-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="IR · LSES 02"><img src="images/isadora-romero/isadora-romero-2.jpg" alt=""></figure>
+      <figure class="photo" data-meta="IR · LSES 03"><img src="images/isadora-romero/isadora-romero-3.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">Su abuelo y bisabuela paternos, en Une, Colombia, eran guardianes de semillas. <em>—</em> Llevaba años trabajando agrobiodiversidad sin saber por qué se sentía tan conectada. No es una fotógrafa documentando campesinos: es una nieta reconstruyendo su propia genealogía a través del cultivo.</p>
+      <div class="tag">Ruptura · II</div>
+    </footer>
+  </section>
+
+  <!-- 13. CAROLYN DRAKE + ANDRES GONZALEZ -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">Carolyn Drake &amp; Andres Gonzalez</div>
+        <div class="place-year">Vallejo, California — Magnum Photos · pareja desde 2003</div>
+      </div>
+      <div class="right">
+        <div class="project-title">I&rsquo;ll let you be in my dreams if I can be in yours</div>
+        <div class="project-meta">2018 — 2023 · MACK Books · frontera EE. UU. / México</div>
+      </div>
+    </header>
+    <div class="image-grid">
+      <figure class="photo" data-meta="CD/AG · DRM 01"><img src="images/carolyn-drake/carolyn-drake-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="CD/AG · DRM 02"><img src="images/carolyn-drake/carolyn-drake-2.jpg" alt=""></figure>
+      <figure class="photo" data-meta="CD/AG · DRM 03"><img src="images/carolyn-drake/carolyn-drake-3.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">La familia de él migró de México a California; los ancestros de ella vinieron del este por el Oregon Trail. <em>—</em> La frontera no es para ellos un tema sino una frontera cultural dentro de su relación. Cinco años fotografiando juntos. Dejaron deliberadamente ambigua la autoría de cada imagen.</p>
+      <div class="tag">Ruptura · II</div>
+    </footer>
+  </section>
+
+  <!-- 14. SECTION: III -->
+  <section class="slide slide-section">
+    <div class="kicker">— Tercera ruptura</div>
+    <div class="roman">III</div>
+    <h2>Del instante <em>al proyecto de largo aliento.</em></h2>
+  </section>
+
+  <!-- 15. LAIA ABRIL -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">Laia Abril</div>
+        <div class="place-year">Barcelona · 1986 — Premio Nacional de Fotografía 2023</div>
+      </div>
+      <div class="right">
+        <div class="project-title">On Rape &amp; Institutional Failure</div>
+        <div class="project-meta">2020 · A History of Misogyny — Capítulo II · Dewi Lewis</div>
+      </div>
+    </header>
+    <div class="image-grid">
+      <figure class="photo" data-meta="LA · ONR 01"><img src="images/laia-abril/laia-abril-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="LA · ONR 02"><img src="images/laia-abril/laia-abril-2.jpg" alt=""></figure>
+      <figure class="photo" data-meta="LA · ONR 03"><img src="images/laia-abril/laia-abril-3.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">Detonado por el caso de «La Manada», Pamplona, 2016. <em>—</em> Pero el proyecto no documenta ese caso: lo usa como punto de partida para una historia visual de más de 2000 años. Retratos conceptuales, testimonios, archivos, audios, objetos. Una década de investigación sedimentada.</p>
+      <div class="tag">Ruptura · III</div>
+    </footer>
+  </section>
+
+  <!-- 16. CÉSAR RODRÍGUEZ -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">César Rodríguez</div>
+        <div class="place-year">Tepic, Nayarit · 1983 — World Press Photo 2026</div>
+      </div>
+      <div class="right">
+        <div class="project-title">Montaña Roja</div>
+        <div class="project-meta">2014 — 2020 · Paris Photo–Aperture finalist · Sierra de Guerrero</div>
+      </div>
+    </header>
+    <div class="image-grid">
+      <figure class="photo" data-meta="CR · MRJ 01"><img src="images/cesar-rodriguez/cesar-rodriguez-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="CR · MRJ 02"><img src="images/cesar-rodriguez/cesar-rodriguez-2.jpg" alt=""></figure>
+      <figure class="photo" data-meta="CR · MRJ 03"><img src="images/cesar-rodriguez/cesar-rodriguez-3.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">Cinco años en las comunidades atrapadas entre el narco y el cultivo de amapola como única vía de supervivencia. <em>—</em> El tiempo no es una variable: es la condición de posibilidad. Solo cinco años permiten construir la confianza que estas imágenes exigen.</p>
+      <div class="tag">Ruptura · III</div>
+    </footer>
+  </section>
+
+  <!-- 17. ALESSANDRO CINQUE -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">Alessandro Cinque</div>
+        <div class="place-year">Italia · 1988 — radicado en Lima desde 2017</div>
+      </div>
+      <div class="right">
+        <div class="project-title">Alpaqueros</div>
+        <div class="project-meta">2022 · World Press Photo 2023 Sudamérica · National Geographic</div>
+      </div>
+    </header>
+    <div class="image-grid">
+      <figure class="photo" data-meta="AC · ALP 01"><img src="images/alessandro-cinque/alessandro-cinque-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="AC · ALP 02"><img src="images/alessandro-cinque/alessandro-cinque-2.jpg" alt=""></figure>
+      <figure class="photo" data-meta="AC · ALP 03"><img src="images/alessandro-cinque/alessandro-cinque-3.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">Criadores de alpaca andinos frente a la crisis climática. <em>—</em> Combina rituales a la Pachamama con laboratorios de inseminación in vitro, retiros glaciares con concursos de belleza alpaquero. Seis años radicado en Lima: ya no es viaje, es estar.</p>
+      <div class="tag">Ruptura · III</div>
+    </footer>
+  </section>
+
+  <!-- 18. RUPTURA IV -->
+  <section class="slide slide-text">
+    <div class="eyebrow">— Cuarta ruptura</div>
+    <h2><em>El allá</em> se vuelve aquí.</h2>
+    <div class="body-cols">
+      <div>
+        <p class="lead">El documentalismo clásico se sostenía sobre una geografía implícita: el centro mira a la periferia, el norte global al sur global, la ciudad al campo.</p>
+        <p>El nuevo documental disuelve esa geografía porque la mayoría de sus autores trabaja desde adentro de los territorios que fotografía.</p>
+      </div>
+      <div>
+        <p>Mata Rosas fotografía México desde México. Yael es de Taxco y fotografía Guerrero. César Rodríguez es de Tepic. Romero opera desde Quito. Pons trabaja la memoria catalana desde Cataluña. Elsa Medina hace foto desde la ventana de su casa.</p>
+        <p>Cuando el proyecto exige cruzar fronteras, como en Cinque o Drake, la lógica cambia: no es ir a documentar al otro, sino integrarse durante años hasta que el otro deja de ser otro. <em>Disuelve la asimetría colonial del documentalismo clásico.</em></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 19. RUPTURA V -->
+  <section class="slide slide-text">
+    <div class="eyebrow">— Quinta ruptura</div>
+    <h2>La imagen como <em>construcción material.</em></h2>
+    <div class="body-cols">
+      <div>
+        <p class="lead">Si el documental clásico ofrecía la imagen como ventana, el nuevo documental la ofrece como objeto manufacturado, cargado de su propio proceso.</p>
+        <p>Yael Martínez perfora físicamente sus copias para que la luz atraviese el papel — porque hablar de desaparecidos exigía un lenguaje visual que se desapareciera a sí mismo.</p>
+      </div>
+      <div>
+        <p>Romero imprime con pigmentos vegetales, tiñe con tierra, usa luz infrarroja. Mata Rosas multiplica dispositivos. Abril expone objetos junto a las imágenes. De Middel autopublica fotolibros que son objetos.</p>
+        <p>La pregunta del espectador se desplaza. Ya no es <em>¿qué pasó?</em> sino <em>¿cómo se construyó esta representación de lo que pasó?</em> — la pregunta meta-fotográfica que el documentalismo clásico tenía prohibido suscitar.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20. SÍNTESIS -->
+  <section class="slide slide-text">
+    <div class="eyebrow">— Síntesis</div>
+    <h2><em>El hilo</em> que une las cinco rupturas.</h2>
+    <div class="body-single">
+      <p class="lead">El documentalismo clásico operaba sobre la fantasía de que el fotógrafo era separable de su tema. El nuevo documental admite que esa separación nunca existió.</p>
+      <p>El autor está en el tema porque su bisabuela vivió ahí, porque su tío-abuelo fue fusilado, porque su abuelo era guardián de semillas, porque sus cuñados desaparecieron, porque la frontera la lleva tatuada en la piel, porque su pareja viene del otro lado, porque investigar la violación es investigar el propio cuerpo.</p>
+      <p>El espectador ya no recibe <em>información sobre el mundo</em>. Recibe <em>el rastro de una investigación situada</em>, hecha por alguien implicado en lo que muestra. Eso no debilita el documento. Lo vuelve verificable de otra manera: por la responsabilidad evidente del autor frente a su tema.</p>
+    </div>
+  </section>
+
+  <!-- 21. CODA: bridge to personal work — set apart from the groups -->
+  <section class="slide slide-section">
+    <div class="kicker">— Coda · una práctica propia</div>
+    <div class="roman">&amp;</div>
+    <h2>Lo anterior <em>también</em> aplica a una práctica propia.</h2>
+  </section>
+
+  <!-- 22. MARIO ALBERTO CHÁVEZ — DISAPPEARING DREAMS -->
+  <section class="slide slide-author">
+    <header class="author-header">
+      <div class="left">
+        <div class="name">Mario Alberto Chávez Cárdenas</div>
+        <div class="place-year">Colima · México — fotógrafo documental</div>
+      </div>
+      <div class="right">
+        <div class="project-title">Disappearing Dreams</div>
+        <div class="project-meta">2019 — 2022 · Northern Exposure Scholarship 2023 · 14 fotografías</div>
+      </div>
+    </header>
+    <div class="image-grid">
+      <figure class="photo" data-meta="MAC · DD 01"><img src="images/mario-chavez/disappearing-dreams-1.jpg" alt=""></figure>
+      <figure class="photo" data-meta="MAC · DD 02"><img src="images/mario-chavez/disappearing-dreams-2.jpg" alt=""></figure>
+      <figure class="photo" data-meta="MAC · DD 03"><img src="images/mario-chavez/disappearing-dreams-3.jpg" alt=""></figure>
+    </div>
+    <footer class="author-footer">
+      <p class="pull-quote">Acompañamiento con la Red Desaparecidos Colima desde finales de 2019. Seis familias que buscan a sus seres queridos. <em>—</em> La ropa suspendida en el vaso seco de la laguna. Los retratos tomados de espaldas. <em>De espaldas, todos nos parecemos:</em> esas familias pueden ser cualquier familia, la nuestra.</p>
+      <div class="tag">&amp;</div>
+    </footer>
+  </section>
+
+  <!-- 23. CIERRE -->
+  <section class="slide slide-closing">
+    <p class="quote">«No fotografías el lugar como un viajero. <br>Lo fotografías porque te tiene <br>tanto como tú lo tienes.»</p>
+    <div class="signature">
+      <span class="name">Mario Alberto Chávez Cárdenas</span>
+      Fotógrafo documental · Colima<br>
+      foto.mariochavez.io · instagram &mdash; @mario_chavez
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.querySelector('.counter');
+  const hint = document.querySelector('.hint');
+  const total = String(slides.length).padStart(2, '0');
+  let current = 0;
+  let hintTimer;
+
+  // Safely update URL hash — gracefully ignored in sandboxed contexts (about:srcdoc, iframes, etc.)
+  function safeReplaceHash(num) {
+    try {
+      if (window.history && typeof window.history.replaceState === 'function') {
+        window.history.replaceState(null, '', '#' + num);
+      }
+    } catch (e) {
+      // SecurityError in sandboxed iframe — ignore silently
+    }
+  }
+
+  function show(i, push = true) {
+    current = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
+    counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + total;
+    if (push) safeReplaceHash(current + 1);
+  }
+
+  function fadeHint() {
+    clearTimeout(hintTimer);
+    hint.classList.remove('fade');
+    hintTimer = setTimeout(() => hint.classList.add('fade'), 4000);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'ArrowDown') {
+      show(current + 1);
+      e.preventDefault();
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'ArrowUp') {
+      show(current - 1);
+      e.preventDefault();
+    } else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    } else if (e.key === 'Home') {
+      show(0);
+    } else if (e.key === 'End') {
+      show(slides.length - 1);
+    }
+    fadeHint();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('a, button, input')) return;
+    if (e.clientX > window.innerWidth / 2) show(current + 1);
+    else show(current - 1);
+    fadeHint();
+  });
+
+  // Initialize — safely read hash for deep-linking
+  let initial = 0;
+  try {
+    const h = parseInt((location.hash || '').replace('#', ''), 10);
+    if (!isNaN(h) && h > 0 && h <= slides.length) initial = h - 1;
+  } catch (e) {}
+  show(initial, false);
+
+  fadeHint();
+</script>
+</body>
+</html>
